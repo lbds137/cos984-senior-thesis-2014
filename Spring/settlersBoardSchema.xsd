@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+targetNamespace="http://www.w3schools.com"
+xmlns="http://www.w3schools.com"
+elementFormDefault="qualified">
+
+<xs:element name="board" maxOccurs="1" minOccurs="1">
+    <xs:complexType>
+        <xs:sequence>
+            <!-- hexGraph: for each hex (node), record adjacent hexes (edges between this and other hex) -->
+            <xs:element name="hexGraph" maxOccurs="1" minOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="hex" maxOccurs="19" minOccurs="19">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="id" type="xs:integer"/>  
+                                    <xs:element name="adjacentId" type="xs:integer" maxOccurs="6" minOccurs="2"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <!-- intersectionGraph: for each intersection (node), record adjacent intersections (edge between this and other intersection) -->
+            <xs:element name="intersectionGraph" maxOccurs="1" minOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="intersection" maxOccurs="54" minOccurs="54">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="id" type="xs:integer"/>  
+                                    <xs:element name="adjacentId" type="xs:integer" maxOccurs="3" minOccurs="2"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <!-- hexToIntersectionMapGraph: for each hex (node), record adjacent intersections (edge between this hex and other intersection) -->
+            <xs:element name="hexToIntersectionMapGraph" maxOccurs="1" minOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="hexToIntersectionMap" maxOccurs="6" minOccurs="6">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="id" type="xs:integer"/>  
+                                    <xs:element name="adjacentId" type="xs:integer" maxOccurs="6" minOccurs="6"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+
+</xs:schema> 

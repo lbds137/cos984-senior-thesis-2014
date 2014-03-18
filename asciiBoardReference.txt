@@ -57,7 +57,13 @@ ppppsssssssss\TT__TT/sssTTsss\TT__TT/\n
 ppppssssssssssssssss\sssTTsss/\n
 ppppsssssssssssssssss\TT__TT/\n
 
+3:1
+ ___
+/   \
+\___/
+6:2
 bigger version
+9:3
    ________
   /        \
  /          \
@@ -65,3 +71,42 @@ bigger version
 \            /
  \          /
   \________/
+
+12:4?
+15:5 (looks decent enough, but not perfect)
+13:5 is good
+     _____________
+    /             \
+   /               \
+  /                 \
+ /                   \
+/                     \
+\                     /
+ \                   /
+  \                 /
+   \               /
+    \_____________/
+    
+formula: settle on 2.5:1 ratio, always rounding up if result is not an integer
+25:10 looks good:
+          _________________________
+         /                         \
+        /                           \
+       /                             \
+      /                               \
+     /                                 \
+    /                                   \
+   /                                     \
+  /                                       \
+ /                                         \
+/                                           \
+\                                           /
+ \                                         /
+  \                                       /
+   \                                     /
+    \                                   /
+     \                                 /
+      \                               /
+       \                             /
+        \                           /
+         \_________________________/

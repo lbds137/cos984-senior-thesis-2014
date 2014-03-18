@@ -104,6 +104,41 @@ public class Board {
     public Hex[] getHexes() {
         return hexes;
     }
+    public boolean[][] getHGraph() {
+        return hGraph;
+    }
+    
+    /* Operations */
+    
+    public int buildRoad(String location) {
+        // return indicates success or error
+        return -1;
+    }
+    public int buildSettlement(String location) {
+        // return indicates success or error
+        return -1;
+    }
+    public int buildCity(String location) {
+        // return indicates success or error
+        return -1;
+    }
+    public int getNumSettlements(int player) {
+        return 0;
+    }
+    public int getNumCities(int player) {
+        return 0;
+    }
+    public int getLongestRoad(int player) {
+        return 0;
+    }
+    public ArrayList<ArrayList<Integer>> getResources(int roll) {
+        // returns 2D array list: row index indicates player, column index indicates resource type, 
+        // arr[row][col] indicates number of resource cards of that type earned
+        return null;
+    }
+    
+    /* Debug */
+    
     public void printIGraph() {
         System.out.println(intersections.length + "\r");
         for (int i = 0; i < intersections.length; i++) {
@@ -136,35 +171,6 @@ public class Board {
         }
     }
     
-    /* Methods for Game to call */
-    
-    public int buildRoad(String location) {
-        // return indicates success or error
-        return -1;
-    }
-    public int buildSettlement(String location) {
-        // return indicates success or error
-        return -1;
-    }
-    public int buildCity(String location) {
-        // return indicates success or error
-        return -1;
-    }
-    public int getNumSettlements(int player) {
-        return 0;
-    }
-    public int getNumCities(int player) {
-        return 0;
-    }
-    public int getLongestRoad(int player) {
-        return 0;
-    }
-    public ArrayList<ArrayList<Integer>> getResources(int roll) {
-        // returns 2D array list: row index indicates player, column index indicates resource type, 
-        // arr[row][col] indicates number of resource cards of that type earned
-        return null;
-    }
-    
     /* Testing */
     
     public static void main(String args[]) {
@@ -172,5 +178,19 @@ public class Board {
         //b.printRoads();
         b.printHexes();
         //b.printHexGraph();
+        //System.out.print(String.format("\033[2J"));
+        System.out.print(Constants.ANSI_YELLOW_BG_INTENSE);
+        System.out.println("I am yellow!");
+        System.out.print(Constants.ANSI_RESET);
+        System.out.print("I am no longer yellow!");
+        System.out.print("");
+        System.out.print(Constants.ANSI_RESET);
+        System.out.print(Constants.ANSI_RESET_BG);
+        System.out.println();
+        System.out.print(Constants.ANSI_PURPLE_INTENSE);
+        System.out.print("I am purple!");
+        System.out.print(Constants.ANSI_RESET);
+        System.out.println("I am no longer purple!");
+        for (int i = 0; i < 50; ++i) System.out.println();
     }
 }

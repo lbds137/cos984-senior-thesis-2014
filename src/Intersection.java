@@ -53,5 +53,4 @@ public class Intersection {
     public int buildCity(int player) {
         return build(Constants.CITY, player);
     }
-    
 }

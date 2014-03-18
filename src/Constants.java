@@ -1,0 +1,93 @@
+
+public final class Constants  {
+
+    // basic board structure information
+    public static final int MAX_DEG = 3;
+    public static final int HEX = 6;
+    public static final int[][] H_GRAPH = {{1,3,4},{0,2,4,5},{1,5,6},
+                                           {0,4,7,8},{0,1,3,5,8,9}, 
+                                           {1,2,4,6,9,10},{2,5,10,11}, 
+                                           {3,8,12},{3,4,7,9,12,13}, 
+                                           {4,5,8,10,13,14},
+                                           {5,6,9,11,14,15},
+                                           {6,10,15},{7,8,13,16}, 
+                                           {8,9,12,14,16,17}, 
+                                           {9,10,13,15,17,18},
+                                           {10,11,14,18},{12,13,17},
+                                           {13,14,16,18},{14,15,17}};
+    public static final int[][] I_GRAPH = {{1,8},{0,2},{1,3,10},{2,4},
+                                           {3,5,12},{4,6},{5,14},{8,17},
+                                           {0,7,9},{8,10,19},{2,9,11},
+                                           {10,12,21},{4,11,13},
+                                           {12,14,23},{6,13,15},{14,25},
+                                           {17,27},{7,16,18},{17,19,29},
+                                           {9,18,20},{19,21,31},
+                                           {11,20,22},{21,23,33},
+                                           {13,22,24},{23,25,35},
+                                           {15,24,26},{25,37},{16,28},
+                                           {27,29,38},{18,28,30},
+                                           {29,31,40},{20,30,32},
+                                           {31,33,42},{22,32,34},
+                                           {33,35,44},{24,34,36},
+                                           {35,37,46},{26,36},{28,39},
+                                           {38,40,47},{30,39,41},
+                                           {40,42,49},{32,41,43},
+                                           {42,44,51},{34,43,45},
+                                           {44,46,53},{36,45},{39,48},
+                                           {47,49},{41,48,50},{49,51},
+                                           {43,50,52},{51,53},{45,52}};
+    public static final int[][] H_I_MAP_GRAPH = {{0,1,2,8,9,10},
+                                                 {2,3,4,10,11,12},
+                                                 {4,5,6,12,13,14},
+                                                 {7,8,9,17,18,19},
+                                                 {9,10,11,19,20,21},
+                                                 {11,12,13,21,22,23},
+                                                 {13,14,15,23,24,25},
+                                                 {16,17,18,27,28,29},
+                                                 {18,19,20,29,30,31},
+                                                 {20,21,22,31,32,33},
+                                                 {22,23,24,33,34,35},
+                                                 {24,25,26,35,36,37},
+                                                 {28,29,30,38,39,40},
+                                                 {30,31,32,40,41,42},
+                                                 {32,33,34,42,43,44},
+                                                 {34,35,36,44,45,46},
+                                                 {39,40,41,47,48,49},
+                                                 {41,42,43,49,50,51},
+                                                 {43,44,45,51,52,53}};
+    // player colors
+    public static final int GAIA = -1;
+    public static final int BLUE = 0;
+    public static final int ORANGE = 1;
+    public static final int RED = 2;
+    public static final int WHITE = 3;
+    // resource types
+    public static final int DESERT = -1;
+    public static final int BRICK = 0;
+    public static final int GRAIN = 1;
+    public static final int LUMBER = 2;
+    public static final int ORE = 3;
+    public static final int WOOL = 4;
+    // building types
+    public static final int OPEN = -1;
+    public static final int SETTLEMENT = 0;
+    public static final int CITY = 1;
+    // dev card types
+    public static final int KNIGHT = 0;
+    public static final int ROAD_BUILDING = 1;
+    public static final int YEAR_OF_PLENTY = 2;
+    public static final int MONOPOLY = 3;
+    public static final int VICTORY_POINT = 4;
+    // resource tiles
+    public static final Integer[] LAND = {DESERT,BRICK,BRICK,BRICK,GRAIN,
+                                          GRAIN,GRAIN,GRAIN,LUMBER,LUMBER,
+                                          LUMBER,LUMBER,ORE,ORE,ORE,WOOL,
+                                          WOOL,WOOL,WOOL};
+    // dice roll chits
+    public static final Integer[] DICE = {2,3,3,4,4,5,5,6,6,7,8,
+                                          8,9,9,10,10,11,11,12};
+    
+    private Constants(){
+        throw new AssertionError();
+    }
+}

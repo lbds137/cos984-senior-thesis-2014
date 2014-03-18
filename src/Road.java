@@ -3,18 +3,18 @@ public class Road {
 
     /* Private fields */
 
-    private int i1;
-    private int i2;
+    private int iOne;
+    private int iTwo;
     private int player;
     
     /* Constructors */
     
-    public Road(int i1, int i2) {
-        this.i1 = i1;
-        this.i2 = i2;
-        if (i1 > i2) {
-            this.i1 = i2;
-            this.i2 = i1;
+    public Road(int iOne, int iTwo) {
+        this.iOne = iOne;
+        this.iTwo = iTwo;
+        if (iOne > iTwo) {
+            this.iOne = iTwo;
+            this.iTwo = iOne;
         }
         this.player = Constants.GAIA;
     }
@@ -22,8 +22,8 @@ public class Road {
     /* Getters */
     
     public int other(int i) {
-        if (i == i2) return i1;
-        return i2;
+        if (i == iTwo) return iOne;
+        return iTwo;
     }
     
     /* Operations */
@@ -39,7 +39,6 @@ public class Road {
     }
     
     public String toString() {
-        return i1 + "->" + i2;
+        return " [" + iOne + "->" + iTwo + "] ";
     }
-    
 }

@@ -1,0 +1,67 @@
+
+                      ______
+                     /      \
+              ______/    C   \______
+             /      \        /      \
+      N___NE/    B   \______/    G   \______
+     /      \        /      \        /      \
+  NW/    A   \SE____/    F   \______/    L   \
+    \        /      \        /      \        /
+     \SW___S/    E   \______/    K   \______/
+     /      \        /      \        /      \
+    /    D   \______/    J   \______/    P   \
+    \        /      \        /      \        /
+     \______/    I   \______/    O   \______/
+     /      \        /      \        /      \
+    /    H   \______/    N   \______/    S   \
+    \        /      \        /      \        /
+     \______/    M   \______/    R   \______/
+            \        /      \        /
+             \______/    Q   \______/
+                    \        /
+                     \______/
+Width 42
+Height 21
+Left padding 4
+Top padding 1 (acts like 2)
+
+Brick: bright red
+Ore: bright black
+Sheep: bright green
+Wheat: yellow
+Wood: dark green
+Desert: black
+
+marked up version below
+
+\n
+ppppssssssssssssssssssTT__TT\n
+ppppsssssssssssssssss/ssssss\\n
+ppppssssssssssTT__TT/sssTTsss\TT__TT\n
+ppppsssssssss/ssssss\sssTTsss/ssssss\\n
+ppppssTT__TT/sssTTsss\TT__TT/sssTTsss\TT__TT\n
+pppps/ssssss\sssTTsss/ssssss\sssTTsss/ssssss\\n
+ppTT/sssTTsss\TT__TT/sssTTsss\TT__TT/sssTTsss\\n
+pppp\sssTTsss/ssssss\sssTTsss/ssssss\sssTTsss/\n
+pppps\TT__TT/sssTTsss\TT__TT/sssTTsss\TT__TT/\n
+pppps/ssssss\sssTTsss/ssssss\sssTTsss/ssssss\\n
+pppp/sssTTsss\TT__TT/sssTTsss\TT__TT/sssTTsss\\n
+pppp\sssTTsss/ssssss\sssTTsss/ssssss\sssTTsss/\n
+pppps\TT__TT/sssTTsss\TT__TT/sssTTsss\TT__TT/\n
+pppps/ssssss\sssTTsss/ssssss\sssTTsss/ssssss\\n
+pppp/sssTTsss\TT__TT/sssTTsss\TT__TT/sssTTsss\\n
+pppp\sssTTsss/ssssss\sssTTsss/ssssss\sssTTsss/\n
+pppps\TT__TT/sssTTsss\TT__TT/sssTTsss\TT__TT/\n
+ppppssssssss\sssTTsss/ssssss\sssTTsss/\n
+ppppsssssssss\TT__TT/sssTTsss\TT__TT/\n
+ppppssssssssssssssss\sssTTsss/\n
+ppppsssssssssssssssss\TT__TT/\n
+
+bigger version
+   ________
+  /        \
+ /          \
+/            \
+\            /
+ \          /
+  \________/

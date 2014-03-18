@@ -1,13 +1,14 @@
+import java.util.ArrayList;
 
 public class Game {
 
     private Board board;
-    private resource decks
+    private ArrayList<ArrayList<Integer>> resources;
     private ArrayList<Player> players;
-    private int turn number
+    private int turnNumber;
     
     public Game() {
-        // test
+        
     }
     
     // 

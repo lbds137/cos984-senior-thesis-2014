@@ -1,0 +1,34 @@
+
+    public Board(int g) { // NOT FULLY IMPLEMENTED, DO NOT USE
+        int numHexRows = (g * 2) - 1;
+        int[] hexRows = new int[numHexRows];
+        for (int i = 0; i < g; i++) {
+            hexRows[i] = g + i;
+            hexRows[numHexRows - 1 - i] = g + i;
+        }
+        // g = 3; hexRows = {3,4,5,4,3};
+        
+        int numHexes = 0;
+        for (int i = 0; i < numHexRows; i++) {
+            numHexes += hexRows[i];
+        }
+        // g = 3; numHexes = 19;
+
+        int numVertexRows = numHexRows + 1;
+        int[] vertexRows = new int[numVertexRows];
+        for (int i = 0; i < g; i++) {
+            vertexRows[i] = (g + i) * 2 + 1;
+            vertexRows[numVertexRows - 1 - i] = (g + i) * 2 + 1;
+        }
+        // g = 3; vertexRows = {7,9,11,11,9,7};
+
+        int numVertices = 0;
+        for (int i = 0; i < numVertexRows; i++) {
+            numVertices += vertexRows[i];
+        }
+        // g = 3; numVertices = 54;
+        
+        // initialize hex and vertex arrays
+        hexes = new Hex[numHexes];
+        intersections = new Intersection[numVertices];
+    }

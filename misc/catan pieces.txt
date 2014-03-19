@@ -1,0 +1,37 @@
+• 19 terrain hexes (tiles)
+• 6 sea frame pieces
+• 9 harbor piece
+• 18 circular number tokens (chits)
+• 95 Resource Cards
+  - 19 ore
+  - 19 grain
+  - 19 lumber
+  - 19 wool
+  - 19 brick
+• 25 Development Cards
+  - 14 Knight/Soldier Cards
+  - 6 Progress Cards
+    * 2 road building: 2 free roads
+    * 2 year of plenty: take any two resource cards
+    * 2 monopoly: name one resource, take all resource cards of that type from all other players
+  - 5 Victory Point Cards
+• 4 “Building Costs” Cards
+• 2 Special Cards: “Longest Road” & “Largest Army”
+• 16 cities (4 of each color shaped like churches)
+• 20 settlements (5 of each color shaped like houses)
+• 60 roads (15 of each color shaped like bars)
+• 2 dice (1 yellow, 1 red)
+• 1 robber
+
+neighbors: NW, NE, E, SE, SW, W
+
+Knight
+Year of Plenty
+Monopoly
+Road Building
+
+University
+Palace
+Library
+Chapel
+Market

@@ -27,30 +27,14 @@ public class Intersection {
     
     /* Operations */
     
-    private int build(int building, int player) {
-        if (this.player == Constants.GAIA) {
+    public boolean build(int building, int player) {
+        if ((this.player == Constants.GAIA || this.player == player) && this.building < building) {
             this.player = player;
             this.building = building;
-            return 0;
-        }
-        else if (this.player == player) {
-            if (this.building < building) {
-                this.building = building;
-                return 0;
-            }
-            else {
-                return -1;
-            }
+            return true;
         }
         else {
-            return -1;
+            return false;
         }
-    }
-    
-    public int buildSettlement(int player) {
-        return build(Constants.SETTLEMENT, player);
-    }
-    public int buildCity(int player) {
-        return build(Constants.CITY, player);
     }
 }

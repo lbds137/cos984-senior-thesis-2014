@@ -55,14 +55,16 @@ public final class Constants  {
                                                  {39,40,41,47,48,49},
                                                  {41,42,43,49,50,51},
                                                  {43,44,45,51,52,53}};
-    // player colors
-    public static final int GAIA = -1;
+    // players
+    public static final int NUM_PLAYERS = 4;
+    public static final int GAIA = -1; // placeholder, not real player
     public static final int BLUE = 0;
     public static final int ORANGE = 1;
     public static final int RED = 2;
     public static final int WHITE = 3;
     // resource types
-    public static final int DESERT = -1;
+    public static final int NUM_RESOURCES = 5;
+    public static final int DESERT = -1; // not a "useful" resource
     public static final int BRICK = 0;
     public static final int GRAIN = 1;
     public static final int LUMBER = 2;
@@ -84,9 +86,13 @@ public final class Constants  {
                                           LUMBER,LUMBER,ORE,ORE,ORE,WOOL,
                                           WOOL,WOOL,WOOL};
     // dice roll chits
-    public static final Integer[] DICE = {2,3,3,4,4,5,5,6,6,7,8,
-                                          8,9,9,10,10,11,11,12};
-    // text interface colors for terminal
+    public static final Integer[] DICE_ROLLS = {2,3,3,4,4,5,5,6,6,7,8,
+                                                8,9,9,10,10,11,11,12};
+    // build limits for each player
+    public static final int MAX_ROADS = 15;
+    public static final int MAX_SETTLEMENTS = 5;
+    public static final int MAX_CITIES = 4;
+    // text interface colors for terminal (interface sub-project on hold for now)
     public static final String ANSI_RESET = "\u001b[0m";
     public static final String ANSI_RESET_BG = "\u001b[49m";
     public static final String ANSI_BLACK = "\u001b[30m";

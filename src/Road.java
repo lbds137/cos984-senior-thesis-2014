@@ -21,22 +21,27 @@ public class Road {
     
     /* Getters */
     
+    public int getPlayer() {
+        return player;
+    }
     public int other(int i) {
         if (i == iTwo) return iOne;
-        return iTwo;
+        else return iTwo;
     }
     
     /* Operations */
     
-    public int build(int player) {
+    public boolean build(int player) {
         if (this.player == Constants.GAIA) {
             this.player = player;
-            return 0;
+            return true;
         }
         else {
-            return -1;
+            return false;
         }
     }
+    
+    /* Debug */
     
     public String toString() {
         return " [" + iOne + "->" + iTwo + "] ";

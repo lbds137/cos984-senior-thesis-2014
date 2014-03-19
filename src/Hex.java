@@ -5,14 +5,14 @@ public class Hex {
     
     private int id;
     private int resourceType;
-    private int dieNumber;
+    private int diceRoll;
     
     /* Constructors */
     
-    public Hex(int id, int resourceType, int dieNumber) {
+    public Hex(int id, int resourceType, int diceRoll) {
         this.id = id;
         this.resourceType = resourceType;
-        this.dieNumber = dieNumber;
+        this.diceRoll = diceRoll;
     }
     
     /* Getters */
@@ -40,8 +40,8 @@ public class Hex {
         }
         return "Invalid Resource Type";
     }
-    public int getDieNumber() {
-        return dieNumber;
+    public int getDiceRoll() {
+        return diceRoll;
     }
     
     /* Operations */

@@ -115,6 +115,7 @@ public final class Constants  {
     public static final int MAX_SETTLEMENTS = 5;
     public static final int MAX_CITIES = 4;
     // text interface colors for terminal (interface sub-project on hold)
+    /*
     public static final String ANSI_RESET = "\u001b[0m";
     public static final String ANSI_RESET_BG = "\u001b[49m";
     public static final String ANSI_BLACK = "\u001b[30m";
@@ -134,6 +135,9 @@ public final class Constants  {
     public static final String ANSI_CYAN_INTENSE = "\u001b[36;1m";
     public static final String ANSI_WHITE = "\u001b[37m";
     public static final String ANSI_WHITE_INTENSE = "\u001b[37;1m";
+    */
+    // misc
+    public static final int NOTHING = -1;
     
     private Constants(){
         throw new AssertionError();

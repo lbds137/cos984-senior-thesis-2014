@@ -6,11 +6,13 @@ public class Intersection {
     private int id;
     private int player;
     private int building;
+    private int port;
 
-    public Intersection(int id) {
+    public Intersection(int id, int port) {
         this.id = id;
         this.player = Constants.GAIA;
         this.building = Constants.OPEN;
+        this.port = port;
     }
 
     /* Getters */
@@ -23,6 +25,9 @@ public class Intersection {
     }
     public int getBuilding() {
         return building;
+    }
+    public int getPort() {
+        return port;
     }
     
     /* Operations */

@@ -35,10 +35,11 @@ public class Board {
     private void initIGraph() {
         int[][] g = Constants.I_GRAPH;
         int n = g.length;
+        ArrayList<Integer> shuffledPorts = getShuffledPorts();
         
         intersections = new Intersection[n];
         for (int i = 0; i < n; i++) {
-            intersections[i] = new Intersection(i);
+            intersections[i] = new Intersection(i, shuffledPorts.get(i));
         }
         
         iGraph = new Road[n][n];
@@ -122,6 +123,20 @@ public class Board {
         
         return shuffledDiceRolls;
     }
+    private ArrayList<Integer> getShuffledPorts() {
+        ArrayList<Integer> shuffledPorts = new ArrayList<Integer>(Constants.I_GRAPH.length);
+        for (int i = 0; i < Constants.I_GRAPH.length; i++) shuffledPorts.add(Constants.INLAND);
+        
+        ArrayList<Integer> shuffledPortTypes = new ArrayList<Integer>(Arrays.asList(Constants.PORTS));
+        Collections.shuffle(shuffledPortTypes, new Random());
+        for (int i = 0; i < Constants.PORT_LOCATIONS.length; i++) {
+            for (int j = 0; j < Constants.PORT_LOCATIONS[i].length; j++) {
+                shuffledPorts.set(Constants.PORT_LOCATIONS[i][j], shuffledPortTypes.get(i));
+            }
+        }
+        
+        return shuffledPorts;
+    }
     
     /* Getters */
     
@@ -143,9 +158,35 @@ public class Board {
     public int getNumCities(int player) {
         return citiesBuilt[player];
     }
+    /* LONGEST ROAD NOT WORKING YET */
+    // calls recursive version to do the heavy lifting
     public int getLongestRoad(int player) {
-        // todo
-        return 0;
+        boolean[] visited = new boolean[intersections.length];
+        int longestRoad = 0;
+        for (int i = 0; i < intersections.length; i++) {
+            visited[i] = true; // we don't want to get stuck in cycles
+            int candidate = getLongestRoad(0, i, visited, player);
+            if (candidate > longestRoad) longestRoad = candidate;
+        }
+        
+        return longestRoad;
+    }
+    // recursive helper: use DFS to find longest road
+    private int getLongestRoad(int length, int id, boolean[] visited, int player) {
+        // base cases
+        if (visited[id]) return length; // visited in a previous function call
+        if (intersections[id].getPlayer() != player) return length; // not owned by player
+        
+        int longestRoad = length;
+        int[] neighbors = Constants.I_GRAPH[id];
+        for (int i = 0; i < neighbors.length; i++) {
+            int candidate = 0;
+            if (iGraph[id][i].getPlayer() == player) {
+                candidate = getLongestRoad(++length, neighbors[i], visited, player);
+            }
+            if (candidate > longestRoad) longestRoad = candidate;
+        }
+        return longestRoad;
     }
     /* returns 2D array: row index indicates player, column index indicates resource type, 
        resources[row][col] indicates number of resource cards of that type earned */
@@ -226,7 +267,7 @@ public class Board {
         System.out.println(hexes.length + "\r");
         for (int i = 0; i < hexes.length; i++) {
             //System.out.print(hexes[i]);
-            System.out.print(i + " : " + hexes[i].getStringResourceType() + " " + hexes[i].getDiceRoll() + "\n");
+            System.out.print((char) (i + 'A') + " : " + hexes[i].getStringResourceType() + " " + hexes[i].getDiceRoll() + "\n");
         }
     }
     public void printHGraph() {
@@ -241,14 +282,88 @@ public class Board {
             System.out.print("\r\n");
         }
     }
+    public void printIntersections() {
+        System.out.println(intersections.length + "\r");
+        for (int i = 0; i < intersections.length; i++) {
+            int id = i;
+            int player = intersections[i].getPlayer();
+            int building = intersections[i].getBuilding();
+            int port = intersections[i].getPort();
+            
+            String sPlayer = "";
+            String sBuilding = "";
+            String sPort = "";
+            
+            switch (player) {
+                case Constants.GAIA:
+                    sPlayer = "Gaia";
+                    break;
+                case Constants.BLUE:
+                    sPlayer = "Blue";
+                    break;
+                case Constants.ORANGE:
+                    sPlayer = "Orange";
+                    break;
+                case Constants.RED:
+                    sPlayer = "Red";
+                    break;
+                case Constants.WHITE:
+                    sPlayer = "White";
+                    break;
+                default:
+                    sPlayer = "Invalid";
+            }
+            switch (building) {
+                case Constants.OPEN:
+                    sBuilding = "Open";
+                    break;
+                case Constants.SETTLEMENT:
+                    sBuilding = "Settlement";
+                    break;
+                case Constants.CITY:
+                    sBuilding = "City";
+                    break;
+                default:
+                    sBuilding = "Invalid";
+            }
+            switch (port) {
+                case Constants.INLAND:
+                    sPort = "Inland (4:1)";
+                    break;
+                case Constants.BRICK:
+                    sPort = "Brick (2:1)";
+                    break;
+                case Constants.GRAIN:
+                    sPort = "Grain (2:1)";
+                    break;
+                case Constants.LUMBER:
+                    sPort = "Lumber (2:1)";
+                    break;
+                case Constants.ORE:
+                    sPort = "Ore (2:1)";
+                    break;
+                case Constants.WOOL:
+                    sPort = "Wool (2:1)";
+                    break;
+                case Constants.PORT:
+                    sPort = "Generic (3:1)";
+                    break;
+                default:
+                    sPort = "Invalid";
+            }
+            System.out.print(id + " : " + sPlayer + ", " + sBuilding + ", " + sPort);
+            System.out.print("\r\n");
+        }
+    }
     
     /* Testing */
     
     public static void main(String args[]) {
         Board b = new Board();
-        //b.printRoads();
-        b.printHexes();
-        //b.printHexGraph();
+        //b.printIGraph();
+        b.printIntersections();
+        //b.printHexes();
+        //b.printHGraph();
         //System.out.print(String.format("\033[2J"));
         /*
         System.out.print(Constants.ANSI_YELLOW_BG_INTENSE);

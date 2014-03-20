@@ -55,6 +55,9 @@ public final class Constants  {
                                                  {39,40,41,47,48,49},
                                                  {41,42,43,49,50,51},
                                                  {43,44,45,51,52,53}};
+    public static final int[][] PORT_LOCATIONS = {{0,1},{3,4},{7,17},
+                                                  {14,15},{26,37},{28,38},
+                                                  {45,46},{47,48},{50,51}};
     // players
     public static final int NUM_PLAYERS = 4;
     public static final int GAIA = -1; // placeholder, not real player
@@ -70,29 +73,48 @@ public final class Constants  {
     public static final int LUMBER = 2;
     public static final int ORE = 3;
     public static final int WOOL = 4;
+    // port types
+    public static final int INLAND = -1; // not a port
+    /* remaining port types same as resources */
+    public static final int PORT = 5; // generic 3:1 port
     // building types
     public static final int OPEN = -1;
     public static final int SETTLEMENT = 0;
     public static final int CITY = 1;
     // dev card types
     public static final int KNIGHT = 0;
-    public static final int ROAD_BUILDING = 1;
-    public static final int YEAR_OF_PLENTY = 2;
+    public static final int ROAD = 1;
+    public static final int PLENTY = 2;
     public static final int MONOPOLY = 3;
-    public static final int VICTORY_POINT = 4;
+    public static final int CHAPEL = 4;
+    public static final int UNIVERSITY = 5;
+    public static final int PALACE = 6;
+    public static final int LIBRARY = 7;
+    public static final int MARKET = 8;
     // resource tiles
     public static final Integer[] LAND = {DESERT,BRICK,BRICK,BRICK,GRAIN,
                                           GRAIN,GRAIN,GRAIN,LUMBER,LUMBER,
                                           LUMBER,LUMBER,ORE,ORE,ORE,WOOL,
                                           WOOL,WOOL,WOOL};
+    // ports
+    public static final Integer[] PORTS = {PORT,PORT,PORT,PORT,BRICK,GRAIN,
+                                           LUMBER,ORE,WOOL};
     // dice roll chits
     public static final Integer[] DICE_ROLLS = {2,3,3,4,4,5,5,6,6,7,8,
                                                 8,9,9,10,10,11,11,12};
+    // dev cards
+    public static final Integer[] DEV_CARDS = {KNIGHT,KNIGHT,KNIGHT,KNIGHT,
+                                               KNIGHT,KNIGHT,KNIGHT,KNIGHT,
+                                               KNIGHT,KNIGHT,KNIGHT,KNIGHT,
+                                               KNIGHT,KNIGHT,ROAD,ROAD,
+                                               PLENTY,PLENTY,MONOPOLY,MONOPOLY,
+                                               CHAPEL,UNIVERSITY,PALACE,
+                                               LIBRARY,MARKET};
     // build limits for each player
     public static final int MAX_ROADS = 15;
     public static final int MAX_SETTLEMENTS = 5;
     public static final int MAX_CITIES = 4;
-    // text interface colors for terminal (interface sub-project on hold for now)
+    // text interface colors for terminal (interface sub-project on hold)
     public static final String ANSI_RESET = "\u001b[0m";
     public static final String ANSI_RESET_BG = "\u001b[49m";
     public static final String ANSI_BLACK = "\u001b[30m";

@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Random;
 
 public class Board {
 
@@ -58,7 +57,7 @@ public class Board {
         int[][] g = Constants.H_GRAPH;
         int n = g.length;
         ArrayList<Integer> shuffledLand = new ArrayList<Integer>(Arrays.asList(Constants.LAND));
-        Collections.shuffle(shuffledLand, new Random());
+        Collections.shuffle(shuffledLand);
         robberIndex = shuffledLand.indexOf(Constants.DESERT); // robber starts in desert
         ArrayList<Integer> shuffledDiceRolls = getShuffledDiceRolls(robberIndex);
         
@@ -104,7 +103,7 @@ public class Board {
         do {
             conflict = false;
             shuffledDiceRolls = new ArrayList<Integer>(Arrays.asList(Constants.DICE_ROLLS));
-            Collections.shuffle(shuffledDiceRolls, new Random());
+            Collections.shuffle(shuffledDiceRolls);
             // Make sure die number 7 is on the desert tile
             shuffledDiceRolls.add(desertIndex, shuffledDiceRolls.remove(shuffledDiceRolls.indexOf(7)));
             
@@ -128,7 +127,7 @@ public class Board {
         for (int i = 0; i < Constants.I_GRAPH.length; i++) shuffledPorts.add(Constants.INLAND);
         
         ArrayList<Integer> shuffledPortTypes = new ArrayList<Integer>(Arrays.asList(Constants.PORTS));
-        Collections.shuffle(shuffledPortTypes, new Random());
+        Collections.shuffle(shuffledPortTypes);
         for (int i = 0; i < Constants.PORT_LOCATIONS.length; i++) {
             for (int j = 0; j < Constants.PORT_LOCATIONS[i].length; j++) {
                 shuffledPorts.set(Constants.PORT_LOCATIONS[i][j], shuffledPortTypes.get(i));

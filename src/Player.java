@@ -46,5 +46,6 @@ public abstract class Player {
     // cards discarded by player when 7 is rolled. Can be empty if player has 7 or fewer cards 
     public abstract void firstMove();
     public abstract void secondMove();
+    public abstract void normalMove();
     public abstract int[][] discard();
 }

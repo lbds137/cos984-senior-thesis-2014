@@ -1,10 +1,12 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Game {
 
     private Board board;
     private Cards cards;
     private Player[] players;
+    private int[] turnOrder;
     private int turnNumber;
     
     public Game(int numHumanPlayers, int numCPUPlayers) {
@@ -21,17 +23,46 @@ public class Game {
     }
     
     private void startGame() {
-        // every player rolls to see who goes first
-        int[] diceRolls = new int[players.length];
-        for (int i = 9; i < players.length; i++) {
-            diceRolls[i] = getDiceRoll();
-        }
-        
-        // todo
+        initTurnOrder();
+        firstMoves();
+        gameLoop();
     }
     // if a certain constructor is called, resume the game (i.e. saved game state read from file on disk)
-    private void resumeGame() {
+    private void resumeGame(String state) {
         // todo
+    }
+    private void firstMoves() {
+        // first moves in normal order
+        for (int i = 0; i < players.length && players[i] != null; i++) {
+            players[turnOrder[i]].firstMove();
+        }
+        // second moves in reverse order
+        for (int i = players.length - 1; i >= 0 && players[i] != null; i--) {
+            players[turnOrder[i]].secondMove();
+        }
+    }
+    /* MAIN GAME LOOP - WHERE EVERYTHING HAPPENS */
+    private void gameLoop() {
+        while (true) {
+            for (int i = 0; i < players.length && players[i] != null; i++) {
+                players[turnOrder[i]].normalMove();
+            }
+            // more to do here
+        }
+    }
+    // currently, ties are broken by the order in which dice were rolled (first goes first, etc.)
+    private void initTurnOrder() {
+        ArrayList<Integer> diceRolls = new ArrayList<Integer>(Constants.NUM_PLAYERS);
+        turnOrder = new int[players.length];
+        
+        for (int i = 0; i < players.length; i++) {
+            diceRolls.add(getDiceRoll());
+        }
+        for (int i = 0; i < players.length; i++) {
+            int highestIndex = diceRolls.indexOf(Collections.max(diceRolls));
+            turnOrder[i] = highestIndex;
+            diceRolls.set(highestIndex, 0);
+        }
     }
     private int getDiceRoll() {
         int yellowDie = (int) (Math.random() * Constants.DIE) + 1;
@@ -45,9 +76,6 @@ public class Game {
     /* Testing */
     
     public static void main(String args[]) {
-        Board b = new Board();
-        //b.printRoads();
-        b.printHexes();
-        //b.printHexGraph();
+        Game g = new Game(2,2);
     }
 }

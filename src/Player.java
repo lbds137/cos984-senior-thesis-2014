@@ -1,8 +1,7 @@
 import java.util.ArrayList;
 
-public class Player {
+public abstract class Player {
     
-    private int playerType; // human or computer
     private ArrayList<String> roads; // roads built (String = location)
     private ArrayList<String> settlements; // settlements built (String = location)
     private ArrayList<String> cities; // cities built (String = location)
@@ -10,6 +9,7 @@ public class Player {
     private boolean largestArmy;
     private ArrayList<Integer> resources;
     private ArrayList<Integer> devCards;
+    private ArrayList<Integer> publicDevCards; // dev cards that have already been played
     private int knights;
     private int devVP;
     
@@ -29,10 +29,6 @@ public class Player {
         // return indicates success or error
         return -1;
     }
-    public ArrayList<Integer> discard() {
-        // cards discarded by player when 7 is rolled. Can be empty if player has 7 or fewer cards 
-        return null;
-    }
     public int getPublicVP() {
         int VP = 0;
         if (longestRoad) VP += 2;
@@ -45,4 +41,10 @@ public class Player {
         return (getPublicVP() + devVP);
     }
     
+    /* Abstract methods */
+    
+    // cards discarded by player when 7 is rolled. Can be empty if player has 7 or fewer cards 
+    public abstract void firstMove();
+    public abstract void secondMove();
+    public abstract int[][] discard();
 }

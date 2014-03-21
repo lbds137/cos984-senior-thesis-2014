@@ -100,6 +100,7 @@ public final class Constants  {
     public static final Integer[] PORTS = {PORT,PORT,PORT,PORT,BRICK,GRAIN,
                                            LUMBER,ORE,WOOL};
     // dice roll chits
+    public static final int DIE = 6;
     public static final Integer[] DICE_ROLLS = {2,3,3,4,4,5,5,6,6,7,8,
                                                 8,9,9,10,10,11,11,12};
     // dev cards

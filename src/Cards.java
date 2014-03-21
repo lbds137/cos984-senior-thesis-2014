@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Random;
 
 public class Cards {
 
@@ -12,7 +11,7 @@ public class Cards {
     
     public Cards() {
         devCards = new ArrayList<Integer>(Arrays.asList(Constants.DEV_CARDS));
-        Collections.shuffle(devCards, new Random());
+        Collections.shuffle(devCards);
         resourceCards = new int[Constants.NUM_RESOURCES];
         for (int i = 0; i < resourceCards.length; i++) {
             resourceCards[i] = Constants.LAND.length; // 19 resource cards of each type

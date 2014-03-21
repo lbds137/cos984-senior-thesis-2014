@@ -13,6 +13,8 @@ public class HumanPlayer extends Player {
     }
     public void secondMove() {
     }
+    public void normalMove() {
+    }
     public int[][] discard() {
         return null;
     }

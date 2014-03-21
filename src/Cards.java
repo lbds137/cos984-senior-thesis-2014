@@ -23,7 +23,7 @@ public class Cards {
     
     public int drawDevCard() {
         if (devCards.isEmpty()) return Constants.NOTHING;
-        else return devCards.get(0);
+        else return devCards.remove(devCards.size() - 1);
     }
     public int drawResourceCard(int resource) {
         if (resourceCards[resource] > 0) {

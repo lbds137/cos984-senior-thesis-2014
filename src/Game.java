@@ -8,16 +8,20 @@ public class Game {
     private Player[] players;
     private int[] turnOrder;
     private int turnNumber;
+	private Player longestRoadOwner;
+	private int longestRoadLength;
+	private Player largestArmyOwner;
+	private int largestArmySize;
     
     public Game(int numHumanPlayers, int numCPUPlayers) {
         // default behavior: if too many players specified, assign human players first and 
         // remaining players as CPU (if any space left)
-        players = new Player[Player.NUM_PLAYERS];
+        /*players = new Player[Player.NUM_PLAYERS];
         int numPlayers = numHumanPlayers + numCPUPlayers;
         for (int i = 0; i < Player.NUM_PLAYERS && i < numPlayers; i++) {
             if ((numHumanPlayers - i) > 0) players[i] = new HumanPlayer();
             else players[i] = new CPUPlayer();
-        }
+        }*/
         
         startGame();
     }
@@ -32,22 +36,12 @@ public class Game {
         // todo
     }
     private void firstMoves() {
-        // first moves in normal order
-        for (int i = 0; i < players.length && players[i] != null; i++) {
-            players[turnOrder[i]].firstMove();
-        }
-        // second moves in reverse order
-        for (int i = players.length - 1; i >= 0 && players[i] != null; i--) {
-            players[turnOrder[i]].secondMove();
-        }
+        // todo
     }
     /* MAIN GAME LOOP - WHERE EVERYTHING HAPPENS */
     private void gameLoop() {
         while (true) {
-            for (int i = 0; i < players.length && players[i] != null; i++) {
-                players[turnOrder[i]].normalMove();
-            }
-            // more to do here
+            // todo
         }
     }
     // currently, ties are broken by the order in which dice were rolled (first goes first, etc.)
@@ -70,8 +64,6 @@ public class Game {
         
         return yellowDie + redDie;
     }
-    
-    // 
     
     /* Testing */
     

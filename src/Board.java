@@ -103,13 +103,13 @@ public class Board {
         for (int i = 0; i < Intersection.GRAPH.length; i++) ports.add(new Port(Port.INLAND));
         
         ArrayList<Port> shuffledPorts = new ArrayList<Port>(Port.LOCATIONS.length);
-		for (int i = 0; i < Port.NUM_GENERIC; i++) shuffledPorts.add(new Port(Port.GENERIC));
-		for (int i = 0; i < Port.NUM_SPECIFIC / Resource.NUM_TYPES; i++) {
-			for (int j = Resource.NUM_TYPES; j > 0; j--) {
-				shuffledPorts.add(new Port(Port.SPECIFIC, new Resource(j)));
-			}
-		}
-		
+        for (int i = 0; i < Port.NUM_GENERIC; i++) shuffledPorts.add(new Port(Port.GENERIC));
+        for (int i = 0; i < Port.NUM_SPECIFIC / Resource.NUM_TYPES; i++) {
+            for (int j = Resource.NUM_TYPES; j > 0; j--) {
+                shuffledPorts.add(new Port(Port.SPECIFIC, new Resource(j)));
+            }
+        }
+        
         Collections.shuffle(shuffledPorts);
         for (int i = 0; i < Port.LOCATIONS.length; i++) {
             for (int j = 0; j < Port.LOCATIONS[i].length; j++) {
@@ -163,10 +163,10 @@ public class Board {
             if (candidate > longestRoad) longestRoad = candidate;
         }
         return longestRoad;*/
-		return 0;
+        return 0;
     }
     /* returns 2D array: row index indicates player, column index indicates resource type, 
-       resources[row][col] indicates number of resource cards of that type earned */
+    resources[row][col] indicates number of resource cards of that type earned */
     public int[][] getResources(int diceRoll) {
         int[][] resources = new int[Player.NUM_PLAYERS][Resource.NUM_TYPES];
         if (diceRoll == 7) return resources; // robber rolls get no resources from the board

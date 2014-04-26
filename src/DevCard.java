@@ -20,6 +20,7 @@ public class DevCard {
 	public static final String PALACE_NAME = "Palace";
 	public static final String LIBRARY_NAME = "Library";
 	public static final String MARKET_NAME = "Market";
+	// the entire set of dev cards that are used in the game
 	public static final int[] DECK = {KNIGHT,KNIGHT,KNIGHT,KNIGHT,
                                       KNIGHT,KNIGHT,KNIGHT,KNIGHT,
 		                              KNIGHT,KNIGHT,KNIGHT,KNIGHT,
@@ -41,7 +42,7 @@ public class DevCard {
 				this.cardType = cardType;
                 break;
 			default:
-				this.cardType = Constants.INVALID; // executes for invalid types
+				this.cardType = Constants.INVALID;
                 break;
 		}
 	}

@@ -1,7 +1,7 @@
 
 public final class Constants  {
     
-    public static final int INVALID = -1;
+    public static final int INVALID = -10;
     
     // dice roll chits
     public static final int DIE = 6;

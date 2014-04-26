@@ -24,6 +24,7 @@ public class Decks {
         Collections.shuffle(devDeck);
         
 		for (int i = Resource.NUM_TYPES; i > Resource.DESERT; i--) {
+			// there are 19 cards for each type of resource
 			ArrayList<Resource> resourceDeck = new ArrayList<Resource>(Resource.TILES.length);
 			for (int j = 0; j < Resource.TILES.length; j++) {
 				resourceDeck.add(new Resource(i));
@@ -49,6 +50,7 @@ public class Decks {
 			resourceDeck.add(resource);
 			return true;
 		}
+		// if deck is full, we cannot add any more cards
 		else return false;
     }
     
@@ -72,6 +74,7 @@ public class Decks {
     public static void main(String args[]) {
         Decks c = new Decks();
         c.printDevCards();
-        //c.printResources();
+        System.out.println();
+		c.printResources();
     }
 }

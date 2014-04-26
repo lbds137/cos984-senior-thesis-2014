@@ -5,7 +5,7 @@ public class Road {
 
     private int iOne;
     private int iTwo;
-    private int player;
+    private Player player;
     
     /* Constructors */
     
@@ -16,12 +16,12 @@ public class Road {
             this.iOne = iTwo;
             this.iTwo = iOne;
         }
-        this.player = Constants.GAIA;
+        this.player = null;
     }
     
     /* Getters */
     
-    public int getPlayer() {
+    public Player getPlayer() {
         return player;
     }
     public int other(int i) {
@@ -31,8 +31,8 @@ public class Road {
     
     /* Operations */
     
-    public boolean build(int player) {
-        if (this.player == Constants.GAIA) {
+    public boolean build(Player player) {
+        if (this.player == null) {
             this.player = player;
             return true;
         }
@@ -41,9 +41,16 @@ public class Road {
         }
     }
     
-    /* Debug */
+    /* Inherits / overrides */
     
+	@Override
     public String toString() {
         return " [" + iOne + "->" + iTwo + "] ";
     }
+	
+	/* Testing */
+	
+	public static void main(String[] args) {
+		
+	}
 }

@@ -5,18 +5,10 @@ import java.util.Collections;
 public class Board {
 
     private Intersection[] intersections;
-    private Road[][] iGraph;
+    private Road[][] iGraph; // existence of edge denoted by Road object; 'null' otherwise
     private Hex[] hexes;
-    private boolean[][] hGraph;
+    private boolean[][] hGraph; // existence of edge denoted by 'true'; 'false' otherwise
     private int robberIndex; // location of the robber in hexes[]
-    
-    // for each player, how many of [pieceType] are there?
-    private int[] roadsBuilt;
-    private int[] roadsFree;
-    private int[] settlementsBuilt;
-    private int[] settlementsFree;
-    private int[] citiesBuilt;
-    private int[] citiesFree;
     
     /* Constructors */
     
@@ -24,21 +16,20 @@ public class Board {
     public Board() {
         initIGraph();
         initHGraph();
-        initPieces();
     }
     // build a board from a saved state
     public Board(String state) {
-        // todo
+        // TODO
     }
     
     private void initIGraph() {
-        int[][] g = Constants.I_GRAPH;
+        int[][] g = Intersection.GRAPH;
         int n = g.length;
-        ArrayList<Integer> shuffledPorts = getShuffledPorts();
+        ArrayList<Port> ports = getPorts();
         
         intersections = new Intersection[n];
         for (int i = 0; i < n; i++) {
-            intersections[i] = new Intersection(i, shuffledPorts.get(i));
+            intersections[i] = new Intersection(i, ports.get(i));
         }
         
         iGraph = new Road[n][n];
@@ -54,16 +45,16 @@ public class Board {
         }
     }
     private void initHGraph() {
-        int[][] g = Constants.H_GRAPH;
+        int[][] g = Hex.GRAPH;
         int n = g.length;
-        ArrayList<Integer> shuffledLand = new ArrayList<Integer>(Arrays.asList(Constants.LAND));
+        ArrayList<Integer> shuffledLand = new ArrayList<Integer>(Arrays.asList(Resource.TILES));
         Collections.shuffle(shuffledLand);
-        robberIndex = shuffledLand.indexOf(Constants.DESERT); // robber starts in desert
+        robberIndex = shuffledLand.indexOf(Resource.DESERT); // robber starts in desert
         ArrayList<Integer> shuffledDiceRolls = getShuffledDiceRolls(robberIndex);
         
         hexes = new Hex[n];
         for (int i = 0; i < n; i++) {
-            hexes[i] = new Hex(i, shuffledLand.get(i), shuffledDiceRolls.get(i));
+            hexes[i] = new Hex(i, new Resource(shuffledLand.get(i)), shuffledDiceRolls.get(i));
         }
         
         hGraph = new boolean[n][n];
@@ -78,24 +69,9 @@ public class Board {
             }
         }
     }
-    private void initPieces() {
-        roadsBuilt = new int[Constants.NUM_PLAYERS];
-        roadsFree = new int[Constants.NUM_PLAYERS];
-        settlementsBuilt = new int[Constants.NUM_PLAYERS];
-        settlementsFree = new int[Constants.NUM_PLAYERS];
-        citiesBuilt = new int[Constants.NUM_PLAYERS];
-        citiesFree = new int[Constants.NUM_PLAYERS];
-        
-        for (int i = 0; i < Constants.NUM_PLAYERS; i++) {
-            roadsFree[i] = Constants.MAX_ROADS;
-            settlementsFree[i] = Constants.MAX_SETTLEMENTS;
-            citiesFree[i] = Constants.MAX_CITIES;
-            // the [piece]Built arrays default to 0, which is what we want
-        }    
-    }
     // Dice roll chits 6 and 8 cannot be adjacent, so we have to work a bit harder
     private ArrayList<Integer> getShuffledDiceRolls(int desertIndex) {
-        int[][] g = Constants.H_GRAPH;
+        int[][] g = Hex.GRAPH;
         int n = g.length;
         boolean conflict;
         ArrayList<Integer> shuffledDiceRolls;
@@ -122,19 +98,26 @@ public class Board {
         
         return shuffledDiceRolls;
     }
-    private ArrayList<Integer> getShuffledPorts() {
-        ArrayList<Integer> shuffledPorts = new ArrayList<Integer>(Constants.I_GRAPH.length);
-        for (int i = 0; i < Constants.I_GRAPH.length; i++) shuffledPorts.add(Constants.INLAND);
+    private ArrayList<Port> getPorts() {
+        ArrayList<Port> ports = new ArrayList<Port>(Intersection.GRAPH.length);
+        for (int i = 0; i < Intersection.GRAPH.length; i++) ports.add(new Port(Port.INLAND));
         
-        ArrayList<Integer> shuffledPortTypes = new ArrayList<Integer>(Arrays.asList(Constants.PORTS));
-        Collections.shuffle(shuffledPortTypes);
-        for (int i = 0; i < Constants.PORT_LOCATIONS.length; i++) {
-            for (int j = 0; j < Constants.PORT_LOCATIONS[i].length; j++) {
-                shuffledPorts.set(Constants.PORT_LOCATIONS[i][j], shuffledPortTypes.get(i));
+        ArrayList<Port> shuffledPorts = new ArrayList<Port>(Port.LOCATIONS.length);
+		for (int i = 0; i < Port.NUM_GENERIC; i++) shuffledPorts.add(new Port(Port.GENERIC));
+		for (int i = 0; i < Port.NUM_SPECIFIC / Resource.NUM_TYPES; i++) {
+			for (int j = Resource.NUM_TYPES; j > 0; j--) {
+				shuffledPorts.add(new Port(Port.SPECIFIC, new Resource(j)));
+			}
+		}
+		
+        Collections.shuffle(shuffledPorts);
+        for (int i = 0; i < Port.LOCATIONS.length; i++) {
+            for (int j = 0; j < Port.LOCATIONS[i].length; j++) {
+                ports.set(Port.LOCATIONS[i][j], shuffledPorts.get(i));
             }
         }
         
-        return shuffledPorts;
+        return ports;
     }
     
     /* Getters */
@@ -150,12 +133,6 @@ public class Board {
     }
     public boolean[][] getHGraph() {
         return hGraph;
-    }
-    public int getNumSettlements(int player) {
-        return settlementsBuilt[player];
-    }
-    public int getNumCities(int player) {
-        return citiesBuilt[player];
     }
     /* LONGEST ROAD NOT WORKING YET */
     // calls recursive version to do the heavy lifting
@@ -173,11 +150,11 @@ public class Board {
     // recursive helper: use DFS to find longest road
     private int getLongestRoad(int length, int id, boolean[] visited, int player) {
         // base cases
-        if (visited[id]) return length; // visited in a previous function call
+        /*if (visited[id]) return length; // visited in a previous function call
         if (intersections[id].getPlayer() != player) return length; // not owned by player
         
         int longestRoad = length;
-        int[] neighbors = Constants.I_GRAPH[id];
+        int[] neighbors = Intersection.GRAPH[id];
         for (int i = 0; i < neighbors.length; i++) {
             int candidate = 0;
             if (iGraph[id][i].getPlayer() == player) {
@@ -185,23 +162,24 @@ public class Board {
             }
             if (candidate > longestRoad) longestRoad = candidate;
         }
-        return longestRoad;
+        return longestRoad;*/
+		return 0;
     }
     /* returns 2D array: row index indicates player, column index indicates resource type, 
        resources[row][col] indicates number of resource cards of that type earned */
     public int[][] getResources(int diceRoll) {
-        int[][] resources = new int[Constants.NUM_PLAYERS][Constants.NUM_RESOURCES];
+        int[][] resources = new int[Player.NUM_PLAYERS][Resource.NUM_TYPES];
         if (diceRoll == 7) return resources; // robber rolls get no resources from the board
         
         for (int i = 0; i < hexes.length; i++) {
             if ((hexes[i].getDiceRoll() != diceRoll) || (i == robberIndex)) continue; // no resources given
             
-            for (int j = 0; j < Constants.H_I_MAP_GRAPH[i].length; j++) {
-                Intersection intersection = intersections[Constants.H_I_MAP_GRAPH[i][j]];
-                int building = intersection.getBuilding();
-                int player = intersection.getPlayer();
-                int resource = hexes[i].getResourceType();
-                resources[player][resource] += (++building); // settlements give one, cities two
+            for (int j = 0; j < Hex.INTERSECTIONS[i].length; j++) {
+                Intersection intersection = intersections[Hex.INTERSECTIONS[i][j]];
+                Building building = intersection.getBuilding();
+                Player player = intersection.getPlayer();
+                int resource = hexes[i].getResource().getResourceType();
+                resources[player.getId()][resource] += (building.getNumResources()); // settlements give one, cities two
             }
         }
         return resources;
@@ -209,40 +187,14 @@ public class Board {
     
     /* Operations */
     
-    public boolean buildRoad(int id, int destId, int player) {
-        if (roadsFree[player] > 0 && iGraph[id][destId].build(player)) {
-            roadsBuilt[player]++;
-            roadsFree[player]--;
-            return true;
-        }
-        else {
-            return false;
-        }
+    public boolean buildRoad(int id, int destId, Player player) {
+        return false;
     }
-    public boolean buildSettlement(int id, int player) {
-        if (settlementsFree[player] > 0 && intersections[id].build(Constants.SETTLEMENT, player)) {
-            settlementsBuilt[player]++;
-            settlementsFree[player]--;
-            return true;
-        }
-        else {
-            return false;
-        }
+    public boolean buildSettlement(int id, Player player) {
+        return false;
     }
-    public boolean buildCity(int id, int player) {
-        int building = intersections[id].getBuilding();
-        if (citiesFree[player] > 0 && intersections[id].build(Constants.CITY, player)) {
-            citiesBuilt[player]++;
-            citiesFree[player]--;
-            if (building == Constants.SETTLEMENT) { // free up a settlement when a city is built
-                settlementsBuilt[player]--;
-                settlementsFree[player]++;
-            }
-            return true;
-        }
-        else {
-            return false;
-        }
+    public boolean buildCity(int id, Player player) {
+        return false;
     }
     public void moveRobber(int index) {
         robberIndex = index;
@@ -266,7 +218,7 @@ public class Board {
         System.out.println(hexes.length + "\r");
         for (int i = 0; i < hexes.length; i++) {
             //System.out.print(hexes[i]);
-            System.out.print((char) (i + 'A') + " : " + hexes[i].getStringResourceType() + " " + hexes[i].getDiceRoll() + "\n");
+            System.out.print(hexes[i] + "\n");
         }
     }
     public void printHGraph() {
@@ -284,73 +236,7 @@ public class Board {
     public void printIntersections() {
         System.out.println(intersections.length + "\r");
         for (int i = 0; i < intersections.length; i++) {
-            int id = i;
-            int player = intersections[i].getPlayer();
-            int building = intersections[i].getBuilding();
-            int port = intersections[i].getPort();
-            
-            String sPlayer = "";
-            String sBuilding = "";
-            String sPort = "";
-            
-            switch (player) {
-                case Constants.GAIA:
-                    sPlayer = "Gaia";
-                    break;
-                case Constants.BLUE:
-                    sPlayer = "Blue";
-                    break;
-                case Constants.ORANGE:
-                    sPlayer = "Orange";
-                    break;
-                case Constants.RED:
-                    sPlayer = "Red";
-                    break;
-                case Constants.WHITE:
-                    sPlayer = "White";
-                    break;
-                default:
-                    sPlayer = "Invalid";
-            }
-            switch (building) {
-                case Constants.OPEN:
-                    sBuilding = "Open";
-                    break;
-                case Constants.SETTLEMENT:
-                    sBuilding = "Settlement";
-                    break;
-                case Constants.CITY:
-                    sBuilding = "City";
-                    break;
-                default:
-                    sBuilding = "Invalid";
-            }
-            switch (port) {
-                case Constants.INLAND:
-                    sPort = "Inland (4:1)";
-                    break;
-                case Constants.BRICK:
-                    sPort = "Brick (2:1)";
-                    break;
-                case Constants.GRAIN:
-                    sPort = "Grain (2:1)";
-                    break;
-                case Constants.LUMBER:
-                    sPort = "Lumber (2:1)";
-                    break;
-                case Constants.ORE:
-                    sPort = "Ore (2:1)";
-                    break;
-                case Constants.WOOL:
-                    sPort = "Wool (2:1)";
-                    break;
-                case Constants.PORT:
-                    sPort = "Generic (3:1)";
-                    break;
-                default:
-                    sPort = "Invalid";
-            }
-            System.out.print(id + " : " + sPlayer + ", " + sBuilding + ", " + sPort);
+            System.out.print(intersections[i]);
             System.out.print("\r\n");
         }
     }
@@ -381,3 +267,4 @@ public class Board {
         */
     }
 }
+

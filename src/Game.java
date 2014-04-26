@@ -8,10 +8,10 @@ public class Game {
     private Player[] players;
     private int[] turnOrder;
     private int turnNumber;
-	private Player longestRoadOwner;
-	private int longestRoadLength;
-	private Player largestArmyOwner;
-	private int largestArmySize;
+    private Player longestRoadOwner;
+    private int longestRoadLength;
+    private Player largestArmyOwner;
+    private int largestArmySize;
     
     public Game(int numHumanPlayers, int numCPUPlayers) {
         // default behavior: if too many players specified, assign human players first and 

@@ -1,3 +1,4 @@
+
 public class Resource implements Comparable<Resource> {
 	
     /* Constants */
@@ -11,6 +12,16 @@ public class Resource implements Comparable<Resource> {
 	public static final int LUMBER = 3;
 	public static final int BRICK = 4;
     public static final int ORE = 5;
+	public static final String DESERT_NAME = "Desert";
+	public static final String WOOL_NAME = "Wool";
+	public static final String GRAIN_NAME = "Grain";
+	public static final String LUMBER_NAME = "Lumber";
+	public static final String BRICK_NAME = "Brick";
+	public static final String ORE_NAME = "Ore";
+	public static final Integer[] TILES = {DESERT,BRICK,BRICK,BRICK,GRAIN,
+                                           GRAIN,GRAIN,GRAIN,LUMBER,LUMBER,
+                                           LUMBER,LUMBER,ORE,ORE,ORE,WOOL,
+                                           WOOL,WOOL,WOOL};
 	
     /* Fields */
     
@@ -20,11 +31,11 @@ public class Resource implements Comparable<Resource> {
     
 	public Resource(int resourceType) {
 		switch (resourceType) {
-			case DESERT: case WOOL: case GRAIN: case BRICK: case ORE:
+			case DESERT: case WOOL: case GRAIN: case LUMBER: case BRICK: case ORE:
 				this.resourceType = resourceType;
                 break;
 			default:
-				this.resourceType = DESERT; // executes for invalid resource types
+				this.resourceType = Constants.INVALID;
                 break;
 		}
 	}
@@ -44,18 +55,21 @@ public class Resource implements Comparable<Resource> {
 	@Override
 	public String toString() {
 		switch (resourceType) {
-			case DESERT: return "Desert";
-			case WOOL: return "Wool";
-			case GRAIN: return "Grain";
-			case BRICK: return "Brick";
-			case ORE: return "Ore";
-			default: return "Invalid resource type"; // this shouldn't ever happen
+			case DESERT: return DESERT_NAME;
+			case WOOL: return WOOL_NAME;
+			case GRAIN: return GRAIN_NAME;
+			case LUMBER: return LUMBER_NAME;
+			case BRICK: return BRICK_NAME;
+			case ORE: return ORE_NAME;
+			default: return "Invalid resource";
 		}
 	}
     // method only useful to AI players when evaluating "value" of a resource
 	public int compareTo(Resource r) {
+		// anything is greater than null
+		if (r == null) return resourceType + 1;
 		// natural ordering defined by values of type constants
-		return this.getResourceType() - r.getResourceType();
+		else return resourceType - r.getResourceType();
 	}
 	
 	/* Testing */
@@ -63,9 +77,13 @@ public class Resource implements Comparable<Resource> {
 	public static void main(String[] args) {
 		Resource r = new Resource(Resource.BRICK);
         Resource q = new Resource(Resource.ORE);
+		Resource s = null;
         System.out.println(r.toString());
         System.out.println(q.toString());
         System.out.println(r.compareTo(q));
+		System.out.println(r.equals(q));
+		System.out.println(q.compareTo(s));
+		System.out.println(q.equals(s));
 	}
 }
 

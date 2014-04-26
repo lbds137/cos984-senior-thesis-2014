@@ -4,24 +4,18 @@ import java.util.Collections;
 public class Game {
 
     private Board board;
-    private Decks cards;
-    private Player[] players;
-    private int[] turnOrder;
+    private Decks decks;
+    private ArrayList<Player> players; // ordering implies turn order
     private int turnNumber;
     private Player longestRoadOwner;
     private int longestRoadLength;
     private Player largestArmyOwner;
     private int largestArmySize;
     
-    public Game(int numHumanPlayers, int numCPUPlayers) {
-        // default behavior: if too many players specified, assign human players first and 
-        // remaining players as CPU (if any space left)
-        /*players = new Player[Player.NUM_PLAYERS];
-        int numPlayers = numHumanPlayers + numCPUPlayers;
-        for (int i = 0; i < Player.NUM_PLAYERS && i < numPlayers; i++) {
-            if ((numHumanPlayers - i) > 0) players[i] = new HumanPlayer();
-            else players[i] = new CPUPlayer();
-        }*/
+    public Game(int numPlayers) throws Exception {
+        if (numPlayers < 3 || numPlayers > 4) {
+            throw new Exception();
+        }
         
         startGame();
     }
@@ -46,7 +40,7 @@ public class Game {
     }
     // currently, ties are broken by the order in which dice were rolled (first goes first, etc.)
     private void initTurnOrder() {
-        ArrayList<Integer> diceRolls = new ArrayList<Integer>(Player.NUM_PLAYERS);
+        /*ArrayList<Integer> diceRolls = new ArrayList<Integer>(Player.NUM_PLAYERS);
         turnOrder = new int[players.length];
         
         for (int i = 0; i < players.length; i++) {
@@ -57,6 +51,7 @@ public class Game {
             turnOrder[i] = highestIndex;
             diceRolls.set(highestIndex, 0);
         }
+        */
     }
     private int getDiceRoll() {
         int yellowDie = (int) (Math.random() * Constants.DIE) + 1;
@@ -68,6 +63,11 @@ public class Game {
     /* Testing */
     
     public static void main(String args[]) {
-        Game g = new Game(2,2);
+        try {
+            Game g = new Game(3);
+        }
+        catch (Exception e) {
+            System.out.println("Invalid number of players");
+        }
     }
 }

@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public abstract class Player {
+public class Player {
     
 	/* Constants */
 	
@@ -20,27 +20,19 @@ public abstract class Player {
 	/* Fields */
 	
 	private int id;
-    private ArrayList<String> roads; // roads built (String = location)
-    private ArrayList<String> settlements; // settlements built (String = location)
-    private ArrayList<String> cities; // cities built (String = location)
-    private boolean longestRoad;
-    private boolean largestArmy;
-    private ArrayList<Integer> resources;
-    private ArrayList<Integer> devCards;
-    private ArrayList<Integer> publicDevCards; // dev cards that have already been played
-    private int knights;
-    private int devVP;
-	private int roadsBuilt;
+    private ArrayList<Road> roads; // roads built (String = location)
+    private ArrayList<Building> buildings;
+    private ArrayList<ArrayList<Resource>> resourceCards;
+    private ArrayList<DevCard> devCards;
+    private ArrayList<DevCard> playedDevCards;
     private int roadsFree;
-    private int settlementsBuilt;
     private int settlementsFree;
-    private int citiesBuilt;
     private int citiesFree;
     
 	/* Constructors */
 	
     public Player() {
-        
+    	// abstract class cannot be initialized    
     }
 	
 	/* Getters */
@@ -48,17 +40,18 @@ public abstract class Player {
 	public int getId() {
 		return id;
 	}
-	public int getPublicVP() {
-        int VP = 0;
-        if (longestRoad) VP += 2;
-        if (largestArmy) VP += 2;
-        VP += settlements.size();
-        VP += (2 * cities.size());
-        return VP;
-    }
-    public int getTotalVP() {
-        return (getPublicVP() + devVP);
-    }
+	public ArrayList<Road> getRoads() {
+		return roads;
+	}
+	public ArrayList<ArrayList<Resource>> getResourceCards() {
+    	return resourceCards;
+	}
+	public ArrayList<DevCard> getDevCards() {
+		return devCards;
+	}
+	public ArrayList<DevCard> getPlayedDevcards() {
+		return playedDevCards;
+	}
     
 	/* Operations */
 	
@@ -74,6 +67,21 @@ public abstract class Player {
         // return indicates success or error
         return false;
     }
+	public boolean drawDevCard() {
+		return false;
+	}
+	public boolean drawResourceCard() {
+		return false;
+	}
+	public boolean acceptTradeRequest() {
+		return false;
+	}
+	public boolean offerTrade() {
+		return false;
+	}
+	public boolean acceptTradeOffer() {
+		return false;
+	}
 	
 	/* Inherits / overrides */
 	
@@ -93,11 +101,9 @@ public abstract class Player {
 		}
 	}
     
-    /* Abstract methods */
-    
-    public abstract void firstMove();
-    public abstract void secondMove();
-    public abstract void normalMove();
 	// cards discarded by player when 7 is rolled. Can be empty if player has 7 or fewer cards 
-    public abstract int[][] discard();
+    public ArrayList<ArrayList<Resource>> discard() {
+		return null;
+	}
 }
+

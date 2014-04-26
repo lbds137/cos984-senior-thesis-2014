@@ -11,6 +11,7 @@ public class Port {
 	public static final int NUM_GENERIC = LOCATIONS.length - NUM_SPECIFIC;
 	public static final String INLAND_NAME = "Inland";
 	public static final String GENERIC_NAME = "Generic";
+	// there are 9 ports, and each port appears at two intersections
 	public static final int[][] LOCATIONS = {{0,1},{3,4},{7,17},
                                              {14,15},{26,37},{28,38},
                                              {45,46},{47,48},{50,51}};
@@ -79,21 +80,21 @@ public class Port {
 	}
 	@Override
 	public String toString() {
-		String sPortType;
+		String s;
 		switch (portType) {
 			case INLAND: 
-				sPortType = INLAND_NAME;
+				s = INLAND_NAME;
 				break;
 			case GENERIC:
-				sPortType = GENERIC_NAME;
+				s = GENERIC_NAME;
 				break;
 			case SPECIFIC:
-				sPortType = resource.toString();
+				s = resource.toString();
 				break;
 			default:
 				return "Invalid";
 		}
-		return sPortType + " (" + portType + ":1)";
+		return s + " (" + portType + ":1)";
 	}
 	
 	/* Testing */

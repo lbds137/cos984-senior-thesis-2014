@@ -45,7 +45,7 @@ public class Road {
     
 	@Override
     public String toString() {
-        return " [" + iOne + "->" + iTwo + "] ";
+        return " [" + iOne + "->" + iTwo + "] " + " owned by player " + player.toString();
     }
 	
 	/* Testing */

@@ -65,7 +65,7 @@ public class Hex {
     
 	@Override
     public String toString() {
-        String s = (char) (id + 'A') + " : ";
+        String s = "Hex " + (char) (id + 'A') + " : ";
         for (int i = 0; i < HEX; i++) {
             s += INTERSECTIONS[id][i];
             if (i + 1 != HEX) s += " ";

@@ -16,16 +16,36 @@ public class ResourceBundle {
 		}
 	}
 	
+	/* Getters */
+	
+	public ArrayList<ArrayList<Resource>> getBundle() {
+		return bundle;
+	}
+	
 	/* Operations */
 	
 	public void add(Resource r) {
 		bundle.get(r.getResourceType()).add(r);
 	}
 	public Resource remove(int resourceType) {
+		if (bundle.get(resourceType).size() == 0) return null;
 		return bundle.get(resourceType).remove(bundle.get(resourceType).size() - 1);
 	}
 	public int size(int resourceType) {
 		return bundle.get(resourceType).size();
+	}
+	public int size() {
+		int size = 0;
+		for (int i = 0; i < bundle.size(); i++) {
+			size += bundle.get(i).size();
+		}
+		return size;
+	}
+	public boolean isEmpty(int resourceType) {
+		return size(resourceType) == 0;
+	}
+	public boolean isEmpty() {
+		return size() == 0;
 	}
 }
 

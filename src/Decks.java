@@ -35,16 +35,22 @@ public class Decks {
     /* Operations */
     
     public DevCard drawDevCard() {
-        // TODO
-        return null;
+		if (devDeck.size() == 0) return null;
+		
+		int rand = (int) (Math.random() * devDeck.size());
+		int rowIndex = 0;
+		int temp = 0;
+		for ( ; temp < rand; rowIndex++) temp += devDeck.size(rowIndex);
+		if (temp > rand) rowIndex--; // whoops, we overshot
+		while (devDeck.size(rowIndex) == 0) rowIndex++;
+		
+		return devDeck.remove(rowIndex);
     }
     public Resource drawResourceCard(int resourceType) {
-        // TODO
-        return null;
+        return resourceDecks.remove(resourceType);
     }
     public boolean putResourceCard(Resource resource) {
-        // TODO
-        return false;
+        return resourceDecks.add(resource);
     }
     
     /* Debug */
@@ -56,12 +62,10 @@ public class Decks {
         System.out.println(Resource.ORE_NAME + ": " + resourceDecks.size(Resource.ORE));
         System.out.println(Resource.WOOL_NAME + ": " + resourceDecks.size(Resource.WOOL));
     }
-    public void printDevCards() {
-        for (ArrayList<DevCard> cards : devDeck.getBundle()) {
-            for (DevCard card : cards) {	
-	            System.out.println(card);
-            }
-        }
+    public void printDevCards() { // simulate drawing cards
+        for (DevCard d = drawDevCard(); d != null; d = drawDevCard()) {
+			System.out.println(d);
+		}
     }
     
     /* Testing */
@@ -73,3 +77,4 @@ public class Decks {
         c.printResources();
     }
 }
+

@@ -14,6 +14,12 @@ public class DevCardBundle {
 			bundle.add(new ArrayList<DevCard>());
 		}
 	}
+	
+	/* Getters */
+	
+	public ArrayList<ArrayList<DevCard>> getBundle() {
+		return bundle;
+	}
 
 	/* Operations */
 
@@ -21,10 +27,24 @@ public class DevCardBundle {
 		bundle.get(d.getCardType()).add(d);
 	}
 	public DevCard remove(int devCardType) {
+		if (bundle.get(devCardType).size() == 0) return null;
 		return bundle.get(devCardType).remove(bundle.get(devCardType).size() - 1);
 	}
 	public int size(int devCardType) {
 		return bundle.get(devCardType).size();
+	}
+	public int size() {
+		int size = 0;
+		for (int i = 0; i < bundle.size(); i++) {
+			size += bundle.get(i).size();
+		}
+		return size;
+	}
+	public boolean isEmpty(int devCardType) {
+		return size(devCardType) == 0;
+	}
+	public boolean isEmpty() {
+		return size() == 0;
 	}
 }
 

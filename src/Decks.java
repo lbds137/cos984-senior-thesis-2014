@@ -6,66 +6,61 @@ public class Decks {
 
     /* Constants */
     
+	// nothing here
     
     /* Fields */
     
-    private ArrayList<DevCard> devDeck;
-    private ArrayList<ArrayList<Resource>> resourceDecks;
+    private DevCardBundle devDeck;
+    private ResourceBundle resourceDecks;
     
     /* Constructors */
     
     public Decks() {
-        devDeck = new ArrayList<DevCard>(DevCard.DECK.length);
-        resourceDecks = new ArrayList<ArrayList<Resource>>(Resource.NUM_TYPES);
+        devDeck = new DevCardBundle();
+        resourceDecks = new ResourceBundle();
         
-        for (int i = 0; i < DevCard.DECK.length; i++) {
-            devDeck.add(new DevCard(DevCard.DECK[i]));
-        }
-        Collections.shuffle(devDeck);
-        
-        for (int i = Resource.NUM_TYPES; i > Resource.DESERT; i--) {
-            // there are 19 cards for each type of resource
-            ArrayList<Resource> resourceDeck = new ArrayList<Resource>(Resource.TILES.length);
-            for (int j = 0; j < Resource.TILES.length; j++) {
-                resourceDeck.add(new Resource(i));
-            }
-            resourceDecks.add(resourceDeck);
-        }
+		for (int i = 0; i < DevCard.NUM_TYPES; i++) {
+			for (int j = 0; j < DevCard.MAX_CARDS[i]; j++){
+				devDeck.add(new DevCard(i));
+			}
+		}
+		
+		for (int i = 0; i < Resource.NUM_TYPES; i++) {
+			for (int j = 0; j < Resource.MAX_CARDS[i]; j++) {
+				resourceDecks.add(new Resource(i));
+			}
+		}
     }
     
     /* Operations */
     
     public DevCard drawDevCard() {
-        if (devDeck.isEmpty()) return null;
-        else return devDeck.remove(devDeck.size() - 1);
+        // TODO
+        return null;
     }
     public Resource drawResourceCard(int resourceType) {
-        ArrayList<Resource> resourceDeck = resourceDecks.get(resourceType);
-        if (resourceDeck.isEmpty()) return null;
-        else return resourceDeck.remove(resourceDeck.size() - 1);
+        // TODO
+        return null;
     }
     public boolean putResourceCard(Resource resource) {
-        ArrayList<Resource> resourceDeck = resourceDecks.get(resource.getResourceType());
-        if (resourceDeck.size() < Resource.TILES.length) {
-            resourceDeck.add(resource);
-            return true;
-        }
-        // if deck is full, we cannot add any more cards
-        else return false;
+        // TODO
+        return false;
     }
     
     /* Debug */
     
     public void printResources() {
-        System.out.println(Resource.BRICK_NAME + ": " + resourceDecks.get(Resource.BRICK).size());
-        System.out.println(Resource.GRAIN_NAME + ": " + resourceDecks.get(Resource.GRAIN).size());
-        System.out.println(Resource.LUMBER_NAME + ": " + resourceDecks.get(Resource.LUMBER).size());
-        System.out.println(Resource.ORE_NAME + ": " + resourceDecks.get(Resource.ORE).size());
-        System.out.println(Resource.WOOL_NAME + ": " + resourceDecks.get(Resource.WOOL).size());
+        System.out.println(Resource.BRICK_NAME + ": " + resourceDecks.size(Resource.BRICK));
+        System.out.println(Resource.GRAIN_NAME + ": " + resourceDecks.size(Resource.GRAIN));
+        System.out.println(Resource.LUMBER_NAME + ": " + resourceDecks.size(Resource.LUMBER));
+        System.out.println(Resource.ORE_NAME + ": " + resourceDecks.size(Resource.ORE));
+        System.out.println(Resource.WOOL_NAME + ": " + resourceDecks.size(Resource.WOOL));
     }
     public void printDevCards() {
-        for (DevCard card : devDeck) {
-            System.out.println(card);
+        for (ArrayList<DevCard> cards : devDeck.getBundle()) {
+            for (DevCard card : cards) {	
+	            System.out.println(card);
+            }
         }
     }
     

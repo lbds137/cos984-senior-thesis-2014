@@ -12,15 +12,6 @@ public class DevCard {
     public static final int PALACE = 6;
     public static final int LIBRARY = 7;
     public static final int MARKET = 8;
-	public static final int KNIGHT_NUM = 14;
-    public static final int ROAD_NUM = 2;
-    public static final int PLENTY_NUM = 2;
-    public static final int MONOPOLY_NUM = 2;
-    public static final int CHAPEL_NUM = 1;
-    public static final int UNIVERSITY_NUM = 1;
-    public static final int PALACE_NUM = 1;
-    public static final int LIBRARY_NUM = 1;
-    public static final int MARKET_NUM = 1;
     public static final String KNIGHT_NAME = "Knight";
     public static final String ROAD_NAME = "Road Building";
     public static final String PLENTY_NAME = "Year Of Plenty";
@@ -30,14 +21,8 @@ public class DevCard {
     public static final String PALACE_NAME = "Palace";
     public static final String LIBRARY_NAME = "Library";
     public static final String MARKET_NAME = "Market";
-    // the entire set of dev cards that are used in the game
-    public static final int[] DECK = {KNIGHT,KNIGHT,KNIGHT,KNIGHT,
-                                    KNIGHT,KNIGHT,KNIGHT,KNIGHT,
-                                    KNIGHT,KNIGHT,KNIGHT,KNIGHT,
-                                    KNIGHT,KNIGHT,ROAD,ROAD,
-                                    PLENTY,PLENTY,MONOPOLY,MONOPOLY,
-                                    CHAPEL,UNIVERSITY,PALACE,
-                                    LIBRARY,MARKET};
+    // max number of each type
+	public static final int[] MAX_CARDS = {14,2,2,2,1,1,1,1,1};
     
     /* Fields */
     

@@ -23,6 +23,7 @@ public class Resource implements Comparable<Resource> {
                                         GRAIN,GRAIN,GRAIN,LUMBER,LUMBER,
                                         LUMBER,LUMBER,ORE,ORE,ORE,WOOL,
                                         WOOL,WOOL,WOOL};
+	public static final int[] MAX_CARDS = {19,19,19,19,19};
     
     /* Fields */
     

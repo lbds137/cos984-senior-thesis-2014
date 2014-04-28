@@ -1,7 +1,11 @@
 
 public class Road {
 
-    /* Private fields */
+	/* Constants */
+	
+	public static final int[] ROAD_COST = {0,0,1,1,0};
+	
+    /* Fields */
 
     private int iOne;
     private int iTwo;

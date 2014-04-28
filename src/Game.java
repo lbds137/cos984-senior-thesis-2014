@@ -5,7 +5,7 @@ public class Game {
 
     private Board board;
     private Decks decks;
-    private ArrayList<Player> players; // ordering implies turn order
+    private ArrayList<Player> players; // ordering = turn order
     private int turnNumber;
     private Player longestRoadOwner;
     private int longestRoadLength;

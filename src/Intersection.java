@@ -61,7 +61,9 @@ public class Intersection {
     
     @Override
     public String toString() {
-        return id + " : " + player.toString() + ", " + building.toString() + ", " + port.toString();
+		String sPlayer = "Unowned";
+		if (player != null) sPlayer = player.toString(); 
+        return id + " : " + sPlayer + ", " + building.toString() + ", " + port.toString();
     }
     
     /* Operations */

@@ -9,6 +9,8 @@ public class Building implements Comparable<Building> {
     public static final String OPEN_NAME = "Open";
     public static final String SETTLEMENT_NAME = "Settlement";
     public static final String CITY_NAME = "City";
+	public static final int[] SETTLEMENT_COST = {1,1,1,1,0};
+	public static final int[] CITY_COST = {0,2,0,0,3};
 
     /* Fields */
 

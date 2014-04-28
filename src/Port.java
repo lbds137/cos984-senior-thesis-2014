@@ -7,8 +7,8 @@ public class Port {
     public static final int INLAND = 4; // not a port
     public static final int GENERIC = 3;
     public static final int SPECIFIC = 2;
-    public static final int NUM_SPECIFIC = 1 * Resource.NUM_TYPES;
-    public static final int NUM_GENERIC = LOCATIONS.length - NUM_SPECIFIC;
+    public static final int NUM_SPECIFIC = Resource.NUM_TYPES;
+    public static final int NUM_GENERIC = 4;
     public static final String INLAND_NAME = "Inland";
     public static final String GENERIC_NAME = "Generic";
     // there are 9 ports, and each port appears at two intersections

@@ -2,6 +2,7 @@ public class DevCard {
     
     /* Constants */
     
+	public static final int NUM_TYPES = 9;
     public static final int KNIGHT = 0;
     public static final int ROAD = 1;
     public static final int PLENTY = 2;
@@ -11,6 +12,15 @@ public class DevCard {
     public static final int PALACE = 6;
     public static final int LIBRARY = 7;
     public static final int MARKET = 8;
+	public static final int KNIGHT_NUM = 14;
+    public static final int ROAD_NUM = 2;
+    public static final int PLENTY_NUM = 2;
+    public static final int MONOPOLY_NUM = 2;
+    public static final int CHAPEL_NUM = 1;
+    public static final int UNIVERSITY_NUM = 1;
+    public static final int PALACE_NUM = 1;
+    public static final int LIBRARY_NUM = 1;
+    public static final int MARKET_NUM = 1;
     public static final String KNIGHT_NAME = "Knight";
     public static final String ROAD_NAME = "Road Building";
     public static final String PLENTY_NAME = "Year Of Plenty";

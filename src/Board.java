@@ -50,7 +50,7 @@ public class Board {
         ArrayList<Integer> shuffledLand = new ArrayList<Integer>(Arrays.asList(Resource.TILES));
         Collections.shuffle(shuffledLand);
         robberIndex = shuffledLand.indexOf(Resource.DESERT); // robber starts in desert
-        ArrayList<Integer> shuffledDiceRolls = getShuffledDiceRolls(robberIndex);
+        ArrayList<Integer> shuffledDiceRolls = getDiceRolls(robberIndex);
         
         hexes = new Hex[n];
         for (int i = 0; i < n; i++) {
@@ -70,7 +70,7 @@ public class Board {
         }
     }
     // Dice roll chits 6 and 8 cannot be adjacent, so we have to work a bit harder
-    private ArrayList<Integer> getShuffledDiceRolls(int desertIndex) {
+    private ArrayList<Integer> getDiceRolls(int desertIndex) {
         int[][] g = Hex.GRAPH;
         int n = g.length;
         boolean conflict;
@@ -100,12 +100,13 @@ public class Board {
     }
     private ArrayList<Port> getPorts() {
         ArrayList<Port> ports = new ArrayList<Port>(Intersection.GRAPH.length);
+		// each intersection initialized with a dummy INLAND port
         for (int i = 0; i < Intersection.GRAPH.length; i++) ports.add(new Port(Port.INLAND));
         
         ArrayList<Port> shuffledPorts = new ArrayList<Port>(Port.LOCATIONS.length);
         for (int i = 0; i < Port.NUM_GENERIC; i++) shuffledPorts.add(new Port(Port.GENERIC));
         for (int i = 0; i < Port.NUM_SPECIFIC / Resource.NUM_TYPES; i++) {
-            for (int j = Resource.NUM_TYPES; j > 0; j--) {
+            for (int j = 0; j < Resource.NUM_TYPES; j++) {
                 shuffledPorts.add(new Port(Port.SPECIFIC, new Resource(j)));
             }
         }
@@ -167,7 +168,7 @@ public class Board {
     }
     /* returns 2D array: row index indicates player, column index indicates resource type, 
     resources[row][col] indicates number of resource cards of that type earned */
-    public int[][] getResources(int diceRoll) {
+    public int[][] getResourceCounts(int diceRoll) {
         int[][] resources = new int[Player.NUM_PLAYERS][Resource.NUM_TYPES];
         if (diceRoll == 7) return resources; // robber rolls get no resources from the board
         
@@ -179,7 +180,8 @@ public class Board {
                 Building building = intersection.getBuilding();
                 Player player = intersection.getPlayer();
                 int resource = hexes[i].getResource().getResourceType();
-                resources[player.getId()][resource] += (building.getNumResources()); // settlements give one, cities two
+				// settlements give one resource, cities two resources
+                resources[player.getId()][resource] += (building.getNumResources());
             }
         }
         return resources;
@@ -188,13 +190,21 @@ public class Board {
     /* Operations */
     
     public boolean buildRoad(int id, int destId, Player player) {
-        return false;
+        return iGraph[id][destId].build(player);
     }
     public boolean buildSettlement(int id, Player player) {
-        return false;
+        Intersection i = intersections[id];
+        Building b = i.getBuilding();
+        // a settlement can only be built on an OPEN intersection
+        if (b.getBuildingType() == Building.OPEN) return i.upgrade(player);
+        else return false;
     }
     public boolean buildCity(int id, Player player) {
-        return false;
+        Intersection i = intersections[id];
+        Building b = i.getBuilding();
+        // a city can only be built on top of a SETTLEMENT
+        if (b.getBuildingType() == Building.SETTLEMENT) return i.upgrade(player);
+        else return false;
     }
     public void moveRobber(int index) {
         robberIndex = index;
@@ -245,10 +255,18 @@ public class Board {
     
     public static void main(String args[]) {
         Board b = new Board();
-        //b.printIGraph();
+        System.out.println("HGRAPH");
+        b.printHGraph();
+        System.out.println("-----");
+        System.out.println("IGRAPH");
+        b.printIGraph();
+        System.out.println("-----");
+        System.out.println("INTERSECTIONS");
         b.printIntersections();
-        //b.printHexes();
-        //b.printHGraph();
+        System.out.println("-----");
+        System.out.println("HEXES");
+        b.printHexes();
+        System.out.println("-----");
         //System.out.print(String.format("\033[2J"));
         /*
         System.out.print(Constants.ANSI_YELLOW_BG_INTENSE);

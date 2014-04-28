@@ -22,7 +22,7 @@ public class Player {
     private int id;
     private ArrayList<Road> roads; // roads built (String = location)
     private ArrayList<Building> buildings;
-    private ArrayList<ArrayList<Resource>> resourceCards;
+    private ResourceBundle resourceCards;
     private ArrayList<DevCard> devCards;
     private ArrayList<DevCard> playedDevCards;
     private int roadsFree;
@@ -31,8 +31,18 @@ public class Player {
     
     /* Constructors */
     
-    public Player() {
-        // abstract class cannot be initialized    
+    public Player(int id) throws Exception {
+        switch (id) {
+            case BLUE: case ORANGE: case RED: case WHITE:
+                this.id = id;
+                roadsFree = MAX_ROADS;
+                settlementsFree = MAX_SETTLEMENTS;
+                citiesFree = MAX_CITIES;
+                break;
+            default:
+                // we only accept BLUE, ORANGE, RED, and WHITE players
+                throw new Exception();
+        }
     }
     
     /* Getters */
@@ -43,7 +53,10 @@ public class Player {
     public ArrayList<Road> getRoads() {
         return roads;
     }
-    public ArrayList<ArrayList<Resource>> getResourceCards() {
+    public ArrayList<Building> getBuildings() {
+        return buildings;
+    }
+    public ResourceBundle getResourceCards() {
         return resourceCards;
     }
     public ArrayList<DevCard> getDevCards() {
@@ -55,14 +68,17 @@ public class Player {
     
     /* Operations */
     
+    // remove and return the resource cards needed to build a road
     public boolean buildRoad(String location) {
         // return indicates success or error
         return false;
     }
+    // remove and return the resource cards needed to build a settlement
     public boolean buildSettlement(String location) {
         // return indicates success or error
         return false;
     }
+    // remove and return the resource cards needed to build a city
     public boolean buildCity(String location) {
         // return indicates success or error
         return false;

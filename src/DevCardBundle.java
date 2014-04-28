@@ -27,10 +27,11 @@ public class DevCardBundle {
 		bundle.get(d.getCardType()).add(d);
 	}
 	public DevCard remove(int devCardType) {
-		if (bundle.get(devCardType).size() == 0) return null;
+		if (devCardType >= bundle.size() || bundle.get(devCardType).size() == 0) return null;
 		return bundle.get(devCardType).remove(bundle.get(devCardType).size() - 1);
 	}
 	public int size(int devCardType) {
+		if (devCardType >= bundle.size()) return 0;
 		return bundle.get(devCardType).size();
 	}
 	public int size() {

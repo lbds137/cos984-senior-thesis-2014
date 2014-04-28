@@ -24,14 +24,17 @@ public class ResourceBundle {
 	
 	/* Operations */
 	
-	public void add(Resource r) {
+	public boolean add(Resource r) {
+		if (bundle.get(r.getResourceType()).size() >= Resource.MAX_CARDS[r.getResourceType()]) return false;
 		bundle.get(r.getResourceType()).add(r);
+		return true;
 	}
 	public Resource remove(int resourceType) {
-		if (bundle.get(resourceType).size() == 0) return null;
+		if (resourceType >= bundle.size() || bundle.get(resourceType).size() == 0) return null;
 		return bundle.get(resourceType).remove(bundle.get(resourceType).size() - 1);
 	}
 	public int size(int resourceType) {
+		if (resourceType >= bundle.size()) return 0;
 		return bundle.get(resourceType).size();
 	}
 	public int size() {

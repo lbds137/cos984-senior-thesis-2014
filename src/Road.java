@@ -30,7 +30,13 @@ public class Road {
     }
     public int other(int i) {
         if (i == iTwo) return iOne;
-        else return iTwo;
+        else if (i == iOne) return iTwo;
+        else return Constants.INVALID;
+    }
+    public boolean isNeighbor(Road r) {
+        if (r.other(iOne) == Constants.INVALID && 
+            r.other(iTwo) == Constants.INVALID) return false;
+        else return true;
     }
     
     /* Operations */

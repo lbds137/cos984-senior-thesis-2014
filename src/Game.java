@@ -5,23 +5,28 @@ public class Game {
 
     private Board board;
     private Decks decks;
+    private int numPlayers;
     private ArrayList<Player> players; // ordering = turn order
-    private int turnNumber;
     private Player longestRoadOwner;
     private int longestRoadLength;
     private Player largestArmyOwner;
     private int largestArmySize;
     
+    public Game(String gameState) {
+        resumeGame(gameState);
+    }
     public Game(int numPlayers) throws Exception {
         if (numPlayers < 3 || numPlayers > 4) {
             throw new Exception();
         }
+        this.numPlayers = numPlayers;
         
         startGame();
     }
     
     private void startGame() {
-        initTurnOrder();
+        setUpPlayers();
+        setUpBoard();
         firstMoves();
         gameLoop();
     }
@@ -38,9 +43,8 @@ public class Game {
             // todo
         }
     }
-    // currently, ties are broken by the order in which dice were rolled (first goes first, etc.)
-    private void initTurnOrder() {
-        /*ArrayList<Integer> diceRolls = new ArrayList<Integer>(Player.NUM_PLAYERS);
+    private void setUpPlayers() {
+        /*ArrayList<Integer> diceRolls = new ArrayList<Integer>(numPlayers);
         turnOrder = new int[players.length];
         
         for (int i = 0; i < players.length; i++) {
@@ -53,6 +57,7 @@ public class Game {
         }
         */
     }
+    
     private int getDiceRoll() {
         int yellowDie = (int) (Math.random() * Constants.DIE) + 1;
         int redDie = (int) (Math.random() * Constants.DIE) + 1;

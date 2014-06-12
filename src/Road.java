@@ -33,9 +33,20 @@ public class Road {
         else if (i == iOne) return iTwo;
         else return Constants.INVALID;
     }
+    // return the intersection shared by both roads
+    public int common(Road r) {
+        if (r.other(iOne) != Constants.INVALID) return iOne;
+        else if (r.other(iTwo) != Constants.INVALID) return iTwo;
+        else return Constants.INVALID;
+    }
+    public ArrayList<Integer> both() {
+        ArrayList<Integer> both = new ArrayList<Integer>(2);
+        both.add(iOne);
+        both.add(iTwo);
+        return both;
+    }
     public boolean isNeighbor(Road r) {
-        if (r.other(iOne) == Constants.INVALID && 
-            r.other(iTwo) == Constants.INVALID) return false;
+        if (common(r) == Constants.INVALID) return false;
         else return true;
     }
     

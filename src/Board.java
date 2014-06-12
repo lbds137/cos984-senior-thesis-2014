@@ -168,6 +168,9 @@ public class Board {
     }
     /* returns 2D array: row index indicates player, column index indicates resource type, 
     resources[row][col] indicates number of resource cards of that type earned */
+    
+    
+    // MOVE THIS TO PLAYER CLASS AND CHANGE INTERSECTIONS SO THEY KNOW THEIR DICE ROLL AND RESOURCE TYPES
     public int[][] getResourceCounts(int diceRoll) {
         int[][] resources = new int[Player.NUM_PLAYERS][Resource.NUM_TYPES];
         if (diceRoll == 7) return resources; // robber rolls get no resources from the board

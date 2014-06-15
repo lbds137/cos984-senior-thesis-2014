@@ -14,36 +14,14 @@ public class Board {
     
     // build a new random board
     public Board() {
-        initIGraph();
         initHGraph();
+        initIGraph();
     }
     // build a board from a saved state
     public Board(String state) {
         // TODO
     }
     
-    private void initIGraph() {
-        int[][] g = Intersection.GRAPH;
-        int n = g.length;
-        ArrayList<Port> ports = getPorts();
-        
-        intersections = new Intersection[n];
-        for (int i = 0; i < n; i++) {
-            intersections[i] = new Intersection(i, ports.get(i));
-        }
-        
-        iGraph = new Road[n][n];
-        for (int i = 0; i < n; i++) {
-            int id = i;
-            for (int j = 0; j < g[i].length; j++) {
-                int destId = g[i][j];
-                if (iGraph[id][destId] == null) {
-                    iGraph[id][destId] = new Road(id, destId);
-                    iGraph[destId][id] = iGraph[id][destId];
-                }
-            }
-        }
-    }
     private void initHGraph() {
         int[][] g = Hex.GRAPH;
         int n = g.length;
@@ -65,6 +43,33 @@ public class Board {
                 if (!hGraph[id][destId]) {
                     hGraph[id][destId] = true;
                     hGraph[destId][id] = hGraph[id][destId];
+                }
+            }
+        }
+    }
+    private void initIGraph() {
+        int[][] g = Intersection.GRAPH;
+        int n = g.length;
+        ArrayList<Port> ports = getPorts();
+        
+        intersections = new Intersection[n];
+        for (int i = 0; i < n; i++) {
+            ArrayList<Integer> hexList = new ArrayList<Integer>(Arrays.asList(Intersection.HEXES[i]));
+            ArrayList<Hex> iHexes = new ArrayList<Hex>(hexList.size());
+            for (Integer hexId : hexList) {
+                iHexes.add(hexes[hexId]);
+            }
+            intersections[i] = new Intersection(i, ports.get(i), iHexes);
+        }
+        
+        iGraph = new Road[n][n];
+        for (int i = 0; i < n; i++) {
+            int id = i;
+            for (int j = 0; j < g[i].length; j++) {
+                int destId = g[i][j];
+                if (iGraph[id][destId] == null) {
+                    iGraph[id][destId] = new Road(id, destId);
+                    iGraph[destId][id] = iGraph[id][destId];
                 }
             }
         }

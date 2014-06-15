@@ -53,49 +53,6 @@ public class Player {
         }
     }
     
-    /* Helper methods */
-    
-    private boolean satisfiesBuildCost(int[] buildCost) {
-        boolean satisfied = true;
-        for (int i = 0; i < Resource.NUM_TYPES; i++) {
-            if (buildCost[i] > resourceCards.size(i)) satisfied = false;
-        }
-        return satisfied;
-    }
-    private void payBuildCost(int[] buildCost, Decks d) {
-        for (int i = 0; i < Resource.NUM_TYPES; i++) {
-            for (int j = 0; j < buildCost[i]; j++) {
-                d.add(resourceCards.remove(i));
-            }
-        }
-    }
-    // recursive helper method for getLongestRoad()
-    private int getLongestRoad(ArrayList<Integer> idsVisited, boolean[][] iGraph) {
-        int iCurrent = idsVisited.get(idsVisited.size() - 1);
-        ArrayList<Integer> nextIds = new ArrayList<Integer>(Intersection.MAX_DEGREE - 1);
-        for (int k = 0; k < iGraph[iCurrent].length; k++) {
-            if (k = iCurrent) continue;
-            if (iGraph[iCurrent][k]) nextIds.add(k);
-        }
-        /* base case: dead-ended (not into a loop) */
-        if (nextIds.size() == 0) return idsVisited.size();
-        TreeSet<Integer> longestRoads = new TreeSet<Integer>();
-        for (int j = 0; j < nextIds.size(); j++) {
-            ArrayList<Integer> newIdsVisited = new ArrayList<Integer>(idsVisited);
-            // continue only to intersections not visited yet
-            if (idsVisited.indexOf(j) == -1) {
-                newIdsVisited.add(nextIds.get(j));
-                longestRoads.add(getLongestRoad(newIdsVisited, iGraph);
-            }
-        }
-        /* base case: dead-ended (into a loop) */
-        if (longestRoads.size() == 0) return idsVisited.size();
-        
-        /* recursive case: return the longest road (out of 1 or more candidates, 
-                           depending on whether or not there is a fork) */
-        return longestRoads.last();
-    }
-    
     /* Getters */
     
     public int getId() {
@@ -125,7 +82,7 @@ public class Player {
     // build the road and return a boolean status (true if success, false if failure)
     public boolean buildRoad(Road r, Decks d) {
         // must check that this player has enough resources to build this road
-        if (!satisfiesBuildCost(Road.ROAD_COST)) return false;
+        if (!resourceCards.canRemove(Road.ROAD_COST)) return false;
         
         // must check if road is adjacent to a road owned by this player
         boolean isRValid = false;
@@ -142,13 +99,13 @@ public class Player {
         
         roads.add(r);
         roadsFree -= 1;
-        payBuildCost(Road.ROAD_COST, d);
+        d.add(resourceCards.remove(Road.ROAD_COST));
         return true;
     }
     // build the settlement and return a boolean status (true if success, false if failure)
     public boolean buildSettlement(Intersection i, Decks d) {
         // must check that this player has enough resources to build this settlement
-        if (!satisfiesBuildCost(Building.SETTLEMENT_COST)) return false;
+        if (!resourceCards.canRemove(Building.SETTLEMENT_COST)) return false;
         
         // must check if settlement is adjacent to a road owned by this player
         /* todo: don't forget to have Game class check whether settlement location is valid 
@@ -171,13 +128,13 @@ public class Player {
         
         settlements.add(i);
         settlementsFree -= 1;
-        payBuildCost(Building.SETTLEMENT_COST, d);
+        d.add(resourceCards.remove(Building.SETTLEMENT_COST));
         return true;
     }
     // build the city and return a boolean status (true if success, false if failure)
     public boolean buildCity(Intersection i, Decks d) {
         // must check that this player has enough resources to build this settlement
-        if (!satisfiesBuildCost(Building.CITY_COST)) return false;
+        if (!resourceCards.canRemove(Building.CITY_COST)) return false;
         
         // must check if there exists a settlement owned by this player
         if (settlements.indexOf(i) == -1) return false;
@@ -189,24 +146,26 @@ public class Player {
         settlementsFree += 1;
         cities.add(i);
         citiesFree -= 1;
-        payBuildCost(Building.CITY_COST, d);
+        d.add(resourceCards.remove(Building.CITY_COST));
         return true;
     }
     // build a dev card and return a boolean status (true if success, false if failure)
     public boolean buildDevCard(Decks d) {
         // must check that this player has enough resources to build a dev card
-        if (!satisfiesBuildCost(DevCard.DEV_CARD_COST)) return false;
+        if (!resourceCards.canRemove(DevCard.DEV_CARD_COST)) return false;
         
         // attempt to draw a dev card
         DevCard card = d.drawDevCard();
         if (card == null) return false;
         
         devCards.add(card);
-        payBuildCost(DevCard.DEV_CARD_COST);
+        d.add(resourceCards.remove(DevCard.DEV_CARD_COST));
         return true;
     }
     public boolean collectResources(int diceRoll, Decks d) {
-        // todo (relies on change made to intersection class)
+        // todo
+        
+        // discard (when more than 7 cards and 7 rolled) doesn't happen here
         return false;
     }
     // returns the length of this player's longest road
@@ -239,12 +198,40 @@ public class Player {
             iGraph[both.get(1)][both.get(0)] = true;
         }
         
-        ArrayList<Integer> longestRoads = new ArrayList<Integer>();
+        TreeSet<Integer> longestRoads = new TreeSet<Integer>();
         for (Integer i : iTermini) {
             ArrayList<Integer> idsVisited = new ArrayList<Integer>();
             idsVisited.add(i);
-            longestRoads.add(getLongestRoad(idsVisited, iGraph));
+            longestRoads.add(getLongestRoad(idsVisited, iGraph)); // recursive helper
         }
+        
+        return longestRoads.last();
+    }
+    // recursive helper method for getLongestRoad()
+    private int getLongestRoad(ArrayList<Integer> idsVisited, boolean[][] iGraph) {
+        int iCurrent = idsVisited.get(idsVisited.size() - 1);
+        ArrayList<Integer> nextIds = new ArrayList<Integer>(Intersection.MAX_DEGREE - 1);
+        for (int k = 0; k < iGraph[iCurrent].length; k++) {
+            if (k = iCurrent) continue;
+            if (iGraph[iCurrent][k]) nextIds.add(k);
+        }
+        /* base case: dead-ended (not into a loop) */
+        if (nextIds.size() == 0) return idsVisited.size();
+        TreeSet<Integer> longestRoads = new TreeSet<Integer>();
+        for (int j = 0; j < nextIds.size(); j++) {
+            ArrayList<Integer> newIdsVisited = new ArrayList<Integer>(idsVisited);
+            // continue only to intersections not visited yet
+            if (idsVisited.indexOf(j) == -1) {
+                newIdsVisited.add(nextIds.get(j));
+                longestRoads.add(getLongestRoad(newIdsVisited, iGraph);
+            }
+        }
+        /* base case: dead-ended (into a loop) */
+        if (longestRoads.size() == 0) return idsVisited.size();
+        
+        /* recursive case: return the longest road (out of 1 or more candidates, 
+                           depending on whether or not there is a fork) */
+        return longestRoads.last();
     }
     // todo: need a protocol for trading between players
     
@@ -264,10 +251,5 @@ public class Player {
             default:
                 return "Invalid player";
         }
-    }
-    
-    // cards discarded by player when 7 is rolled. Can be empty if player has 7 or fewer cards 
-    public ArrayList<ArrayList<Resource>> discard() {
-        return null;
     }
 }

@@ -44,10 +44,36 @@ public class ResourceBundle {
         }
         return true;
     }
+    public boolean canRemove(int type) {
+        if (type < 0 || type >= bundle.size() || bundle.get(type).size() == 0) return false;
+        else return true;
+    }
+    public boolean canRemove(int[] resourceCounts) {
+        if (resourceCounts.length != Resource.NUM_TYPES) return false; // lengths must match
+        
+        boolean canRemove = true;
+        for (int i = 0; i < resourceCounts.length; i++) {
+            if (resourceCounts[i] > size(i)) canRemove = false;
+        }
+        if (!canRemove) return false;
+        else return true;
+    }
 	public Resource remove(int resourceType) {
-		if (resourceType >= bundle.size() || bundle.get(resourceType).size() == 0) return null;
+		if (!canRemove(resourceType)) return null;
 		return bundle.get(resourceType).remove(bundle.get(resourceType).size() - 1);
 	}
+	public ResourceBundle remove(int[] resourceCounts) {
+        if (!canRemove(resourceCounts)) return null;
+        
+        ResourceBundle b = new ResourceBundle();
+        for (int i = 0; i < resourceCounts.length; i++) {
+            for (int j = 0; j < resourceCounts[i]; j++) {
+                // don't need to check return value of add(), since we're removing from an existing bundle
+                b.add(remove(i));
+            }
+        }
+        return b;
+    }
 	public int size(int resourceType) {
 		int test = new Resource(resourceType).getResourceType();
 		if (test != resourceType) return 0; // size is always 0 for invalid resource types

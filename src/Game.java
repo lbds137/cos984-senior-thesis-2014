@@ -3,10 +3,12 @@ import java.util.Collections;
 
 public class Game {
 
-    private Board board;
-    private Decks decks;
     private int numPlayers;
     private ArrayList<Player> players; // ordering = turn order
+    private Board board;
+    private ResourceBundle resDeck;
+    private DevCardBundle devDeck;
+    
     private Player longestRoadOwner;
     private int longestRoadLength;
     private Player largestArmyOwner;
@@ -27,6 +29,7 @@ public class Game {
     private void startGame() {
         setUpPlayers();
         setUpBoard();
+        setUpDecks();
         firstMoves();
         gameLoop();
     }
@@ -34,35 +37,74 @@ public class Game {
     private void resumeGame(String state) {
         // todo
     }
-    private void firstMoves() {
-        // todo
-    }
     /* MAIN GAME LOOP - WHERE EVERYTHING HAPPENS */
     private void gameLoop() {
-        while (true) {
-            // todo
-        }
-    }
-    private void setUpPlayers() {
-        /*ArrayList<Integer> diceRolls = new ArrayList<Integer>(numPlayers);
-        turnOrder = new int[players.length];
+        Player pCurrent = players.get(0);
         
-        for (int i = 0; i < players.length; i++) {
-            diceRolls.add(getDiceRoll());
+        while (true) {
+            int diceRoll = getDiceRoll();
+            if (diceRoll == 7) {
+                moveRobber();
+            }
+            else {
+                for (Player p : players) {
+                    p.collectResources(diceRoll, resDeck);
+                }
+            }
+            
+            // todo: remainder of game turn logic
+            
+            pCurrent = getNextPlayer(pCurrent);
         }
-        for (int i = 0; i < players.length; i++) {
-            int highestIndex = diceRolls.indexOf(Collections.max(diceRolls));
-            turnOrder[i] = highestIndex;
-            diceRolls.set(highestIndex, 0);
-        }
-        */
     }
     
+    private void setUpPlayers() {
+        players = new ArrayList<Player>(numPlayers);
+        for (int i = 0; i < numPlayers; i++) {
+            players.add(new Player(i));
+        }
+        
+        // randomize order of play (no point to actually rolling dice)
+        Collections.shuffle(players);
+    }
+    private void setUpBoard() {
+        board = new Board();
+    }
+    private void setUpDecks() {
+        resDeck = new ResourceBundle();
+        for (int i = 0; i < Resource.NUM_TYPES; i++) {
+            for (int j = 0; j < Resource.MAX_CARDS[i]; j++) {
+                resDeck.add(new Resource(i));
+            }
+        }
+        devDeck = new DevCardBundle();
+        for (int i = 0; i < DevCard.NUM_TYPES; i++) {
+            for (int j = 0; j < DevCard.MAX_CARDS[i]; j++) {
+                devDeck.add(new DevCard(i));
+            }
+        }
+    }
+    private void firstMoves() {
+        // todo: players choose initial two settlement and two road locations
+    }
+    
+    private Player getNextPlayer(Player p) {
+        int index = players.indexOf(p);
+        int nextIndex;
+        if (index == -1) return null;
+        else if (index == (players.size() - 1)) nextIndex = 0;
+        else nextIndex = index + 1;
+        return players.get(nextIndex);
+    }
     private int getDiceRoll() {
         int yellowDie = (int) (Math.random() * Constants.DIE) + 1;
         int redDie = (int) (Math.random() * Constants.DIE) + 1;
         
         return yellowDie + redDie;
+    }
+    private void moveRobber() {
+        // todo: player who rolled moves robber and steals from one of the players 
+        // whose settlements/cities border the chosen hex
     }
     
     /* Testing */

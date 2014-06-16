@@ -34,6 +34,7 @@ public class Board {
         for (int i = 0; i < n; i++) {
             hexes[i] = new Hex(i, new Resource(shuffledLand.get(i)), shuffledDiceRolls.get(i));
         }
+        hexes[robberIndex].placeRobber(); // actually place the robber on the desert hex
         
         hGraph = new boolean[n][n];
         for (int i = 0; i < n; i++) {
@@ -140,60 +141,6 @@ public class Board {
     public boolean[][] getHGraph() {
         return hGraph;
     }
-    /* LONGEST ROAD NOT WORKING YET */
-    // calls recursive version to do the heavy lifting
-    public int getLongestRoad(int player) {
-        boolean[] visited = new boolean[intersections.length];
-        int longestRoad = 0;
-        for (int i = 0; i < intersections.length; i++) {
-            visited[i] = true; // we don't want to get stuck in cycles
-            int candidate = getLongestRoad(0, i, visited, player);
-            if (candidate > longestRoad) longestRoad = candidate;
-        }
-        
-        return longestRoad;
-    }
-    // recursive helper: use DFS to find longest road
-    private int getLongestRoad(int length, int id, boolean[] visited, int player) {
-        // base cases
-        /*if (visited[id]) return length; // visited in a previous function call
-        if (intersections[id].getPlayer() != player) return length; // not owned by player
-        
-        int longestRoad = length;
-        int[] neighbors = Intersection.GRAPH[id];
-        for (int i = 0; i < neighbors.length; i++) {
-            int candidate = 0;
-            if (iGraph[id][i].getPlayer() == player) {
-                candidate = getLongestRoad(++length, neighbors[i], visited, player);
-            }
-            if (candidate > longestRoad) longestRoad = candidate;
-        }
-        return longestRoad;*/
-        return 0;
-    }
-    /* returns 2D array: row index indicates player, column index indicates resource type, 
-    resources[row][col] indicates number of resource cards of that type earned */
-    
-    
-    // MOVE THIS TO PLAYER CLASS AND CHANGE INTERSECTIONS SO THEY KNOW THEIR DICE ROLL AND RESOURCE TYPES
-    public int[][] getResourceCounts(int diceRoll) {
-        int[][] resources = new int[Player.NUM_PLAYERS][Resource.NUM_TYPES];
-        if (diceRoll == 7) return resources; // robber rolls get no resources from the board
-        
-        for (int i = 0; i < hexes.length; i++) {
-            if ((hexes[i].getDiceRoll() != diceRoll) || (i == robberIndex)) continue; // no resources given
-            
-            for (int j = 0; j < Hex.INTERSECTIONS[i].length; j++) {
-                Intersection intersection = intersections[Hex.INTERSECTIONS[i][j]];
-                Building building = intersection.getBuilding();
-                Player player = intersection.getPlayer();
-                int resource = hexes[i].getResource().getResourceType();
-				// settlements give one resource, cities two resources
-                resources[player.getId()][resource] += (building.getNumResources());
-            }
-        }
-        return resources;
-    }
     
     /* Operations */
     
@@ -215,7 +162,11 @@ public class Board {
         else return false;
     }
     public void moveRobber(int index) {
+        if (index < 0 || index > hexes.length) return;
+        
+        hexes[robberIndex].removeRobber();
         robberIndex = index;
+        hexes[robberIndex].placeRobber();
     }
     
     /* Debug */

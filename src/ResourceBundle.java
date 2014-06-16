@@ -55,8 +55,7 @@ public class ResourceBundle {
         for (int i = 0; i < resourceCounts.length; i++) {
             if (resourceCounts[i] > size(i)) canRemove = false;
         }
-        if (!canRemove) return false;
-        else return true;
+        return canRemove;
     }
 	public Resource remove(int resourceType) {
 		if (!canRemove(resourceType)) return null;

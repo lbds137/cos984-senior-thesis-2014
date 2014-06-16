@@ -144,23 +144,6 @@ public class Board {
     
     /* Operations */
     
-    public boolean buildRoad(int id, int destId, Player player) {
-        return iGraph[id][destId].build(player);
-    }
-    public boolean buildSettlement(int id, Player player) {
-        Intersection i = intersections[id];
-        Building b = i.getBuilding();
-        // a settlement can only be built on an OPEN intersection
-        if (b.getBuildingType() == Building.OPEN) return i.upgrade(player);
-        else return false;
-    }
-    public boolean buildCity(int id, Player player) {
-        Intersection i = intersections[id];
-        Building b = i.getBuilding();
-        // a city can only be built on top of a SETTLEMENT
-        if (b.getBuildingType() == Building.SETTLEMENT) return i.upgrade(player);
-        else return false;
-    }
     public void moveRobber(int index) {
         if (index < 0 || index > hexes.length) return;
         

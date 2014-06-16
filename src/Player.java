@@ -21,7 +21,7 @@ public class Player {
     /* Fields */
     
     private int id;
-    private ArrayList<Road> roads; // roads built (String = location)
+    private ArrayList<Road> roads;
     private ArrayList<Intersection> settlements;
     private ArrayList<Intersection> cities;
     private int roadsFree;
@@ -38,7 +38,7 @@ public class Player {
             case BLUE: case ORANGE: case RED: case WHITE:
                 this.id = id;
                 roads = new ArrayList<Road>(MAX_ROADS);
-                settlements = new ArrayList<Building>(MAX_SETTLEMENTS);
+                settlements = new ArrayList<Intersection>(MAX_SETTLEMENTS);
                 cities = new ArrayList<Building>(MAX_CITIES);
                 roadsFree = MAX_ROADS;
                 settlementsFree = MAX_SETTLEMENTS;
@@ -48,7 +48,6 @@ public class Player {
                 playedDevCards = new DevCardBundle();
                 break;
             default:
-                // we only accept BLUE, ORANGE, RED, and WHITE players
                 throw new Exception();
         }
     }
@@ -80,7 +79,7 @@ public class Player {
     /* Operations */
     
     // build the road and return a boolean status (true if success, false if failure)
-    public boolean buildRoad(Road r, Decks d) {
+    public boolean buildRoad(Road r, ResourceBundle resDeck) {
         // must check that this player has enough resources to build this road
         if (!resourceCards.canRemove(Road.ROAD_COST)) return false;
         
@@ -99,11 +98,11 @@ public class Player {
         
         roads.add(r);
         roadsFree -= 1;
-        d.add(resourceCards.remove(Road.ROAD_COST));
+        resDeck.add(resourceCards.remove(Road.ROAD_COST));
         return true;
     }
     // build the settlement and return a boolean status (true if success, false if failure)
-    public boolean buildSettlement(Intersection i, Decks d) {
+    public boolean buildSettlement(Intersection i, ResourceBundle resDeck) {
         // must check that this player has enough resources to build this settlement
         if (!resourceCards.canRemove(Building.SETTLEMENT_COST)) return false;
         
@@ -128,11 +127,11 @@ public class Player {
         
         settlements.add(i);
         settlementsFree -= 1;
-        d.add(resourceCards.remove(Building.SETTLEMENT_COST));
+        resDeck.add(resourceCards.remove(Building.SETTLEMENT_COST));
         return true;
     }
     // build the city and return a boolean status (true if success, false if failure)
-    public boolean buildCity(Intersection i, Decks d) {
+    public boolean buildCity(Intersection i, ResourceBundle resDeck) {
         // must check that this player has enough resources to build this settlement
         if (!resourceCards.canRemove(Building.CITY_COST)) return false;
         
@@ -146,27 +145,45 @@ public class Player {
         settlementsFree += 1;
         cities.add(i);
         citiesFree -= 1;
-        d.add(resourceCards.remove(Building.CITY_COST));
+        resDeck.add(resourceCards.remove(Building.CITY_COST));
         return true;
     }
     // build a dev card and return a boolean status (true if success, false if failure)
-    public boolean buildDevCard(Decks d) {
+    public boolean buildDevCard(DevCardBundle devDeck, ResourceBundle resDeck) {
         // must check that this player has enough resources to build a dev card
         if (!resourceCards.canRemove(DevCard.DEV_CARD_COST)) return false;
         
         // attempt to draw a dev card
-        DevCard card = d.drawDevCard();
+        DevCard card = devDeck.removeRandom();
         if (card == null) return false;
         
         devCards.add(card);
-        d.add(resourceCards.remove(DevCard.DEV_CARD_COST));
+        resDeck.add(resourceCards.remove(DevCard.DEV_CARD_COST));
         return true;
     }
-    public boolean collectResources(int diceRoll, Decks d) {
-        // todo
+    // attempts to collect resources (fails if deck doesn't have enough cards)
+    public boolean collectResources(int diceRoll, ResourceBundle resDeck) {
+        int[] resourcesOwed = new int[Resource.NUM_TYPES];
+        ArrayList<Intersection> buildings = new ArrayList<Intersection>();
+        buildings.addAll(settlements);
+        buildings.addAll(cities);
         
-        // discard (when more than 7 cards and 7 rolled) doesn't happen here
-        return false;
+        for (int i = 0; i < buildings.size(); i++) {
+            ArrayList<Hex> hexes = buildings.get(i).getHexes();
+            for (int j = 0; j < hexes.size(); j++) {
+                Hex h = hexes.get(j);
+                if ((!h.hasRobber()) && (h.getDiceRoll() == diceRoll)) {
+                    int resourceType = h.getResource().getResourceType();
+                    Building b = buildings.get(i).getBuilding();
+                    resourcesOwed[resourceType] += b.getNumResources();
+                }
+            }
+        }
+        
+        if (!resDeck.canRemove(resourcesOwed)) return false;
+        
+        resourceCards.add(resDeck.remove(resourcesOwed));
+        return true;
     }
     // returns the length of this player's longest road
     public int getLongestRoad() {
@@ -233,7 +250,8 @@ public class Player {
                            depending on whether or not there is a fork) */
         return longestRoads.last();
     }
-    // todo: need a protocol for trading between players
+    
+    // todo: trading functionality (with bank and other players)
     
     /* Inherits / overrides */
     

@@ -46,6 +46,18 @@ public class DevCardBundle {
 		if (devCardType >= bundle.size() || bundle.get(devCardType).size() == 0) return null;
 		return bundle.get(devCardType).remove(bundle.get(devCardType).size() - 1);
 	}
+	public DevCard removeRandom() { // simulate drawing from a shuffled deck
+        if (size() == 0) return null;
+        
+        int rand = (int) (Math.random() * size());
+        int rowIndex = 0;
+        int temp = 0;
+        for ( ; temp < rand; rowIndex++) temp += size(rowIndex);
+        if (temp > rand) rowIndex--; // whoops, we overshot
+        while (size(rowIndex) == 0) rowIndex++;
+        
+        return remove(rowIndex);
+    }
 	public int size(int devCardType) {
 		int test = new DevCard(devCardType).getCardType();
 		if (test != devCardType) return 0; // size is always 0 for invalid dev card types

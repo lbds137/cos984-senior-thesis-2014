@@ -40,6 +40,7 @@ public class Hex {
     private int id;
     private Resource resource;
     private int diceRoll;
+    private boolean hasRobber;
     
     /* Constructors */
     
@@ -47,6 +48,7 @@ public class Hex {
         this.id = id;
         this.resource = resource;
         this.diceRoll = diceRoll;
+        hasRobber = false;
     }
     
     /* Getters */
@@ -59,6 +61,18 @@ public class Hex {
     }
     public int getDiceRoll() {
         return diceRoll;
+    }
+    public boolean hasRobber() {
+        return hasRobber;
+    }
+    
+    /* Operations */
+    
+    public void placeRobber() {
+        hasRobber = true;
+    }
+    public void removeRobber() {
+        hasRobber = false;
     }
     
     /* Inherits / overrides */

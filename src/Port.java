@@ -73,7 +73,7 @@ public class Port {
 
     /* Inherits / overrides */
     
-    @Override
+    //@Override
     public boolean equals(Port p) {
         if (p == null) return false;
         return resource.equals(p.getResource()) && portType == p.getPortType();

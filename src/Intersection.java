@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 
 public class Intersection {
     
@@ -25,7 +26,7 @@ public class Intersection {
                                          {44,46,53},{36,45},{39,48},
                                          {47,49},{41,48,50},{49,51},
                                          {43,50,52},{51,53},{45,52}};
-    public static final int[][] HEXES = {{0},{0},{0,1},{1},{1,2},{2},
+    public static final Integer[][] HEXES = {{0},{0},{0,1},{1},{1,2},{2},
                                          {2},{3},{0,3},{0,3,4},
                                          {0,1,4},{1,4,5},{1,2,5},
                                          {2,5,6},{2,6},{6},{7},{3,7},

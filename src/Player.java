@@ -33,13 +33,13 @@ public class Player {
     
     /* Constructors */
     
-    public Player(int id) throws Exception {
+    public Player(int id) {
         switch (id) {
             case BLUE: case ORANGE: case RED: case WHITE:
                 this.id = id;
                 roads = new ArrayList<Road>(MAX_ROADS);
                 settlements = new ArrayList<Intersection>(MAX_SETTLEMENTS);
-                cities = new ArrayList<Building>(MAX_CITIES);
+                cities = new ArrayList<Intersection>(MAX_CITIES);
                 roadsFree = MAX_ROADS;
                 settlementsFree = MAX_SETTLEMENTS;
                 citiesFree = MAX_CITIES;
@@ -48,7 +48,7 @@ public class Player {
                 playedDevCards = new DevCardBundle();
                 break;
             default:
-                throw new Exception();
+                //
         }
     }
     
@@ -206,7 +206,7 @@ public class Player {
         TreeSet<Integer> iTermini = new TreeSet<Integer>(iAll);
         iTermini.removeAll(iCommon);
         
-        n = Intersection.GRAPH.length;
+        int n = Intersection.GRAPH.length;
         boolean[][] iGraph = new boolean[n][n];
         // create intersection graph
         for (int i = 0; i < roads.size(); i++) {
@@ -229,7 +229,7 @@ public class Player {
         int iCurrent = idsVisited.get(idsVisited.size() - 1);
         ArrayList<Integer> nextIds = new ArrayList<Integer>(Intersection.MAX_DEGREE - 1);
         for (int k = 0; k < iGraph[iCurrent].length; k++) {
-            if (k = iCurrent) continue;
+            if (k == iCurrent) continue;
             if (iGraph[iCurrent][k]) nextIds.add(k);
         }
         /* base case: dead-ended (not into a loop) */
@@ -240,7 +240,7 @@ public class Player {
             // continue only to intersections not visited yet
             if (idsVisited.indexOf(j) == -1) {
                 newIdsVisited.add(nextIds.get(j));
-                longestRoads.add(getLongestRoad(newIdsVisited, iGraph);
+                longestRoads.add(getLongestRoad(newIdsVisited, iGraph));
             }
         }
         /* base case: dead-ended (into a loop) */

@@ -40,7 +40,7 @@ public class Building implements Comparable<Building> {
 
     /* Inherits / overrides */
 
-    @Override
+    //@Override
     public boolean equals(Building b) {
         return compareTo(b) == 0;
     }

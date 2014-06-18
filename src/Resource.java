@@ -1,3 +1,4 @@
+import java.awt.Color;
 
 public class Resource implements Comparable<Resource> {
     
@@ -12,6 +13,12 @@ public class Resource implements Comparable<Resource> {
     public static final int LUMBER = 2;
     public static final int BRICK = 3;
     public static final int ORE = 4;
+    public static final Color DESERT_COLOR = new Color(255, 255, 153);
+    public static final Color WOOL_COLOR = new Color(0, 204, 0);
+    public static final Color GRAIN_COLOR = new Color(255, 204, 0);
+    public static final Color LUMBER_COLOR = new Color(0, 102, 0);
+    public static final Color BRICK_COLOR = new Color(204, 102, 0);
+    public static final Color ORE_COLOR = new Color(102, 102, 102);
     public static final String DESERT_NAME = "Desert";
     public static final String WOOL_NAME = "Wool";
     public static final String GRAIN_NAME = "Grain";
@@ -48,9 +55,21 @@ public class Resource implements Comparable<Resource> {
         return resourceType;
     }
     
+    public Color getColor() {
+        switch (resourceType) {
+            case DESERT: return DESERT_COLOR;
+            case WOOL: return WOOL_COLOR;
+            case GRAIN: return GRAIN_COLOR;
+            case LUMBER: return LUMBER_COLOR;
+            case BRICK: return BRICK_COLOR;
+            case ORE: return ORE_COLOR;
+            default: return null;
+        }
+    }
+    
     /* Inherits / overrides */
     
-    @Override
+    //@Override
     public boolean equals(Resource r) {
         return compareTo(r) == 0;
     }

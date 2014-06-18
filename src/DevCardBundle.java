@@ -26,6 +26,7 @@ public class DevCardBundle {
 	public boolean add(DevCard d) {
 		if (bundle.get(d.getCardType()).size() >= DevCard.MAX_CARDS[d.getCardType()]) return false;
 		bundle.get(d.getCardType()).add(d);
+		return true;
 	}
 	public boolean add(DevCardBundle b) {
         // check that the maximum number of cards for each type isn't exceeded

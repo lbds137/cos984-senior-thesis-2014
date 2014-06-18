@@ -28,9 +28,4 @@ public class UserInput {
     public void getInput(String s) {
         // todo: placeholder for now
     }
-    public int[] getDiscard(Player p) {
-        // todo
-        
-        return null;
-    }
 }

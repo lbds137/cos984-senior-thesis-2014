@@ -331,7 +331,7 @@ public class Board {
         System.out.println("-----");
         */
         
-        
+        Board b = new Board(3);
         for (int k = 0; k < 20; k++) {
             StdDraw.setXscale(0, 500);
             StdDraw.setYscale(0, 500);
@@ -396,7 +396,7 @@ public class Board {
             StdDraw.filledPolygon(bigBlue.getXCoords(), bigBlue.getYCoords());
             StdDraw.setFont(new Font("Arial", Font.BOLD, 12));
             
-            Board b = new Board(3);
+            b = new Board(3);
             Hex[] hexes = b.getHexes();
             
             for (int i = 0; i < hexes.length; i++) {
@@ -407,6 +407,7 @@ public class Board {
             }
             StdDraw.save("result" + k + ".png");
         }
+        b.printHGraph();
         System.exit(0);
     }
 }

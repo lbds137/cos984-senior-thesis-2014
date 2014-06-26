@@ -21,6 +21,11 @@ public class Board {
     private Intersection[] intersections;
     private Road[][] iGraph; // existence of edge denoted by Road object; 'null' otherwise
     
+    // row index: hex id; col index: intersection ids
+    private ArrayList<ArrayList<Integer>> hIMapping;
+    // row index: intersection id; col index: hex ids
+    private ArrayList<ArrayList<Integer>> iHMapping;
+    
     /* Constructors */
     
     // build a new random board of default size
@@ -37,6 +42,7 @@ public class Board {
         initHexes();
         initIRings();
         initIGraphNew();
+        initMappings();
         initIntersections();
     }
     // build a board from a saved state
@@ -84,7 +90,7 @@ public class Board {
                         hGraph[curCurHex][nextRing.get(k)] = true;
                         hGraph[nextRing.get(k)][curCurHex] = hGraph[curCurHex][nextRing.get(k)];
                     }
-                    break;
+                    continue;
                 }
                 // next in same ring
                 int curNextHex = curRing.get((j + 1) % curRingSize);
@@ -249,12 +255,77 @@ public class Board {
         intersections = new Intersection[n];
         for (int i = 0; i < n; i++) {
             // this needs to be fixed for the new ring system
-            ArrayList<Integer> hexList = new ArrayList<Integer>(Arrays.asList(Intersection.HEXES[i]));
+            ArrayList<Integer> hexList = iHMapping.get(i);
             ArrayList<Hex> iHexes = new ArrayList<Hex>(hexList.size());
             for (Integer hexId : hexList) {
                 iHexes.add(hexes[hexId]);
             }
             intersections[i] = new Intersection(i, ports.get(i), iHexes);
+        }
+    }
+    private void initMappings() {
+        hIMapping = new ArrayList<ArrayList<Integer>>(numHexes);
+        for (int i = 0; i < numHexes; i++) {
+            hIMapping.add(new ArrayList<Integer>(HexShape.NUM_SIDES));
+        }
+        iHMapping = new ArrayList<ArrayList<Integer>>(numIntersections);
+        for (int i = 0; i < numIntersections; i++) {
+            iHMapping.add(new ArrayList<Integer>(HexShape.NUM_SIDES / 2));
+        }
+        
+        for (int i = 0; i < radius; i++) {
+            ArrayList<Integer> curHRing = hRings.get(i);
+            int curHRingSize = curHRing.size();
+            ArrayList<Integer> curIRing = iRings.get(i);
+            int curIRingSize = curIRing.size();
+            
+            ArrayList<Integer> prevIRing;
+            int prevIRingSize;
+            if (i > 0) {
+                prevIRing = iRings.get(i - 1);
+                prevIRingSize = prevIRing.size();
+            }
+            else {
+                prevIRing = null;
+                prevIRingSize = 0;
+            }
+            int curIIndex = 0;
+            int prevIIndex = 1;
+            for (int j = 0; j < curHRingSize; j++) {
+                // first ring is a special case
+                if (curHRingSize == 1) {
+                    for (int k = 0; k < curIRingSize; k++) {
+                        hIMapping.get(curHRing.get(j)).add(curIRing.get(k));
+                        iHMapping.get(curIRing.get(k)).add(curHRing.get(j));
+                    }
+                    continue;
+                }
+                int numCurI = HexShape.NUM_SIDES / 2;
+                int numPrevI = numCurI;
+                boolean isCorner = ((j % i) == 0);
+                if (isCorner) {
+                    numCurI++;
+                    numPrevI--;
+                }
+                for (int k = 0; k < numCurI; k++) {
+                    hIMapping.get(curHRing.get(j)).add(curIRing.get(curIIndex));
+                    iHMapping.get(curIRing.get(curIIndex)).add(curHRing.get(j));
+                    if (k + 1 < numCurI) curIIndex = (curIIndex + 1) % curIRingSize;
+                }
+                if (i == 0) continue; // there are no previous rings for ring 0
+                for (int k = 0; k < numPrevI; k++) {
+                    hIMapping.get(curHRing.get(j)).add(prevIRing.get(prevIIndex));
+                    iHMapping.get(prevIRing.get(prevIIndex)).add(curHRing.get(j));
+                    if (k + 1 < numPrevI) prevIIndex = (prevIIndex + 1) % prevIRingSize;
+                }
+            }
+        }
+        // sort both mappings for convenience
+        for (int i = 0; i < numHexes; i++) {
+            Collections.sort(hIMapping.get(i));
+        }
+        for (int i = 0; i < numIntersections; i++) {
+            Collections.sort(iHMapping.get(i));
         }
     }
     // Dice roll chits 6 and 8 cannot be adjacent, so we have to work a bit harder
@@ -395,6 +466,26 @@ public class Board {
             System.out.print("\r\n");
         }
     }
+    public void printHIMapping() {
+        System.out.println("Hex to intersection mapping");
+        for (int i = 0; i < numHexes; i++) {
+            System.out.print(i + " :");
+            for (int j = 0; j < HexShape.NUM_SIDES; j++) {
+                System.out.print(" " + hIMapping.get(i).get(j));
+            }
+            System.out.print("\r\n");
+        }
+    }
+    public void printIHMapping() {
+        System.out.println("Intersection to hex mapping");
+        for (int i = 0; i < numIntersections; i++) {
+            System.out.print(i + " :");
+            for (int j = 0; j < iHMapping.get(i).size(); j++) {
+                System.out.print(" " + iHMapping.get(i).get(j));
+            }
+            System.out.print("\r\n");
+        }
+    }
     
     /* Testing */
     
@@ -414,9 +505,9 @@ public class Board {
         b.printHexes();
         System.out.println("-----");
         */
-        
         Board b = new Board(3);
-        for (int k = 0; k < 20; k++) {
+        //for (int k = 0; k < 20; k++) {
+        /*for (int k = 0; k < 1; k++) {
             StdDraw.setXscale(0, 500);
             StdDraw.setYscale(0, 500);
             double xCenter = 250;
@@ -475,24 +566,27 @@ public class Board {
                 hexShapes[i] = new HexShape(xCenters[i], yCenters[i], HexShape.BALANCE, w, HexShape.BALANCE_WIDTH);
             }
             
-            HexShape bigBlue = new HexShape(xCenter, yCenter, HexShape.FLAT, 500, HexShape.FLAT_WIDTH);
-            StdDraw.setPenColor(StdDraw.BLUE);
-            StdDraw.filledPolygon(bigBlue.getXCoords(), bigBlue.getYCoords());
+            //HexShape bigBlue = new HexShape(xCenter, yCenter, HexShape.FLAT, 500, HexShape.FLAT_WIDTH);
+            //StdDraw.setPenColor(StdDraw.BLUE);
+            //StdDraw.filledPolygon(bigBlue.getXCoords(), bigBlue.getYCoords());
             StdDraw.setFont(new Font("Arial", Font.BOLD, 12));
             
             b = new Board(3);
             Hex[] hexes = b.getHexes();
             
             for (int i = 0; i < hexes.length; i++) {
-                StdDraw.setPenColor(hexes[i].getResource().getColor());
-                StdDraw.filledPolygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
+                //StdDraw.setPenColor(hexes[i].getResource().getColor());
+                //StdDraw.filledPolygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
+                StdDraw.polygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
                 StdDraw.setPenColor(StdDraw.BLACK);
-                StdDraw.text(xCenters[i], yCenters[i], hexes[i].getResource().toString() + " " + hexes[i].getDiceRoll());
+                //StdDraw.text(xCenters[i], yCenters[i], hexes[i].getResource().toString() + " " + hexes[i].getDiceRoll());
             }
             StdDraw.save("result" + k + ".png");
-        }
-        b.printIGraph();
+        }*/
+        //b.printIGraph();
         //b.printIntersections();
+        b.printHIMapping();
+        b.printIHMapping();
         System.exit(0);
     }
 }

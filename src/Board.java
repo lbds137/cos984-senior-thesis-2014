@@ -9,12 +9,17 @@ public class Board {
     public static final int DEFAULT_RADIUS = 3;
 
     private int radius;
-    private Intersection[] intersections;
-    private Road[][] iGraph; // existence of edge denoted by Road object; 'null' otherwise
+    private int numHexes;
+    private int numIntersections;
+    
     private ArrayList<ArrayList<Integer>> hRings;
     private Hex[] hexes;
     private boolean[][] hGraph; // existence of edge denoted by 'true'; 'false' otherwise
     private int robberIndex; // location of the robber in hexes[]
+    
+    private ArrayList<ArrayList<Integer>> iRings;
+    private Intersection[] intersections;
+    private Road[][] iGraph; // existence of edge denoted by Road object; 'null' otherwise
     
     /* Constructors */
     
@@ -30,7 +35,9 @@ public class Board {
         initHRings();
         initHGraphNew();
         initHexes();
-        initIGraph(); // iGraph numbering is rendered nonsensical but still "works" (todo: fix)
+        initIRings();
+        initIGraphNew();
+        initIntersections();
     }
     // build a board from a saved state
     public Board(String state) {
@@ -47,20 +54,18 @@ public class Board {
             hRings.add(new ArrayList<Integer>(circleSize));
             for (int j = 0; j < circleSize; j++) {
                 hRings.get(i).add(curIndex);
-                curIndex += 1;
+                curIndex++;
             }
         }
+        numHexes = curIndex;
     }
     private void initHGraphNew() {
-        ArrayList<Integer> lastRing = hRings.get(radius - 1);
-        int lastRingSize = lastRing.size();
-        int n = lastRing.get(lastRingSize - 1) + 1;
+        int n = numHexes;
         hGraph = new boolean[n][n];
         for (int i = 0; i < radius; i++) {
             ArrayList<Integer> curRing = hRings.get(i);
             int curRingSize = curRing.size();
             for (int j = 0; j < curRingSize; j++) {
-                int curCurHex = curRing.get(j);
                 ArrayList<Integer> nextRing;
                 int nextRingSize;
                 // determine if current ring is last ring
@@ -72,6 +77,7 @@ public class Board {
                     nextRing = null;
                     nextRingSize = 0;
                 }
+                int curCurHex = curRing.get(j);
                 // first ring is a special case
                 if (curRingSize == 1) {
                     for (int k = 0; k < nextRingSize; k++) {
@@ -115,19 +121,7 @@ public class Board {
                 }
             }
         }
-        
-        ArrayList<Integer> shuffledLand = new ArrayList<Integer>(Arrays.asList(Resource.TILES));
-        Collections.shuffle(shuffledLand);
-        robberIndex = shuffledLand.indexOf(Resource.DESERT); // robber starts in desert
-        ArrayList<Integer> shuffledDiceRolls = getDiceRolls(robberIndex);
-        
-        hexes = new Hex[n];
-        for (int i = 0; i < n; i++) {
-            hexes[i] = new Hex(i, new Resource(shuffledLand.get(i)), shuffledDiceRolls.get(i));
-        }
-        hexes[robberIndex].placeRobber(); // actually place the robber on the desert hex
     }
-    
     private void initHGraph() {
         int[][] g = Hex.GRAPH;
         int n = g.length;
@@ -157,11 +151,74 @@ public class Board {
         }
         hexes[robberIndex].placeRobber(); // actually place the robber on the desert hex
     }
+    private void initIRings() {
+        iRings = new ArrayList<ArrayList<Integer>>(radius);
+        int curIndex = 0;
+        for (int i = 0; i < radius; i++) {
+            int circleSize;
+            circleSize = ((2 * i) + 1) * HexShape.NUM_SIDES;
+            iRings.add(new ArrayList<Integer>(circleSize));
+            for (int j = 0; j < circleSize; j++) {
+                iRings.get(i).add(curIndex);
+                curIndex++;
+            }
+        }
+        numIntersections = curIndex;
+    }
+    private void initIGraphNew() {
+        int n = numIntersections;
+        iGraph = new Road[n][n];
+        for (int i = 0; i < radius; i++) {
+            ArrayList<Integer> curRing = iRings.get(i);
+            int curRingSize = curRing.size();
+            int ringIndexDiff = -1;
+            int waitTillNextInc = 0;
+            boolean hasNextRingLink = true;
+            for (int j = 1; j <= curRingSize; j++) {
+                ArrayList<Integer> nextRing;
+                int nextRingSize;
+                // determine if current ring is last ring
+                if ((i + 1) < radius) {
+                    nextRing = iRings.get(i + 1);
+                    nextRingSize = nextRing.size();
+                }
+                else {
+                    nextRing = null;
+                    nextRingSize = 0;
+                }
+                int curCurInter = curRing.get(j % curRingSize);
+                // next in same ring
+                int curNextInter = curRing.get((j + 1) % curRingSize);
+                iGraph[curCurInter][curNextInter] = new Road(curCurInter, curNextInter);
+                iGraph[curNextInter][curCurInter] = iGraph[curCurInter][curNextInter];
+                // for the last ring there is no next ring
+                if (nextRingSize == 0) continue;
+                // deal with link to next ring
+                if (hasNextRingLink) {
+                    int nextCurInter = nextRing.get(j + ringIndexDiff);
+                    iGraph[curCurInter][nextCurInter] = new Road(curCurInter, nextCurInter);
+                    iGraph[nextCurInter][curCurInter] = iGraph[curCurInter][nextCurInter];
+                    if (waitTillNextInc == 0) {
+                        waitTillNextInc = i;
+                        ringIndexDiff += 2;
+                    }
+                    else {
+                        waitTillNextInc--;
+                        hasNextRingLink = false;
+                    }
+                }
+                else {
+                    hasNextRingLink = true;
+                }
+            }
+        }
+    }
     private void initIGraph() {
         int[][] g = Intersection.GRAPH;
+        
+        //
         int n = g.length;
         ArrayList<Port> ports = getPorts();
-        
         intersections = new Intersection[n];
         for (int i = 0; i < n; i++) {
             ArrayList<Integer> hexList = new ArrayList<Integer>(Arrays.asList(Intersection.HEXES[i]));
@@ -171,6 +228,7 @@ public class Board {
             }
             intersections[i] = new Intersection(i, ports.get(i), iHexes);
         }
+        //
         
         iGraph = new Road[n][n];
         for (int i = 0; i < n; i++) {
@@ -182,6 +240,21 @@ public class Board {
                     iGraph[destId][id] = iGraph[id][destId];
                 }
             }
+        }
+    }
+    private void initIntersections() {
+        int n = numIntersections;
+        ArrayList<Port> ports = getPorts();
+        
+        intersections = new Intersection[n];
+        for (int i = 0; i < n; i++) {
+            // this needs to be fixed for the new ring system
+            ArrayList<Integer> hexList = new ArrayList<Integer>(Arrays.asList(Intersection.HEXES[i]));
+            ArrayList<Hex> iHexes = new ArrayList<Hex>(hexList.size());
+            for (Integer hexId : hexList) {
+                iHexes.add(hexes[hexId]);
+            }
+            intersections[i] = new Intersection(i, ports.get(i), iHexes);
         }
     }
     // Dice roll chits 6 and 8 cannot be adjacent, so we have to work a bit harder
@@ -227,6 +300,7 @@ public class Board {
         }
         
         Collections.shuffle(shuffledPorts);
+        // need to update port locations (and maybe not have port locations as constant anymore)
         for (int i = 0; i < Port.LOCATIONS.length; i++) {
             for (int j = 0; j < Port.LOCATIONS[i].length; j++) {
                 ports.set(Port.LOCATIONS[i][j], shuffledPorts.get(i));
@@ -281,6 +355,16 @@ public class Board {
             System.out.print("{ ");
             for (int j = 0; j < hRings.get(i).size(); j++) {
                 System.out.print(hRings.get(i).get(j) + " "); 
+            }
+            System.out.print("}\n");
+        }
+    }
+    public void printIRings() {
+        for (int i = 0; i < iRings.size(); i++) {
+            System.out.println("Circle " + i);
+            System.out.print("{ ");
+            for (int j = 0; j < iRings.get(i).size(); j++) {
+                System.out.print(iRings.get(i).get(j) + " "); 
             }
             System.out.print("}\n");
         }
@@ -407,7 +491,8 @@ public class Board {
             }
             StdDraw.save("result" + k + ".png");
         }
-        b.printHGraph();
+        b.printIGraph();
+        //b.printIntersections();
         System.exit(0);
     }
 }

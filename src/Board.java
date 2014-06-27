@@ -6,15 +6,21 @@ import java.awt.Font;
 
 public class Board {
 
+    /* Constants */
+
     public static final int DEFAULT_RADIUS = 3;
 
+    /* Fields */
+    
     private int radius;
     private int numHexes;
     private int numIntersections;
     private ArrayList<ArrayList<Integer>> hRings;
     private ArrayList<ArrayList<Integer>> iRings;
-    private boolean[][] hGraph; // existence of edge denoted by 'true'; 'false' otherwise
-    private Road[][] iGraph; // existence of edge denoted by Road object; 'null' otherwise
+    // existence of edge denoted by 'true'; 'false' otherwise
+    private boolean[][] hGraph;
+    // existence of edge denoted by Road object; 'null' otherwise
+    private Road[][] iGraph;
     // row index: hex id; col index: intersection id
     private ArrayList<ArrayList<Integer>> hIMapping;
     // row index: intersection id; col index: hex id
@@ -29,6 +35,7 @@ public class Board {
     public Board() {
         this(DEFAULT_RADIUS);
     }
+    // invocations with anything other than DEFAULT_RADIUS will fail (in the current state)
     public Board(int radius) {
         this.radius = radius;
         initHRings();
@@ -242,12 +249,8 @@ public class Board {
             }
         }
         // sort both mappings for convenience
-        for (int i = 0; i < numHexes; i++) {
-            Collections.sort(hIMapping.get(i));
-        }
-        for (int i = 0; i < numIntersections; i++) {
-            Collections.sort(iHMapping.get(i));
-        }
+        for (int i = 0; i < numHexes; i++) Collections.sort(hIMapping.get(i));
+        for (int i = 0; i < numIntersections; i++) Collections.sort(iHMapping.get(i));
     }
     private void initHexes() {
         int n = hGraph.length;
@@ -268,7 +271,6 @@ public class Board {
         
         intersections = new Intersection[n];
         for (int i = 0; i < n; i++) {
-            // this needs to be fixed for the new ring system
             ArrayList<Integer> hexList = iHMapping.get(i);
             ArrayList<Hex> iHexes = new ArrayList<Hex>(hexList.size());
             for (Integer hexId : hexList) {
@@ -372,68 +374,114 @@ public class Board {
         xCenters[0] = xCenter;
         yCenters[0] = xCenter;
         hexShapes[0] = new HexShape(xCenter, yCenter, HexShape.BALANCE, w, HexShape.BALANCE_WIDTH);
-        double h = hexShapes[0].getBalanceHeight();
         double s = hexShapes[0].getSide();
+        double h = hexShapes[0].getBalanceHeight();
+        xCenters = getHexXCenters(w, s, h, xCenter);
+        yCenters = getHexYCenters(w, s, h, yCenter);
         
-        /*
-        xCenters[0] = xCenter - w;
-        yCenters[0] = yCenter + h + s;
-        xCenters[1] = xCenter;
-        yCenters[1] = yCenter + h + s;
-        xCenters[2] = xCenter + w;
-        yCenters[2] = yCenter + h + s;
-        xCenters[3] = xCenter - (w / 2) - w;
-        yCenters[3] = yCenter + ((h + s) / 2);
-        xCenters[4] = xCenter - (w / 2);
-        yCenters[4] = yCenter + ((h + s) / 2);
-        xCenters[5] = xCenter + (w / 2);
-        yCenters[5] = yCenter + ((h + s) / 2);
-        xCenters[6] = xCenter + (w / 2) + w;
-        yCenters[6] = yCenter + ((h + s) / 2);
-        xCenters[7] = xCenter - (2 * w);
-        yCenters[7] = yCenter;
-        xCenters[8] = xCenter - w;
-        yCenters[8] = yCenter;
-        xCenters[10] = xCenter + w;
-        yCenters[10] = yCenter;
-        xCenters[11] = xCenter + (2 * w);
-        yCenters[11] = yCenter;
-        xCenters[12] = xCenter - (w / 2) - w;
-        yCenters[12] = yCenter - ((h + s) / 2);
-        xCenters[13] = xCenter - (w / 2);
-        yCenters[13] = yCenter - ((h + s) / 2);
-        xCenters[14] = xCenter + (w / 2);
-        yCenters[14] = yCenter - ((h + s) / 2);
-        xCenters[15] = xCenter + (w / 2) + w;
-        yCenters[15] = yCenter - ((h + s) / 2);
-        xCenters[16] = xCenter - w;
-        yCenters[16] = yCenter - h - s;
-        xCenters[17] = xCenter;
-        yCenters[17] = yCenter - h - s;
-        xCenters[18] = xCenter + w;
-        yCenters[18] = yCenter - h - s;
-        
-        for (int i = 0; i < numHexes; i++) {
-            if (i == 9) continue;
+        for (int i = 1; i < numHexes; i++) {
             hexShapes[i] = new HexShape(xCenters[i], yCenters[i], HexShape.BALANCE, w, HexShape.BALANCE_WIDTH);
         }
         
-        //HexShape bigBlue = new HexShape(xCenter, yCenter, HexShape.FLAT, 500, HexShape.FLAT_WIDTH);
-        //StdDraw.setPenColor(StdDraw.BLUE);
-        //StdDraw.filledPolygon(bigBlue.getXCoords(), bigBlue.getYCoords());
+        HexShape ocean = new HexShape(xCenter, yCenter, HexShape.FLAT, dim, HexShape.FLAT_WIDTH);
+        StdDraw.setPenColor(StdDraw.BLUE);
+        StdDraw.filledPolygon(ocean.getXCoords(), ocean.getYCoords());
         StdDraw.setFont(new Font("Arial", Font.BOLD, 12));
         
-        b = new Board(3);
-        Hex[] hexes = b.getHexes();
-        
         for (int i = 0; i < hexes.length; i++) {
-            //StdDraw.setPenColor(hexes[i].getResource().getColor());
-            //StdDraw.filledPolygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
+            StdDraw.setPenColor(hexes[i].getResource().getColor());
+            StdDraw.filledPolygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
             StdDraw.polygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
             StdDraw.setPenColor(StdDraw.BLACK);
-            //StdDraw.text(xCenters[i], yCenters[i], hexes[i].getResource().toString() + " " + hexes[i].getDiceRoll());
+            StdDraw.text(xCenters[i], yCenters[i], hexes[i].getResource().toString() + " " + hexes[i].getDiceRoll());
         }
-        */
+    }
+    private double[] getHexXCenters(double w, double s, double h, double xCenter) {
+        double[] xCenters = new double[numHexes];
+        xCenters[0] = xCenter;
+        for (int i = 1; i < radius; i++) {
+            ArrayList<Integer> curHRing = hRings.get(i);
+            int curHRingSize = curHRing.size();
+            for (int j = 0; j < curHRingSize; j++) {
+                int curHex = curHRing.get(j);
+                if (j == 0) {
+                    xCenters[curHex] = xCenter + (i * w);
+                }
+                int nextHex;
+                if (j + 1 < curHRingSize) {
+                    nextHex = curHRing.get(j + 1);
+                }
+                else {
+                    nextHex = Constants.INVALID;
+                    continue;
+                }
+                xCenters[nextHex] = xCenters[curHex];
+                int transition = j / i;
+                switch (transition) {
+                    case 0: case 2:
+                        xCenters[nextHex] -= w / 2;
+                        break;
+                    case 1:
+                        xCenters[nextHex] -= w;
+                        break;
+                    case 3: case 5:
+                        xCenters[nextHex] += w / 2;
+                        break;
+                    case 4:
+                        xCenters[nextHex] += w;
+                        break;
+                    default:
+                        // something is seriously wrong if this place is reached
+                        System.out.println("MAYDAY, MAYDAY");
+                }
+            }
+        }
+        return xCenters;
+    }
+    private double[] getHexYCenters(double w, double s, double h, double yCenter) {
+        double[] yCenters = new double[numHexes];
+        yCenters[0] = yCenter;
+        for (int i = 1; i < radius; i++) {
+            ArrayList<Integer> curHRing = hRings.get(i);
+            int curHRingSize = curHRing.size();
+            for (int j = 0; j < curHRingSize; j++) {
+                int curHex = curHRing.get(j);
+                if (j == 0) {
+                    yCenters[curHex] = yCenter;
+                }
+                int nextHex;
+                if (j + 1 < curHRingSize) {
+                    nextHex = curHRing.get(j + 1);
+                }
+                else {
+                    nextHex = Constants.INVALID;
+                    continue;
+                }
+                yCenters[nextHex] = yCenters[curHex];
+                int transition = j / i;
+                switch (transition) {
+                    case 0: case 5:
+                        yCenters[nextHex] += (h + s) / 2;
+                        break;
+                    case 1: case 4:
+                        // yCenters[curHex] = yCenter;
+                        break;
+                    case 2: case 3:
+                        yCenters[nextHex] -= (h + s) / 2;
+                        break;
+                    default:
+                        // something is seriously wrong if this place is reached
+                        System.out.println("MAYDAY, MAYDAY");
+                }
+            }
+        }
+        return yCenters;
+    }
+    private double[] getInterXCoords(double xCenter) {
+        return null;
+    }
+    private double[] getInterYCoords(double yCenter) {
+        return null;
     }
     
     /* Debug */
@@ -520,7 +568,6 @@ public class Board {
     /* Testing */
     
     public static void main(String args[]) {
-        /*
         Board b = new Board();
         System.out.println("HGRAPH");
         b.printHGraph();
@@ -534,89 +581,14 @@ public class Board {
         System.out.println("HEXES");
         b.printHexes();
         System.out.println("-----");
-        */
-        Board b = new Board(3);
-        //for (int k = 0; k < 20; k++) {
-        /*for (int k = 0; k < 1; k++) {
-            StdDraw.setXscale(0, 500);
-            StdDraw.setYscale(0, 500);
-            double xCenter = 250;
-            double yCenter = 250;
-            double[] xCenters = new double[Hex.GRAPH.length];
-            double[] yCenters = new double[Hex.GRAPH.length];
-            HexShape[] hexShapes = new HexShape[Hex.GRAPH.length];
-            
-            double w = 80;
-            
-            xCenters[9] = xCenter;
-            yCenters[9] = xCenter;
-            hexShapes[9] = new HexShape(xCenter, yCenter, HexShape.BALANCE, w, HexShape.BALANCE_WIDTH);
-            double h = hexShapes[9].getBalanceHeight();
-            double s = hexShapes[9].getSide();
-            
-            xCenters[0] = xCenter - w;
-            yCenters[0] = yCenter + h + s;
-            xCenters[1] = xCenter;
-            yCenters[1] = yCenter + h + s;
-            xCenters[2] = xCenter + w;
-            yCenters[2] = yCenter + h + s;
-            xCenters[3] = xCenter - (w / 2) - w;
-            yCenters[3] = yCenter + ((h + s) / 2);
-            xCenters[4] = xCenter - (w / 2);
-            yCenters[4] = yCenter + ((h + s) / 2);
-            xCenters[5] = xCenter + (w / 2);
-            yCenters[5] = yCenter + ((h + s) / 2);
-            xCenters[6] = xCenter + (w / 2) + w;
-            yCenters[6] = yCenter + ((h + s) / 2);
-            xCenters[7] = xCenter - (2 * w);
-            yCenters[7] = yCenter;
-            xCenters[8] = xCenter - w;
-            yCenters[8] = yCenter;
-            xCenters[10] = xCenter + w;
-            yCenters[10] = yCenter;
-            xCenters[11] = xCenter + (2 * w);
-            yCenters[11] = yCenter;
-            xCenters[12] = xCenter - (w / 2) - w;
-            yCenters[12] = yCenter - ((h + s) / 2);
-            xCenters[13] = xCenter - (w / 2);
-            yCenters[13] = yCenter - ((h + s) / 2);
-            xCenters[14] = xCenter + (w / 2);
-            yCenters[14] = yCenter - ((h + s) / 2);
-            xCenters[15] = xCenter + (w / 2) + w;
-            yCenters[15] = yCenter - ((h + s) / 2);
-            xCenters[16] = xCenter - w;
-            yCenters[16] = yCenter - h - s;
-            xCenters[17] = xCenter;
-            yCenters[17] = yCenter - h - s;
-            xCenters[18] = xCenter + w;
-            yCenters[18] = yCenter - h - s;
-            
-            for (int i = 0; i < Hex.GRAPH.length; i++) {
-                if (i == 9) continue;
-                hexShapes[i] = new HexShape(xCenters[i], yCenters[i], HexShape.BALANCE, w, HexShape.BALANCE_WIDTH);
-            }
-            
-            //HexShape bigBlue = new HexShape(xCenter, yCenter, HexShape.FLAT, 500, HexShape.FLAT_WIDTH);
-            //StdDraw.setPenColor(StdDraw.BLUE);
-            //StdDraw.filledPolygon(bigBlue.getXCoords(), bigBlue.getYCoords());
-            StdDraw.setFont(new Font("Arial", Font.BOLD, 12));
-            
-            b = new Board(3);
-            Hex[] hexes = b.getHexes();
-            
-            for (int i = 0; i < hexes.length; i++) {
-                //StdDraw.setPenColor(hexes[i].getResource().getColor());
-                //StdDraw.filledPolygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
-                StdDraw.polygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
-                StdDraw.setPenColor(StdDraw.BLACK);
-                //StdDraw.text(xCenters[i], yCenters[i], hexes[i].getResource().toString() + " " + hexes[i].getDiceRoll());
-            }
-            StdDraw.save("result" + k + ".png");
-        }*/
-        //b.printIGraph();
-        //b.printIntersections();
         b.printHIMapping();
         b.printIHMapping();
+        
+        for (int i = 0; i < 20; i++) {
+            b.draw(500);
+            StdDraw.save("result" + i + ".png");
+            b = new Board();
+        }
         System.exit(0);
     }
 }

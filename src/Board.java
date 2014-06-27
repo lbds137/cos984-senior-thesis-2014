@@ -362,6 +362,7 @@ public class Board {
     
     // draws a dim x dim square containing the game board
     public void draw(double dim) {
+        StdDraw.setCanvasSize((int) dim, (int) dim);
         StdDraw.setXscale(0, dim);
         StdDraw.setYscale(0, dim);
         double xCenter = dim / 2;
@@ -391,9 +392,9 @@ public class Board {
         for (int i = 0; i < hexes.length; i++) {
             StdDraw.setPenColor(hexes[i].getResource().getColor());
             StdDraw.filledPolygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
-            StdDraw.polygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
             StdDraw.setPenColor(StdDraw.BLACK);
             StdDraw.text(xCenters[i], yCenters[i], hexes[i].getResource().toString() + " " + hexes[i].getDiceRoll());
+            StdDraw.polygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
         }
     }
     private double[] getHexXCenters(double w, double s, double h, double xCenter) {
@@ -569,6 +570,7 @@ public class Board {
     
     public static void main(String args[]) {
         Board b = new Board();
+        /*
         System.out.println("HGRAPH");
         b.printHGraph();
         System.out.println("-----");
@@ -583,11 +585,14 @@ public class Board {
         System.out.println("-----");
         b.printHIMapping();
         b.printIHMapping();
+        */
         
+        int canvasSize = 450;
         for (int i = 0; i < 20; i++) {
-            b.draw(500);
+            b.draw(canvasSize);
             StdDraw.save("result" + i + ".png");
             b = new Board();
+            canvasSize += 25;
         }
         System.exit(0);
     }

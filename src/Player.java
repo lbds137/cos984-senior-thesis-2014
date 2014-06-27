@@ -206,7 +206,7 @@ public class Player {
         TreeSet<Integer> iTermini = new TreeSet<Integer>(iAll);
         iTermini.removeAll(iCommon);
         
-        int n = Intersection.GRAPH.length;
+        int n = iAll.last() + 1;
         boolean[][] iGraph = new boolean[n][n];
         // create intersection graph
         for (int i = 0; i < roads.size(); i++) {
@@ -227,7 +227,7 @@ public class Player {
     // recursive helper method for getLongestRoad()
     private int getLongestRoad(ArrayList<Integer> idsVisited, boolean[][] iGraph) {
         int iCurrent = idsVisited.get(idsVisited.size() - 1);
-        ArrayList<Integer> nextIds = new ArrayList<Integer>(Intersection.MAX_DEGREE - 1);
+        ArrayList<Integer> nextIds = new ArrayList<Integer>((HexShape.NUM_SIDES / 2) - 1);
         for (int k = 0; k < iGraph[iCurrent].length; k++) {
             if (k == iCurrent) continue;
             if (iGraph[iCurrent][k]) nextIds.add(k);

@@ -11,38 +11,32 @@ public class Board {
     private int radius;
     private int numHexes;
     private int numIntersections;
-    
     private ArrayList<ArrayList<Integer>> hRings;
-    private Hex[] hexes;
-    private boolean[][] hGraph; // existence of edge denoted by 'true'; 'false' otherwise
-    private int robberIndex; // location of the robber in hexes[]
-    
     private ArrayList<ArrayList<Integer>> iRings;
-    private Intersection[] intersections;
+    private boolean[][] hGraph; // existence of edge denoted by 'true'; 'false' otherwise
     private Road[][] iGraph; // existence of edge denoted by Road object; 'null' otherwise
-    
-    // row index: hex id; col index: intersection ids
+    // row index: hex id; col index: intersection id
     private ArrayList<ArrayList<Integer>> hIMapping;
-    // row index: intersection id; col index: hex ids
+    // row index: intersection id; col index: hex id
     private ArrayList<ArrayList<Integer>> iHMapping;
+    private Hex[] hexes;
+    private Intersection[] intersections;
+    private int robberIndex; // location of the robber in hexes[]
     
     /* Constructors */
     
     // build a new random board of default size
     public Board() {
-        radius = DEFAULT_RADIUS;
-        initHGraph();
-        initHexes();
-        initIGraph();
+        this(DEFAULT_RADIUS);
     }
     public Board(int radius) {
         this.radius = radius;
         initHRings();
-        initHGraphNew();
-        initHexes();
         initIRings();
-        initIGraphNew();
+        initHGraph();
+        initIGraph();
         initMappings();
+        initHexes();
         initIntersections();
     }
     // build a board from a saved state
@@ -65,7 +59,21 @@ public class Board {
         }
         numHexes = curIndex;
     }
-    private void initHGraphNew() {
+    private void initIRings() {
+        iRings = new ArrayList<ArrayList<Integer>>(radius);
+        int curIndex = 0;
+        for (int i = 0; i < radius; i++) {
+            int circleSize;
+            circleSize = ((2 * i) + 1) * HexShape.NUM_SIDES;
+            iRings.add(new ArrayList<Integer>(circleSize));
+            for (int j = 0; j < circleSize; j++) {
+                iRings.get(i).add(curIndex);
+                curIndex++;
+            }
+        }
+        numIntersections = curIndex;
+    }
+    private void initHGraph() {
         int n = numHexes;
         hGraph = new boolean[n][n];
         for (int i = 0; i < radius; i++) {
@@ -128,50 +136,7 @@ public class Board {
             }
         }
     }
-    private void initHGraph() {
-        int[][] g = Hex.GRAPH;
-        int n = g.length;
-        
-        hGraph = new boolean[n][n];
-        for (int i = 0; i < n; i++) {
-            int id = i;
-            for (int j = 0; j < g[i].length; j++) {
-                int destId = g[i][j];
-                if (!hGraph[id][destId]) {
-                    hGraph[id][destId] = true;
-                    hGraph[destId][id] = hGraph[id][destId];
-                }
-            }
-        }
-    }
-    private void initHexes() {
-        int n = hGraph.length;
-        ArrayList<Integer> shuffledLand = new ArrayList<Integer>(Arrays.asList(Resource.TILES));
-        Collections.shuffle(shuffledLand);
-        robberIndex = shuffledLand.indexOf(Resource.DESERT); // robber starts in desert
-        ArrayList<Integer> shuffledDiceRolls = getDiceRolls(robberIndex);
-        
-        hexes = new Hex[n];
-        for (int i = 0; i < n; i++) {
-            hexes[i] = new Hex(i, new Resource(shuffledLand.get(i)), shuffledDiceRolls.get(i));
-        }
-        hexes[robberIndex].placeRobber(); // actually place the robber on the desert hex
-    }
-    private void initIRings() {
-        iRings = new ArrayList<ArrayList<Integer>>(radius);
-        int curIndex = 0;
-        for (int i = 0; i < radius; i++) {
-            int circleSize;
-            circleSize = ((2 * i) + 1) * HexShape.NUM_SIDES;
-            iRings.add(new ArrayList<Integer>(circleSize));
-            for (int j = 0; j < circleSize; j++) {
-                iRings.get(i).add(curIndex);
-                curIndex++;
-            }
-        }
-        numIntersections = curIndex;
-    }
-    private void initIGraphNew() {
+    private void initIGraph() {
         int n = numIntersections;
         iGraph = new Road[n][n];
         for (int i = 0; i < radius; i++) {
@@ -217,50 +182,6 @@ public class Board {
                     hasNextRingLink = true;
                 }
             }
-        }
-    }
-    private void initIGraph() {
-        int[][] g = Intersection.GRAPH;
-        
-        //
-        int n = g.length;
-        ArrayList<Port> ports = getPorts();
-        intersections = new Intersection[n];
-        for (int i = 0; i < n; i++) {
-            ArrayList<Integer> hexList = new ArrayList<Integer>(Arrays.asList(Intersection.HEXES[i]));
-            ArrayList<Hex> iHexes = new ArrayList<Hex>(hexList.size());
-            for (Integer hexId : hexList) {
-                iHexes.add(hexes[hexId]);
-            }
-            intersections[i] = new Intersection(i, ports.get(i), iHexes);
-        }
-        //
-        
-        iGraph = new Road[n][n];
-        for (int i = 0; i < n; i++) {
-            int id = i;
-            for (int j = 0; j < g[i].length; j++) {
-                int destId = g[i][j];
-                if (iGraph[id][destId] == null) {
-                    iGraph[id][destId] = new Road(id, destId);
-                    iGraph[destId][id] = iGraph[id][destId];
-                }
-            }
-        }
-    }
-    private void initIntersections() {
-        int n = numIntersections;
-        ArrayList<Port> ports = getPorts();
-        
-        intersections = new Intersection[n];
-        for (int i = 0; i < n; i++) {
-            // this needs to be fixed for the new ring system
-            ArrayList<Integer> hexList = iHMapping.get(i);
-            ArrayList<Hex> iHexes = new ArrayList<Hex>(hexList.size());
-            for (Integer hexId : hexList) {
-                iHexes.add(hexes[hexId]);
-            }
-            intersections[i] = new Intersection(i, ports.get(i), iHexes);
         }
     }
     private void initMappings() {
@@ -328,9 +249,37 @@ public class Board {
             Collections.sort(iHMapping.get(i));
         }
     }
+    private void initHexes() {
+        int n = hGraph.length;
+        ArrayList<Integer> shuffledLand = new ArrayList<Integer>(Arrays.asList(Resource.TILES));
+        Collections.shuffle(shuffledLand);
+        robberIndex = shuffledLand.indexOf(Resource.DESERT); // robber starts in desert
+        ArrayList<Integer> shuffledDiceRolls = getDiceRolls(robberIndex);
+        
+        hexes = new Hex[n];
+        for (int i = 0; i < n; i++) {
+            hexes[i] = new Hex(i, new Resource(shuffledLand.get(i)), shuffledDiceRolls.get(i));
+        }
+        hexes[robberIndex].placeRobber(); // actually place the robber on the desert hex
+    }
+    private void initIntersections() {
+        int n = numIntersections;
+        ArrayList<Port> ports = getPorts();
+        
+        intersections = new Intersection[n];
+        for (int i = 0; i < n; i++) {
+            // this needs to be fixed for the new ring system
+            ArrayList<Integer> hexList = iHMapping.get(i);
+            ArrayList<Hex> iHexes = new ArrayList<Hex>(hexList.size());
+            for (Integer hexId : hexList) {
+                iHexes.add(hexes[hexId]);
+            }
+            intersections[i] = new Intersection(i, ports.get(i), iHexes);
+        }
+    }
     // Dice roll chits 6 and 8 cannot be adjacent, so we have to work a bit harder
     private ArrayList<Integer> getDiceRolls(int desertIndex) {
-        int[][] g = Hex.GRAPH;
+        boolean[][] g = hGraph;
         int n = g.length;
         boolean conflict;
         ArrayList<Integer> shuffledDiceRolls;
@@ -345,10 +294,11 @@ public class Board {
             // test generation for 6 and 8 adjacencies; regenerate if 6 and 8 end up adjacent
             for (int i = 0; i < n; i++) {
                 if (conflict) break;
-                for (int j = 0; j < g[i].length; j++) {
+                for (int j = 0; j < n; j++) {
                     if (conflict) break;
+                    if (!g[i][j]) continue;
                     if ((shuffledDiceRolls.get(i) == 6 || shuffledDiceRolls.get(i) == 8) && 
-                        (shuffledDiceRolls.get(g[i][j]) == 6 || shuffledDiceRolls.get(g[i][j]) == 8)) {
+                        (shuffledDiceRolls.get(j) == 6 || shuffledDiceRolls.get(j) == 8)) {
                         conflict = true;
                     }
                 }
@@ -358,9 +308,9 @@ public class Board {
         return shuffledDiceRolls;
     }
     private ArrayList<Port> getPorts() {
-        ArrayList<Port> ports = new ArrayList<Port>(Intersection.GRAPH.length);
+        ArrayList<Port> ports = new ArrayList<Port>(numIntersections);
 		// each intersection initialized with a dummy INLAND port
-        for (int i = 0; i < Intersection.GRAPH.length; i++) ports.add(new Port(Port.INLAND));
+        for (int i = 0; i < numIntersections; i++) ports.add(new Port(Port.INLAND));
         
         ArrayList<Port> shuffledPorts = new ArrayList<Port>(Port.LOCATIONS.length);
         for (int i = 0; i < Port.NUM_GENERIC; i++) shuffledPorts.add(new Port(Port.GENERIC));
@@ -404,6 +354,86 @@ public class Board {
         hexes[robberIndex].removeRobber();
         robberIndex = index;
         hexes[robberIndex].placeRobber();
+    }
+    
+    /* Drawing */
+    
+    // draws a dim x dim square containing the game board
+    public void draw(double dim) {
+        StdDraw.setXscale(0, dim);
+        StdDraw.setYscale(0, dim);
+        double xCenter = dim / 2;
+        double yCenter = dim / 2;
+        double[] xCenters = new double[numHexes];
+        double[] yCenters = new double[numHexes];
+        HexShape[] hexShapes = new HexShape[numHexes];
+        
+        double w = (dim - (dim / 5)) / ((2 * radius) - 1);
+        xCenters[0] = xCenter;
+        yCenters[0] = xCenter;
+        hexShapes[0] = new HexShape(xCenter, yCenter, HexShape.BALANCE, w, HexShape.BALANCE_WIDTH);
+        double h = hexShapes[0].getBalanceHeight();
+        double s = hexShapes[0].getSide();
+        
+        /*
+        xCenters[0] = xCenter - w;
+        yCenters[0] = yCenter + h + s;
+        xCenters[1] = xCenter;
+        yCenters[1] = yCenter + h + s;
+        xCenters[2] = xCenter + w;
+        yCenters[2] = yCenter + h + s;
+        xCenters[3] = xCenter - (w / 2) - w;
+        yCenters[3] = yCenter + ((h + s) / 2);
+        xCenters[4] = xCenter - (w / 2);
+        yCenters[4] = yCenter + ((h + s) / 2);
+        xCenters[5] = xCenter + (w / 2);
+        yCenters[5] = yCenter + ((h + s) / 2);
+        xCenters[6] = xCenter + (w / 2) + w;
+        yCenters[6] = yCenter + ((h + s) / 2);
+        xCenters[7] = xCenter - (2 * w);
+        yCenters[7] = yCenter;
+        xCenters[8] = xCenter - w;
+        yCenters[8] = yCenter;
+        xCenters[10] = xCenter + w;
+        yCenters[10] = yCenter;
+        xCenters[11] = xCenter + (2 * w);
+        yCenters[11] = yCenter;
+        xCenters[12] = xCenter - (w / 2) - w;
+        yCenters[12] = yCenter - ((h + s) / 2);
+        xCenters[13] = xCenter - (w / 2);
+        yCenters[13] = yCenter - ((h + s) / 2);
+        xCenters[14] = xCenter + (w / 2);
+        yCenters[14] = yCenter - ((h + s) / 2);
+        xCenters[15] = xCenter + (w / 2) + w;
+        yCenters[15] = yCenter - ((h + s) / 2);
+        xCenters[16] = xCenter - w;
+        yCenters[16] = yCenter - h - s;
+        xCenters[17] = xCenter;
+        yCenters[17] = yCenter - h - s;
+        xCenters[18] = xCenter + w;
+        yCenters[18] = yCenter - h - s;
+        
+        for (int i = 0; i < numHexes; i++) {
+            if (i == 9) continue;
+            hexShapes[i] = new HexShape(xCenters[i], yCenters[i], HexShape.BALANCE, w, HexShape.BALANCE_WIDTH);
+        }
+        
+        //HexShape bigBlue = new HexShape(xCenter, yCenter, HexShape.FLAT, 500, HexShape.FLAT_WIDTH);
+        //StdDraw.setPenColor(StdDraw.BLUE);
+        //StdDraw.filledPolygon(bigBlue.getXCoords(), bigBlue.getYCoords());
+        StdDraw.setFont(new Font("Arial", Font.BOLD, 12));
+        
+        b = new Board(3);
+        Hex[] hexes = b.getHexes();
+        
+        for (int i = 0; i < hexes.length; i++) {
+            //StdDraw.setPenColor(hexes[i].getResource().getColor());
+            //StdDraw.filledPolygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
+            StdDraw.polygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
+            StdDraw.setPenColor(StdDraw.BLACK);
+            //StdDraw.text(xCenters[i], yCenters[i], hexes[i].getResource().toString() + " " + hexes[i].getDiceRoll());
+        }
+        */
     }
     
     /* Debug */

@@ -3,6 +3,8 @@ import java.util.Collections;
 
 public class Game {
 
+    /* Fields */
+
     private int numPlayers;
     private ArrayList<Player> players; // ordering = turn order
     private Board board;

@@ -12,9 +12,9 @@ public class Port {
     public static final String INLAND_NAME = "Inland";
     public static final String GENERIC_NAME = "Generic";
     // there are 9 ports, and each port appears at two intersections
-    public static final int[][] LOCATIONS = {{0,1},{3,4},{7,17},
-                                            {14,15},{26,37},{28,38},
-                                            {45,46},{47,48},{50,51}};
+    public static final int[][] LOCATIONS = {{25,26},{28,29},{32,33},
+                                            {35,36},{38,39},{42,43},
+                                            {45,46},{48,49},{52,53}};
 
     /* Fields */
 

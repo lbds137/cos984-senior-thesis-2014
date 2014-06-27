@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
 public class DevCardBundle {
+	
 	/* Fields */
 
 	private ArrayList<ArrayList<DevCard>> bundle;

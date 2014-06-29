@@ -375,10 +375,10 @@ public class Board {
         xCenters[0] = xCenter;
         yCenters[0] = xCenter;
         hexShapes[0] = new HexShape(xCenter, yCenter, HexShape.BALANCE, w, HexShape.BALANCE_WIDTH);
-        double s = hexShapes[0].getSide();
         double h = hexShapes[0].getBalanceHeight();
-        xCenters = getHexXCenters(w, s, h, xCenter);
-        yCenters = getHexYCenters(w, s, h, yCenter);
+        double s = hexShapes[0].getSide();
+        xCenters = getHexXCenters(xCenter, w);
+        yCenters = getHexYCenters(yCenter, h, s);
         
         for (int i = 1; i < numHexes; i++) {
             hexShapes[i] = new HexShape(xCenters[i], yCenters[i], HexShape.BALANCE, w, HexShape.BALANCE_WIDTH);
@@ -387,7 +387,7 @@ public class Board {
         HexShape ocean = new HexShape(xCenter, yCenter, HexShape.FLAT, dim, HexShape.FLAT_WIDTH);
         StdDraw.setPenColor(StdDraw.BLUE);
         StdDraw.filledPolygon(ocean.getXCoords(), ocean.getYCoords());
-        StdDraw.setFont(new Font("Arial", Font.BOLD, 12));
+        StdDraw.setFont(new Font("Arial", Font.BOLD, (int) (w / 8)));
         
         for (int i = 0; i < hexes.length; i++) {
             StdDraw.setPenColor(hexes[i].getResource().getColor());
@@ -396,8 +396,76 @@ public class Board {
             StdDraw.text(xCenters[i], yCenters[i], hexes[i].getResource().toString() + " " + hexes[i].getDiceRoll());
             StdDraw.polygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
         }
+        
+        double[] interXCoords = getInterXCoords(xCenter, w);
+        double[] interYCoords = getInterYCoords(yCenter, h, s);
+        
+        double r = w / 8;
+        
+        for (int i = 0; i < radius; i++) {
+            ArrayList<Integer> curIRing = iRings.get(i);
+            int curIRingSize = curIRing.size();
+            for (int j = 0; j < curIRingSize; j++) {
+                switch (i) {
+                    case 0:
+                        StdDraw.setPenColor(StdDraw.RED);
+                        break;
+                    case 1:
+                        StdDraw.setPenColor(StdDraw.BLUE);
+                        break;
+                    case 2:
+                        StdDraw.setPenColor(StdDraw.BLACK);
+                        break;
+                    default:
+                        StdDraw.setPenColor(StdDraw.BLACK);
+                }
+                StdDraw.filledCircle(interXCoords[curIRing.get(j)], interYCoords[curIRing.get(j)], r);
+                StdDraw.setPenColor(StdDraw.WHITE);
+                StdDraw.text(interXCoords[curIRing.get(j)], interYCoords[curIRing.get(j)], "" + curIRing.get(j));
+            }
+        }
+        for (int i = 0; i < numIntersections; i++) {
+            System.out.println("coords for intersection " + i + ": (" + interXCoords[i] + ", " + interYCoords[i] + ")");
+        }
     }
-    private double[] getHexXCenters(double w, double s, double h, double xCenter) {
+    private double getXTransition(double x, double w, int transType) {
+        double xNew = x;
+        switch (transType) {
+            case 0: case 2:
+                xNew -= w / 2;
+                break;
+            case 1:
+                xNew -= w;
+                break;
+            case 3: case 5:
+                xNew += w / 2;
+                break;
+            case 4:
+                xNew += w;
+                break;
+            default:
+                // we shouldn't be here
+        }
+        return xNew;
+    }
+    private double getYTransition(double y, double h, double s, int transType) {
+        double yNew = y;
+        switch (transType) {
+            case 0: case 5:
+                yNew += (h + s) / 2;
+                break;
+            case 1: case 4:
+                // yNew = y;
+                break;
+            case 2: case 3:
+                yNew -= (h + s) / 2;
+                break;
+            default:
+                // we shouldn't be here
+        }
+        return yNew;
+    }
+    private double[] getHexXCenters(double xCenter, double w) {
         double[] xCenters = new double[numHexes];
         xCenters[0] = xCenter;
         for (int i = 1; i < radius; i++) {
@@ -405,9 +473,7 @@ public class Board {
             int curHRingSize = curHRing.size();
             for (int j = 0; j < curHRingSize; j++) {
                 int curHex = curHRing.get(j);
-                if (j == 0) {
-                    xCenters[curHex] = xCenter + (i * w);
-                }
+                if (j == 0) xCenters[curHex] = xCenter + (i * w);
                 int nextHex;
                 if (j + 1 < curHRingSize) {
                     nextHex = curHRing.get(j + 1);
@@ -416,30 +482,12 @@ public class Board {
                     nextHex = Constants.INVALID;
                     continue;
                 }
-                xCenters[nextHex] = xCenters[curHex];
-                int transition = j / i;
-                switch (transition) {
-                    case 0: case 2:
-                        xCenters[nextHex] -= w / 2;
-                        break;
-                    case 1:
-                        xCenters[nextHex] -= w;
-                        break;
-                    case 3: case 5:
-                        xCenters[nextHex] += w / 2;
-                        break;
-                    case 4:
-                        xCenters[nextHex] += w;
-                        break;
-                    default:
-                        // something is seriously wrong if this place is reached
-                        System.out.println("MAYDAY, MAYDAY");
-                }
+                xCenters[nextHex] = getXTransition(xCenters[curHex], w, j / i);
             }
         }
         return xCenters;
     }
-    private double[] getHexYCenters(double w, double s, double h, double yCenter) {
+    private double[] getHexYCenters(double yCenter, double h, double s) {
         double[] yCenters = new double[numHexes];
         yCenters[0] = yCenter;
         for (int i = 1; i < radius; i++) {
@@ -447,9 +495,7 @@ public class Board {
             int curHRingSize = curHRing.size();
             for (int j = 0; j < curHRingSize; j++) {
                 int curHex = curHRing.get(j);
-                if (j == 0) {
-                    yCenters[curHex] = yCenter;
-                }
+                if (j == 0) yCenters[curHex] = yCenter;
                 int nextHex;
                 if (j + 1 < curHRingSize) {
                     nextHex = curHRing.get(j + 1);
@@ -458,31 +504,82 @@ public class Board {
                     nextHex = Constants.INVALID;
                     continue;
                 }
-                yCenters[nextHex] = yCenters[curHex];
-                int transition = j / i;
-                switch (transition) {
-                    case 0: case 5:
-                        yCenters[nextHex] += (h + s) / 2;
-                        break;
-                    case 1: case 4:
-                        // yCenters[curHex] = yCenter;
-                        break;
-                    case 2: case 3:
-                        yCenters[nextHex] -= (h + s) / 2;
-                        break;
-                    default:
-                        // something is seriously wrong if this place is reached
-                        System.out.println("MAYDAY, MAYDAY");
-                }
+                yCenters[nextHex] = getYTransition(yCenters[curHex], h, s, j / i);
             }
         }
         return yCenters;
     }
-    private double[] getInterXCoords(double xCenter) {
-        return null;
+    private double[] getInterXCoords(double xCenter, double w) {
+        double[] xCoords = new double[numIntersections];
+        // we don't know yCenter here but it doesn't matter, so we can use xCenter for both x and y
+        HexShape hFirst = new HexShape(xCenter, xCenter, HexShape.BALANCE, w, HexShape.BALANCE_WIDTH);
+        System.arraycopy(hFirst.getXCoords(), 0, xCoords, 0, hFirst.getXCoords().length);
+        int iOffset = iRings.get(0).size();
+        int oddStart = 1;
+        int evenStart = 2;
+        // we already dealt with ring 0 so start at 1
+        for (int i = 1; i < radius; i++) {
+            ArrayList<Integer> curIRing = iRings.get(i);
+            int curIRingSize = curIRing.size();
+            int iOdd = oddStart;
+            int iEven = evenStart;
+            xCoords[iOffset + iOdd] = xCenter + (i * w) + (w / 2);
+            xCoords[iOffset + iEven] = xCenter + (i * w) + (w / 2);
+            int oddInc = i + 1;
+            int evenInc = i;
+            for (int j = 0; j < HexShape.NUM_SIDES; j++) {
+                for (int k = 0; k < oddInc; k++) {
+                    iOdd = (iOdd + 2) % curIRingSize;
+                    int prevIOdd = (iOdd - 2 + curIRingSize) % curIRingSize;
+                    xCoords[iOffset + iOdd] = getXTransition(xCoords[iOffset + prevIOdd], w, j);
+                }
+                for (int k = 0; k < evenInc; k++) {
+                    iEven = (iEven + 2) % curIRingSize;
+                    int prevIEven = (iEven - 2 + curIRingSize) % curIRingSize;
+                    xCoords[iOffset + iEven] = getXTransition(xCoords[iOffset + prevIEven], w, j);
+                }
+                oddInc = ((oddInc + 1 - i) % 2) + i;
+                evenInc = ((evenInc + 1 - i) % 2) + i;
+            }
+            iOffset += curIRingSize;
+        }
+        return xCoords;
     }
-    private double[] getInterYCoords(double yCenter) {
-        return null;
+    private double[] getInterYCoords(double yCenter, double h, double s) {
+        double[] yCoords = new double[numIntersections];
+        // we don't know yCenter here but it doesn't matter, so we can use xCenter for both x and y
+        HexShape hFirst = new HexShape(yCenter, yCenter, HexShape.BALANCE, h, HexShape.BALANCE_HEIGHT);
+        System.arraycopy(hFirst.getYCoords(), 0, yCoords, 0, hFirst.getYCoords().length);
+        int iOffset = iRings.get(0).size();
+        int oddStart = 1;
+        int evenStart = 2;
+        // we already dealt with ring 0 so start at 1
+        for (int i = 1; i < radius; i++) {
+            ArrayList<Integer> curIRing = iRings.get(i);
+            int curIRingSize = curIRing.size();
+            int iOdd = oddStart;
+            int iEven = evenStart;
+            yCoords[iOffset + iOdd] = yCenter - (s / 2);
+            yCoords[iOffset + iEven] = yCenter + (s / 2);
+            int oddInc = i + 1;
+            int evenInc = i;
+            for (int j = 0; j < HexShape.NUM_SIDES; j++) {
+                for (int k = 0; k < oddInc; k++) {
+                    iOdd = (iOdd + 2) % curIRingSize;
+                    int prevIOdd = (iOdd - 2 + curIRingSize) % curIRingSize;
+                    yCoords[iOffset + iOdd] = getYTransition(yCoords[iOffset + prevIOdd], h, s, j);
+                }
+                for (int k = 0; k < evenInc; k++) {
+                    iEven = (iEven + 2) % curIRingSize;
+                    int prevIEven = (iEven - 2 + curIRingSize) % curIRingSize;
+                    yCoords[iOffset + iEven] = getYTransition(yCoords[iOffset + prevIEven], h, s, j);
+                }
+                oddInc = ((oddInc + 1 - i) % 2) + i;
+                evenInc = ((evenInc + 1 - i) % 2) + i; 
+            }
+            iOffset += curIRingSize;
+        }
+        return yCoords;
     }
     
     /* Debug */
@@ -570,7 +667,7 @@ public class Board {
     
     public static void main(String args[]) {
         Board b = new Board();
-        /*
+        
         System.out.println("HGRAPH");
         b.printHGraph();
         System.out.println("-----");
@@ -585,7 +682,6 @@ public class Board {
         System.out.println("-----");
         b.printHIMapping();
         b.printIHMapping();
-        */
         
         int canvasSize = 450;
         for (int i = 0; i < 20; i++) {

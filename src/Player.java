@@ -75,6 +75,9 @@ public class Player {
     public DevCardBundle getPlayedDevcards() {
         return playedDevCards;
     }
+    public int getLongestRoad() {
+        return findLongestRoad();
+    }
     
     /* Operations */
     
@@ -181,12 +184,37 @@ public class Player {
         }
         
         if (!resDeck.canRemove(resourcesOwed)) return false;
-        
         resourceCards.add(resDeck.remove(resourcesOwed));
         return true;
     }
+    public boolean doPortTrade(Resource r, Resource s, ResourceBundle resDeck) {
+        int ratio = findBestRatio(r);
+        int[] rRemove = new int[Resource.NUM_TYPES];
+        rRemove[r.getResourceType()] = ratio;
+        
+        if (!resourceCards.canRemove(rRemove) || !resDeck.canRemove(s.getResourceType())) return false; 
+        resDeck.add(resourceCards.remove(rRemove));
+        resourceCards.add(resDeck.remove(s.getResourceType()));
+        return true;
+    }
+    
+    /* Private helpers */
+    
+    // gets best ratio of r for port trade
+    private int findBestRatio(Resource r) {
+        ArrayList<Intersection> buildings = new ArrayList<Intersection>();
+        buildings.addAll(settlements);
+        buildings.addAll(cities);
+        
+        Port bestPort = buildings.get(0).getPort();
+        for (int i = 1; i < buildings.size(); i++) {
+            Port curPort = buildings.get(i).getPort();
+            if (curPort.compareRatio(bestPort, r) > 0) bestPort = curPort;
+        }
+        return bestPort.getRatio();
+    }
     // returns the length of this player's longest road
-    public int getLongestRoad() {
+    private int findLongestRoad() {
         TreeSet<Integer> iAll = new TreeSet<Integer>();
         // get all intersection IDs touched by this player's roads
         for (int i = 0; i < roads.size(); i++) {
@@ -219,13 +247,13 @@ public class Player {
         for (Integer i : iTermini) {
             ArrayList<Integer> idsVisited = new ArrayList<Integer>();
             idsVisited.add(i);
-            longestRoads.add(getLongestRoad(idsVisited, iGraph)); // recursive helper
+            longestRoads.add(findLongestRoad(idsVisited, iGraph)); // recursive helper
         }
         
         return longestRoads.last();
     }
-    // recursive helper method for getLongestRoad()
-    private int getLongestRoad(ArrayList<Integer> idsVisited, boolean[][] iGraph) {
+    // recursive helper method for findLongestRoad()
+    private int findLongestRoad(ArrayList<Integer> idsVisited, boolean[][] iGraph) {
         int iCurrent = idsVisited.get(idsVisited.size() - 1);
         ArrayList<Integer> nextIds = new ArrayList<Integer>((HexShape.NUM_SIDES / 2) - 1);
         for (int k = 0; k < iGraph[iCurrent].length; k++) {
@@ -240,7 +268,7 @@ public class Player {
             // continue only to intersections not visited yet
             if (idsVisited.indexOf(j) == -1) {
                 newIdsVisited.add(nextIds.get(j));
-                longestRoads.add(getLongestRoad(newIdsVisited, iGraph));
+                longestRoads.add(findLongestRoad(newIdsVisited, iGraph));
             }
         }
         /* base case: dead-ended (into a loop) */

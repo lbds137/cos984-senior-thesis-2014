@@ -1,4 +1,3 @@
-import java.util.HashMap;
 
 public class Port {
     
@@ -78,6 +77,16 @@ public class Port {
         if (p == null) return false;
         return resource.equals(p.getResource()) && portType == p.getPortType();
     }
+    // "greater" means that this port offers a better trade ratio for specified resource r
+    public int compareRatio(Port p, Resource r) {
+        if (this.equals(p)) return 0;
+        if (portType != SPECIFIC && p.getRatio() != SPECIFIC) return p.getRatio() - portType;
+        int thisRatio = portType;
+        int pRatio = p.getRatio();
+        if (portType == SPECIFIC && !resource.equals(r)) thisRatio = INLAND;
+        if (p.getRatio() == SPECIFIC && !p.getResource().equals(r)) pRatio = INLAND;
+        return pRatio - thisRatio;
+    }
     @Override
     public String toString() {
         String s;
@@ -101,12 +110,16 @@ public class Port {
 
     public static void main(String[] args) {
         Port p = new Port(Port.SPECIFIC, new Resource(Resource.WOOL));
-        Port q = new Port(Port.GENERIC);
-        Port r = null;
+        Port q = new Port(Port.SPECIFIC, new Resource(Resource.LUMBER));
+        Port r = new Port(Port.GENERIC);
         System.out.println(p.toString());
         System.out.println(q.toString());
         System.out.println(p.equals(q));
+        System.out.println(q.equals(p));
         System.out.println(q.equals(r));
+        Resource k = new Resource(Resource.WOOL);
+        System.out.println(q.compareRatio(p, k));
+        System.out.println(q.compareRatio(r, k));
     }
 }
 

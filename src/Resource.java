@@ -26,11 +26,10 @@ public class Resource implements Comparable<Resource> {
     public static final String BRICK_NAME = "Brick";
     public static final String ORE_NAME = "Ore";
     // set of 19 tiles out of which the board is created
-    public static final Integer[] TILES = {DESERT,BRICK,BRICK,BRICK,GRAIN,
-                                        GRAIN,GRAIN,GRAIN,LUMBER,LUMBER,
-                                        LUMBER,LUMBER,ORE,ORE,ORE,WOOL,
-                                        WOOL,WOOL,WOOL};
-	public static final int[] MAX_CARDS = {19,19,19,19,19};
+    public static final Integer[] DEFAULT_TILES = {DESERT,BRICK,BRICK,BRICK,GRAIN,
+                                                   GRAIN,GRAIN,GRAIN,LUMBER,LUMBER,
+                                                   LUMBER,LUMBER,ORE,ORE,ORE,WOOL,
+                                                   WOOL,WOOL,WOOL};
     
     /* Fields */
     

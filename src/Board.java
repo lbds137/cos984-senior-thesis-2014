@@ -35,8 +35,8 @@ public class Board {
     public Board() {
         this(DEFAULT_RADIUS);
     }
-    // invocations with anything other than DEFAULT_RADIUS will fail (in the current state)
     public Board(int radius) {
+        if (radius < DEFAULT_RADIUS) System.exit(1);
         this.radius = radius;
         initHRings();
         initIRings();
@@ -254,10 +254,16 @@ public class Board {
     }
     private void initHexes() {
         int n = hGraph.length;
-        ArrayList<Integer> shuffledLand = new ArrayList<Integer>(Arrays.asList(Resource.TILES));
-        Collections.shuffle(shuffledLand);
-        robberIndex = shuffledLand.indexOf(Resource.DESERT); // robber starts in desert
-        ArrayList<Integer> shuffledDiceRolls = getDiceRolls(robberIndex);
+        ArrayList<Integer> shuffledLand = getHexTiles();
+        ArrayList<Integer> desertIndices = new ArrayList<Integer>();
+        ArrayList<Integer> partialLand = shuffledLand;
+        while (partialLand.indexOf(Resource.DESERT) != -1) {
+            int index = partialLand.lastIndexOf(Resource.DESERT); // starting from the end
+            desertIndices.add(index);
+            partialLand = new ArrayList<Integer>(partialLand.subList(0, index));
+        }
+        robberIndex = desertIndices.get(desertIndices.size() - 1); // robber starts in the first desert
+        ArrayList<Integer> shuffledDiceRolls = getDiceRolls(desertIndices);
         
         hexes = new Hex[n];
         for (int i = 0; i < n; i++) {
@@ -279,20 +285,41 @@ public class Board {
             intersections[i] = new Intersection(i, ports.get(i), iHexes);
         }
     }
-    // Dice roll chits 6 and 8 cannot be adjacent, so we have to work a bit harder
-    private ArrayList<Integer> getDiceRolls(int desertIndex) {
+    private ArrayList<Integer> getHexTiles() {
+        ArrayList<Integer> land = new ArrayList<Integer>(Arrays.asList(Resource.DEFAULT_TILES));
+        // dynamically add new hex tiles (in addition to hardcoded ones)
+        if (radius > DEFAULT_RADIUS) {
+            for (int i = DEFAULT_RADIUS; i < radius; i++) {
+                ArrayList<Integer> curRing = hRings.get(i);
+                int curRingSize = curRing.size();
+                for (int j = 0; j < curRingSize / Resource.NUM_TYPES; j++) {
+                    for (int k = 0; k < Resource.NUM_TYPES; k++) land.add(k);
+                }
+                int decider = curRingSize % Resource.NUM_TYPES;
+                switch (decider) {
+                    case 0: break;
+                    case 1: case 2: case 3: // we want to sporadically add new deserts
+                        for (int j = 0; j < decider; j++) land.add(Resource.DESERT);
+                        break;
+                    case 4: 
+                        for (int j = 0; j < decider; j++) land.add(j);
+                        break;
+                    default: // we shouldn't be here
+                }
+            }
+        }
+        Collections.shuffle(land);
+        return land;
+    }
+    private ArrayList<Integer> getDiceRolls(ArrayList<Integer> desertIndices) {
         boolean[][] g = hGraph;
         int n = g.length;
         boolean conflict;
         ArrayList<Integer> shuffledDiceRolls;
-
+        // the rule that 6 and 8 cannot neighbor each other only applies when radius = DEFAULT_RADIUS
         do {
             conflict = false;
-            shuffledDiceRolls = new ArrayList<Integer>(Arrays.asList(Constants.DICE_ROLLS));
-            Collections.shuffle(shuffledDiceRolls);
-            // Make sure die number 7 is on the desert tile
-            shuffledDiceRolls.add(desertIndex, shuffledDiceRolls.remove(shuffledDiceRolls.indexOf(7)));
-            
+            shuffledDiceRolls = generateDiceRolls(desertIndices);
             // test generation for 6 and 8 adjacencies; regenerate if 6 and 8 end up adjacent
             for (int i = 0; i < n; i++) {
                 if (conflict) break;
@@ -305,15 +332,64 @@ public class Board {
                     }
                 }
             }
-        } while (conflict);
-        
+        } while (radius == DEFAULT_RADIUS && conflict);
         return shuffledDiceRolls;
     }
+    private ArrayList<Integer> generateDiceRolls(ArrayList<Integer> desertIndices) {
+        ArrayList<Integer> diceRolls = new ArrayList<Integer>(Constants.DEFAULT_DICE_ROLLS);
+        // dynamically add new dice rolls (in addition to hardcoded ones)
+        if (radius > DEFAULT_RADIUS) {
+            for (int i = DEFAULT_RADIUS; i < radius; i++) {
+                ArrayList<Integer> curRing = hRings.get(i);
+                int curRingSize = curRing.size();
+                for (int j = 0; j < curRingSize / (Constants.NUM_DICE_ROLLS - 1); j++) {
+                    for (int k = 0; k < Constants.NUM_DICE_ROLLS; k++) {
+                        int rollToAdd = k + 2;
+                        if (rollToAdd == 7) continue;
+                        diceRolls.add(rollToAdd);
+                    }
+                }
+                ArrayList<Integer> rollsToAdd = new ArrayList<Integer>();
+                int decider = curRingSize % (Constants.NUM_DICE_ROLLS - 1);
+                // sevens get removed and re-added later, but we add them here to make code clearer
+                switch (decider) {
+                    case 0: break;
+                    // corresponds to hex tile generation's case 2 
+                    case 2: 
+                        rollsToAdd = new ArrayList<Integer>(Arrays.asList(7, 7));
+                        break;
+                    // corresponds to hex tile generation's case 4
+                    case 4: 
+                        rollsToAdd = new ArrayList<Integer>(Arrays.asList(5, 6, 8, 9));
+                        break;
+                    // corresponds to hex tile generation's case 1
+                    case 6: 
+                        rollsToAdd = new ArrayList<Integer>(Arrays.asList(5, 6, 7, 8, 9, 10));
+                        break;
+                    // corresponds to hex tile generation's case 3
+                    case 8:
+                        rollsToAdd = new ArrayList<Integer>(Arrays.asList(5, 6, 7, 7, 7, 8, 9, 10));
+                        break;
+                    case 1: case 3: case 5: case 7: case 9: default: // we shouldn't be here
+                }
+                diceRolls.addAll(rollsToAdd);
+            }
+        }
+        Collections.shuffle(diceRolls);
+        // remove sevens
+        while (diceRolls.indexOf(7) != -1) {
+            int sevenIndex = diceRolls.indexOf(7);
+            diceRolls.remove(sevenIndex);
+        }
+        // re-add sevens at proper indices (where the deserts are)
+        for (int i = desertIndices.size() - 1; i >= 0; i--) diceRolls.add(desertIndices.get(i), new Integer(7));
+        return diceRolls;
+    }
+    // needs to be updated to perform dynamic generation for larger boards
     private ArrayList<Port> getPorts() {
         ArrayList<Port> ports = new ArrayList<Port>(numIntersections);
 		// each intersection initialized with a dummy INLAND port
         for (int i = 0; i < numIntersections; i++) ports.add(new Port(Port.INLAND));
-        
         ArrayList<Port> shuffledPorts = new ArrayList<Port>(Port.LOCATIONS.length);
         for (int i = 0; i < Port.NUM_GENERIC; i++) shuffledPorts.add(new Port(Port.GENERIC));
         for (int i = 0; i < Port.NUM_SPECIFIC / Resource.NUM_TYPES; i++) {
@@ -321,15 +397,13 @@ public class Board {
                 shuffledPorts.add(new Port(Port.SPECIFIC, new Resource(j)));
             }
         }
-        
         Collections.shuffle(shuffledPorts);
-        // need to update port locations (and maybe not have port locations as constant anymore)
+        // need to update port locations to be dynamically located
         for (int i = 0; i < Port.LOCATIONS.length; i++) {
             for (int j = 0; j < Port.LOCATIONS[i].length; j++) {
                 ports.set(Port.LOCATIONS[i][j], shuffledPorts.get(i));
             }
         }
-        
         return ports;
     }
     
@@ -393,7 +467,7 @@ public class Board {
             StdDraw.setPenColor(hexes[i].getResource().getColor());
             StdDraw.filledPolygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
             StdDraw.setPenColor(StdDraw.BLACK);
-            StdDraw.text(xCenters[i], yCenters[i], hexes[i].getResource().toString() + " " + hexes[i].getDiceRoll());
+            StdDraw.text(xCenters[i], yCenters[i], i + " " + hexes[i].getResource().toString() + " " + hexes[i].getDiceRoll());
             StdDraw.polygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
         }
         
@@ -406,26 +480,18 @@ public class Board {
             ArrayList<Integer> curIRing = iRings.get(i);
             int curIRingSize = curIRing.size();
             for (int j = 0; j < curIRingSize; j++) {
-                switch (i) {
+                switch (i % 2) {
                     case 0:
                         StdDraw.setPenColor(StdDraw.RED);
                         break;
-                    case 1:
-                        StdDraw.setPenColor(StdDraw.BLUE);
-                        break;
-                    case 2:
+                    case 1: default:
                         StdDraw.setPenColor(StdDraw.BLACK);
                         break;
-                    default:
-                        StdDraw.setPenColor(StdDraw.BLACK);
                 }
                 StdDraw.filledCircle(interXCoords[curIRing.get(j)], interYCoords[curIRing.get(j)], r);
                 StdDraw.setPenColor(StdDraw.WHITE);
                 StdDraw.text(interXCoords[curIRing.get(j)], interYCoords[curIRing.get(j)], "" + curIRing.get(j));
             }
-        }
-        for (int i = 0; i < numIntersections; i++) {
-            System.out.println("coords for intersection " + i + ": (" + interXCoords[i] + ", " + interYCoords[i] + ")");
         }
     }
     private double getXTransition(double x, double w, int transType) {
@@ -547,7 +613,7 @@ public class Board {
     }
     private double[] getInterYCoords(double yCenter, double h, double s) {
         double[] yCoords = new double[numIntersections];
-        // we don't know yCenter here but it doesn't matter, so we can use xCenter for both x and y
+        // we don't know yCenter here but it doesn't matter, so we can use yCenter for both x and y
         HexShape hFirst = new HexShape(yCenter, yCenter, HexShape.BALANCE, h, HexShape.BALANCE_HEIGHT);
         System.arraycopy(hFirst.getYCoords(), 0, yCoords, 0, hFirst.getYCoords().length);
         int iOffset = iRings.get(0).size();
@@ -666,29 +732,31 @@ public class Board {
     /* Testing */
     
     public static void main(String args[]) {
-        Board b = new Board();
-        
-        System.out.println("HGRAPH");
-        b.printHGraph();
-        System.out.println("-----");
-        System.out.println("IGRAPH");
-        b.printIGraph();
-        System.out.println("-----");
-        System.out.println("INTERSECTIONS");
-        b.printIntersections();
-        System.out.println("-----");
-        System.out.println("HEXES");
-        b.printHexes();
-        System.out.println("-----");
-        b.printHIMapping();
-        b.printIHMapping();
-        
-        int canvasSize = 450;
-        for (int i = 0; i < 20; i++) {
+        int canvasSize = 500;
+        for (int i = DEFAULT_RADIUS; i < (DEFAULT_RADIUS + 10); i++) {
+            Board b = new Board(i);
             b.draw(canvasSize);
-            StdDraw.save("result" + i + ".png");
-            b = new Board();
-            canvasSize += 25;
+            StdDraw.save("result" + (i - DEFAULT_RADIUS) + ".png");
+            canvasSize += 250;
+            /*
+            System.out.println("Board size: " + i);
+            System.out.println("HGRAPH");
+            b.printHGraph();
+            System.out.println("-----");
+            System.out.println("IGRAPH");
+            b.printIGraph();
+            System.out.println("-----");
+            System.out.println("INTERSECTIONS");
+            b.printIntersections();
+            System.out.println("-----");
+            System.out.println("HEXES");
+            b.printHexes();
+            System.out.println("-----");
+            b.printHIMapping();
+            b.printIHMapping();
+            System.out.println("=====");
+            System.out.println("=====");
+            */
         }
         System.exit(0);
     }

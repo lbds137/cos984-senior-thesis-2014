@@ -25,16 +25,10 @@ public class ResourceBundle {
 	/* Operations */
 	
 	public boolean add(Resource r) {
-		if (bundle.get(r.getResourceType()).size() >= Resource.MAX_CARDS[r.getResourceType()]) return false;
 		bundle.get(r.getResourceType()).add(r);
 		return true;
 	}
 	public boolean add(ResourceBundle b) {
-        // check that the maximum number of cards for each type isn't exceeded
-        for (int i = 0; i < Resource.NUM_TYPES; i++) {
-            if ((bundle.get(i).size() + b.size(i)) > Resource.MAX_CARDS[i]) return false;
-        }
-        // perform the actual addition
         for (int i = 0; i < Resource.NUM_TYPES; i++) {
             Resource r = b.remove(i);
             while (r != null) {

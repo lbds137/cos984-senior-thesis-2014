@@ -75,7 +75,7 @@ public class Game {
     private void setUpDecks() {
         resDeck = new ResourceBundle();
         for (int i = 0; i < Resource.NUM_TYPES; i++) {
-            for (int j = 0; j < Resource.MAX_CARDS[i]; j++) {
+            for (int j = 0; j < board.getHexes().length; j++) {
                 resDeck.add(new Resource(i));
             }
         }
@@ -99,8 +99,8 @@ public class Game {
         return players.get(nextIndex);
     }
     private int getDiceRoll() {
-        int yellowDie = (int) (Math.random() * Constants.DIE) + 1;
-        int redDie = (int) (Math.random() * Constants.DIE) + 1;
+        int yellowDie = (int) (Math.random() * Constants.DIE_SIDES) + 1;
+        int redDie = (int) (Math.random() * Constants.DIE_SIDES) + 1;
         
         return yellowDie + redDie;
     }

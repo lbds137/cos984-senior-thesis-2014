@@ -63,7 +63,7 @@ public class Game {
     private void setUpPlayers() {
         players = new ArrayList<Player>(numPlayers);
         for (int i = 0; i < numPlayers; i++) {
-            players.add(new Player(i));
+            players.add(new Player(i, 10));
         }
         
         // randomize order of play (no point to actually rolling dice)

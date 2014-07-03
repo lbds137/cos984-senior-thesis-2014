@@ -67,7 +67,10 @@ public class Road {
     
     @Override
     public String toString() {
-        return " [" + iOne + "->" + iTwo + "] " + " owned by player " + player.toString();
+        String pString;
+        if (player == null) pString = "nobody";
+        else pString = player.toString();
+        return " [" + iOne + "->" + iTwo + "] " + " owned by player " + pString;
     }
     
     /* Testing */

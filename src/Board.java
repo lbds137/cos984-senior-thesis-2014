@@ -169,7 +169,6 @@ public class Board {
                 int curNextInter = curRing.get((j + 1) % curRingSize);
                 iGraph[curCurInter][curNextInter] = new Road(curCurInter, curNextInter);
                 iGraph[curNextInter][curCurInter] = iGraph[curCurInter][curNextInter];
-                // for the last ring there is no next ring
                 if (nextRingSize == 0) continue;
                 // deal with link to next ring
                 if (hasNextRingLink) {
@@ -463,6 +462,7 @@ public class Board {
         StdDraw.filledPolygon(ocean.getXCoords(), ocean.getYCoords());
         StdDraw.setFont(new Font("Arial", Font.BOLD, (int) (w / 8)));
         
+        // draw hex tiles
         for (int i = 0; i < hexes.length; i++) {
             StdDraw.setPenColor(hexes[i].getResource().getColor());
             StdDraw.filledPolygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
@@ -476,21 +476,83 @@ public class Board {
         
         double r = w / 8;
         
+        
+        // draw roads
+        for (int i = 0; i < numIntersections; i++) {
+            for (int j = i + 1; j < numIntersections; j++) {
+                Road road = iGraph[i][j];
+                Player p = null;
+                if (road != null) p = road.getPlayer();
+                if (road != null && p != null) {
+                    switch (p.getId()) {
+                        case Player.BLUE: 
+                            StdDraw.setPenColor(StdDraw.BLUE);
+                            break;
+                        case Player.ORANGE:
+                            StdDraw.setPenColor(StdDraw.ORANGE);
+                            break;
+                        case Player.RED:
+                            StdDraw.setPenColor(StdDraw.RED);
+                            break;
+                        case Player.WHITE:
+                            StdDraw.setPenColor(StdDraw.WHITE);
+                            break;
+                        default:
+                            StdDraw.setPenColor(StdDraw.BLACK);
+                    }
+                    StdDraw.setPenRadius(0.01);
+                    ArrayList<Integer> both = road.both();
+                    double x0 = interXCoords[both.get(0)];
+                    double y0 = interYCoords[both.get(0)];
+                    double x1 = interXCoords[both.get(1)];
+                    double y1 = interYCoords[both.get(1)];
+                    StdDraw.line(x0, y0, x1, y1);
+                    StdDraw.setPenRadius();
+                    StdDraw.setPenColor(StdDraw.BLACK);
+                }
+            }
+        }
+        // draw intersections
         for (int i = 0; i < radius; i++) {
             ArrayList<Integer> curIRing = iRings.get(i);
             int curIRingSize = curIRing.size();
             for (int j = 0; j < curIRingSize; j++) {
-                switch (i % 2) {
-                    case 0:
-                        StdDraw.setPenColor(StdDraw.RED);
-                        break;
-                    case 1: default:
-                        StdDraw.setPenColor(StdDraw.BLACK);
-                        break;
+                Intersection inter = intersections[curIRing.get(j)];
+                Player p = inter.getPlayer();
+                Building b = inter.getBuilding();
+                if (p == null) {
+                    StdDraw.setPenColor(StdDraw.WHITE);
+                }
+                else {
+                    switch (p.getId()) {
+                        case Player.BLUE: 
+                            StdDraw.setPenColor(StdDraw.BLUE);
+                            break;
+                        case Player.ORANGE:
+                            StdDraw.setPenColor(StdDraw.ORANGE);
+                            break;
+                        case Player.RED:
+                            StdDraw.setPenColor(StdDraw.RED);
+                            break;
+                        case Player.WHITE:
+                            StdDraw.setPenColor(StdDraw.WHITE);
+                            break;
+                        default:
+                            StdDraw.setPenColor(StdDraw.BLACK);
+                    }
+                }
+                if (p == null) {
+                    StdDraw.setPenColor(StdDraw.WHITE);
+                    StdDraw.filledCircle(interXCoords[curIRing.get(j)], interYCoords[curIRing.get(j)], r / 2);
+                    continue;
                 }
                 StdDraw.filledCircle(interXCoords[curIRing.get(j)], interYCoords[curIRing.get(j)], r);
-                StdDraw.setPenColor(StdDraw.WHITE);
-                StdDraw.text(interXCoords[curIRing.get(j)], interYCoords[curIRing.get(j)], "" + curIRing.get(j));
+                switch (b.getBuildingType()) {
+                    case Building.CITY:
+                        StdDraw.setPenColor(StdDraw.BLACK);
+                        StdDraw.filledCircle(interXCoords[curIRing.get(j)], interYCoords[curIRing.get(j)], r / 2);
+                        break;
+                }
             }
         }
     }
@@ -733,7 +795,7 @@ public class Board {
     
     public static void main(String args[]) {
         int canvasSize = 500;
-        for (int i = DEFAULT_RADIUS; i < (DEFAULT_RADIUS + 10); i++) {
+        for (int i = DEFAULT_RADIUS; i < (DEFAULT_RADIUS + 1); i++) {
             Board b = new Board(i);
             b.draw(canvasSize);
             StdDraw.save("result" + (i - DEFAULT_RADIUS) + ".png");
@@ -758,7 +820,7 @@ public class Board {
             System.out.println("=====");
             */
         }
-        System.exit(0);
+        //System.exit(0);
     }
 }
 

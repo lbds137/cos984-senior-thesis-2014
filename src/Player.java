@@ -10,46 +10,59 @@ public class Player {
     public static final int ORANGE = 1;
     public static final int RED = 2;
     public static final int WHITE = 3;
-    public static final String BLUE_NAME = "Blue";
-    public static final String ORANGE_NAME = "Orange";
-    public static final String RED_NAME = "Red";
-    public static final String WHITE_NAME = "White";
-    public static final int MAX_ROADS = 15;
-    public static final int MAX_SETTLEMENTS = 5;
-    public static final int MAX_CITIES = 4;
+    public static final String BLUE_NAME = "Blue Player";
+    public static final String ORANGE_NAME = "Orange Player";
+    public static final String RED_NAME = "Red Player";
+    public static final String WHITE_NAME = "White Player";
+    public static final int INITIAL_FREE_ROADS = 2;
+    public static final int INITIAL_FREE_SETTLEMENTS = 2;
+    public static final int LONGEST_ROAD_VP = 2;
+    public static final int LARGEST_ARMY_VP = 2;
     
     /* Fields */
     
     private int id;
+    private int maxRoads;
+    private int maxSettlements;
+    private int maxCities;
     private ArrayList<Road> roads;
     private ArrayList<Intersection> settlements;
     private ArrayList<Intersection> cities;
-    private int roadsFree;
-    private int settlementsFree;
-    private int citiesFree;
+    // free means "without cost" (it doesn't mean "available")
+    private int freeRoads;
+    private int freeSettlements;
+    private int freeCities; // used for debugging
     private ResourceBundle resourceCards;
     private DevCardBundle devCards;
     private DevCardBundle playedDevCards;
+    private int targetVP;
+    private int publicVP;
+    private int privateVP;
+    private boolean hasLongestRoad;
+    private boolean hasLargestArmy;
     
     /* Constructors */
     
-    public Player(int id) {
-        switch (id) {
-            case BLUE: case ORANGE: case RED: case WHITE:
-                this.id = id;
-                roads = new ArrayList<Road>(MAX_ROADS);
-                settlements = new ArrayList<Intersection>(MAX_SETTLEMENTS);
-                cities = new ArrayList<Intersection>(MAX_CITIES);
-                roadsFree = MAX_ROADS;
-                settlementsFree = MAX_SETTLEMENTS;
-                citiesFree = MAX_CITIES;
-                resourceCards = new ResourceBundle();
-                devCards = new DevCardBundle();
-                playedDevCards = new DevCardBundle();
-                break;
-            default:
-                //
-        }
+    public Player(int id, int VP) {
+        if (id < 0) System.exit(1);
+        this.id = id;
+        maxRoads = VP + (VP / 2);
+        maxSettlements = maxRoads - VP;
+        maxCities = maxSettlements - (VP / (Resource.NUM_TYPES * 2));
+        roads = new ArrayList<Road>(maxRoads);
+        settlements = new ArrayList<Intersection>(maxSettlements);
+        cities = new ArrayList<Intersection>(maxCities);
+        freeRoads = INITIAL_FREE_ROADS;
+        freeSettlements = INITIAL_FREE_SETTLEMENTS;
+        freeCities = 0; // used for debugging
+        resourceCards = new ResourceBundle();
+        devCards = new DevCardBundle();
+        playedDevCards = new DevCardBundle();
+        targetVP = VP;
+        publicVP = 0;
+        privateVP = 0;
+        hasLongestRoad = false;
+        hasLargestArmy = false;
     }
     
     /* Getters */
@@ -78,14 +91,24 @@ public class Player {
     public int getLongestRoad() {
         return findLongestRoad();
     }
+    public int getLargestArmy() {
+        return playedDevCards.size(DevCard.KNIGHT);
+    }
+    public int getPublicVP() {
+        return publicVP;
+    }
+    public int getPrivateVP() {
+        return publicVP + privateVP;
+    }
     
     /* Operations */
     
     // build the road and return a boolean status (true if success, false if failure)
     public boolean buildRoad(Road r, ResourceBundle resDeck) {
         // must check that this player has enough resources to build this road
-        if (!resourceCards.canRemove(Road.ROAD_COST)) return false;
-        
+        if (freeRoads == 0 && !resourceCards.canRemove(Road.ROAD_COST)) return false;
+        // must check if player still has available roads
+        if (roads.size() == maxRoads) return false;
         // must check if road is adjacent to a road owned by this player
         boolean isRValid = false;
         for (int i = 0; i < roads.size(); i++) {
@@ -94,21 +117,22 @@ public class Player {
                 break;
             }
         }
+        if (roads.size() < INITIAL_FREE_ROADS) isRValid = true; // first two roads are special
         if (!isRValid) return false;
-        
-        // attempt to actually perform the build
+        // attempt to build
         if (!r.build(this)) return false;
-        
+        // build
         roads.add(r);
-        roadsFree -= 1;
-        resDeck.add(resourceCards.remove(Road.ROAD_COST));
+        if (freeRoads == 0) resDeck.add(resourceCards.remove(Road.ROAD_COST));
+        else freeRoads--;
         return true;
     }
     // build the settlement and return a boolean status (true if success, false if failure)
     public boolean buildSettlement(Intersection i, ResourceBundle resDeck) {
         // must check that this player has enough resources to build this settlement
-        if (!resourceCards.canRemove(Building.SETTLEMENT_COST)) return false;
-        
+        if (freeSettlements == 0 && !resourceCards.canRemove(Building.SETTLEMENT_COST)) return false;
+        // must check if player still has available settlements
+        if (settlements.size() == maxSettlements) return false;
         // must check if settlement is adjacent to a road owned by this player
         /* todo: don't forget to have Game class check whether settlement location is valid 
            (i.e. not adjacent to another settlement) */
@@ -120,48 +144,53 @@ public class Player {
                 break;
             }
         }
+        if (settlements.size() < INITIAL_FREE_SETTLEMENTS) isSValid = true; // first two settlements are special
         if (!isSValid) return false;
-        
         // must check if there exists an unowned and empty space for building
         if (i.getPlayer() != null || i.getBuilding().getBuildingType() != Building.OPEN) return false;
-        
-        // attempt to actually perform the build
+        // attempt to build
         if (!i.upgrade(this)) return false;
-        
+        // build
         settlements.add(i);
-        settlementsFree -= 1;
-        resDeck.add(resourceCards.remove(Building.SETTLEMENT_COST));
+        if (freeSettlements == 0) resDeck.add(resourceCards.remove(Building.SETTLEMENT_COST));
+        else freeSettlements--;
+        publicVP++;
         return true;
     }
     // build the city and return a boolean status (true if success, false if failure)
     public boolean buildCity(Intersection i, ResourceBundle resDeck) {
         // must check that this player has enough resources to build this settlement
-        if (!resourceCards.canRemove(Building.CITY_COST)) return false;
-        
+        if (freeCities == 0 && !resourceCards.canRemove(Building.CITY_COST)) return false;
+        // must check if player still has available cities
+        if (cities.size() == maxCities) return false;
         // must check if there exists a settlement owned by this player
         if (settlements.indexOf(i) == -1) return false;
-        
-        // attempt to actually perform the build
+        // attempt to build
         if (!i.upgrade(this)) return false;
-        
+        // build
         settlements.remove(i);
-        settlementsFree += 1;
         cities.add(i);
-        citiesFree -= 1;
-        resDeck.add(resourceCards.remove(Building.CITY_COST));
+        if (freeCities == 0) resDeck.add(resourceCards.remove(Building.CITY_COST));
+        publicVP++;
         return true;
     }
     // build a dev card and return a boolean status (true if success, false if failure)
     public boolean buildDevCard(DevCardBundle devDeck, ResourceBundle resDeck) {
         // must check that this player has enough resources to build a dev card
         if (!resourceCards.canRemove(DevCard.DEV_CARD_COST)) return false;
-        
         // attempt to draw a dev card
         DevCard card = devDeck.removeRandom();
         if (card == null) return false;
-        
+        // draw card
         devCards.add(card);
         resDeck.add(resourceCards.remove(DevCard.DEV_CARD_COST));
+        // if VP card is drawn, save VP
+        switch (card.getCardType()) {
+            case DevCard.CHAPEL: case DevCard.UNIVERSITY: case DevCard.PALACE: 
+            case DevCard.LIBRARY: case DevCard.MARKET:
+                privateVP++;
+                break;
+        }
         return true;
     }
     // attempts to collect resources (fails if deck doesn't have enough cards)
@@ -187,6 +216,7 @@ public class Player {
         resourceCards.add(resDeck.remove(resourcesOwed));
         return true;
     }
+    // trade X cards of r for one card of s
     public boolean doPortTrade(Resource r, Resource s, ResourceBundle resDeck) {
         int ratio = findBestRatio(r);
         int[] rRemove = new int[Resource.NUM_TYPES];
@@ -196,6 +226,49 @@ public class Player {
         resDeck.add(resourceCards.remove(rRemove));
         resourceCards.add(resDeck.remove(s.getResourceType()));
         return true;
+    }
+    public DevCard playDevCard(int type) {
+        // check whether player owns at least one dev card of given type
+        if (devCards.size(type) == 0) return null;
+        DevCard card = devCards.remove(type);
+        playedDevCards.add(card);
+        // if VP card played, decrease private VP and increase public VP
+        switch (card.getCardType()) {
+            case DevCard.CHAPEL: case DevCard.UNIVERSITY: case DevCard.PALACE: 
+            case DevCard.LIBRARY: case DevCard.MARKET:
+                privateVP--;
+                publicVP++;
+                break;
+        }
+        return card;
+    }
+    // used for Road Building dev card (and debugging)
+    public void giveFreeRoads(int n) {
+        freeRoads += n;
+    }
+    // used for debugging
+    public void giveFreeSettlements(int n) {
+        freeSettlements += n;
+    }
+    // used for debugging
+    public void giveFreeCities(int n) {
+        freeCities += n;
+    }
+    public void giveLongestRoad() {
+        hasLongestRoad = true;
+        publicVP += LONGEST_ROAD_VP;
+    }
+    public void takeLongestRoad() {
+        hasLongestRoad = false;
+        publicVP -= LONGEST_ROAD_VP;
+    }
+    public void giveLargestArmy() {
+        hasLargestArmy = true;
+        publicVP += LARGEST_ARMY_VP;
+    }
+    public void takeLargestArmy() {
+        hasLargestArmy = false;
+        publicVP -= LARGEST_ARMY_VP;
     }
     
     /* Private helpers */
@@ -234,6 +307,8 @@ public class Player {
         TreeSet<Integer> iTermini = new TreeSet<Integer>(iAll);
         iTermini.removeAll(iCommon);
         
+        //System.out.println(iTermini);
+        
         int n = iAll.last() + 1;
         boolean[][] iGraph = new boolean[n][n];
         // create intersection graph
@@ -247,33 +322,34 @@ public class Player {
         for (Integer i : iTermini) {
             ArrayList<Integer> idsVisited = new ArrayList<Integer>();
             idsVisited.add(i);
-            longestRoads.add(findLongestRoad(idsVisited, iGraph)); // recursive helper
+            longestRoads.add(findLongestRoad(idsVisited, iGraph, Constants.INVALID)); // recursive helper
         }
         
         return longestRoads.last();
     }
     // recursive helper method for findLongestRoad()
-    private int findLongestRoad(ArrayList<Integer> idsVisited, boolean[][] iGraph) {
+    private int findLongestRoad(ArrayList<Integer> idsVisited, boolean[][] iGraph, int prevId) {
         int iCurrent = idsVisited.get(idsVisited.size() - 1);
         ArrayList<Integer> nextIds = new ArrayList<Integer>((HexShape.NUM_SIDES / 2) - 1);
         for (int k = 0; k < iGraph[iCurrent].length; k++) {
             if (k == iCurrent) continue;
-            if (iGraph[iCurrent][k]) nextIds.add(k);
+            if (iGraph[iCurrent][k] && k != prevId) nextIds.add(k);
         }
         /* base case: dead-ended (not into a loop) */
-        if (nextIds.size() == 0) return idsVisited.size();
+        if (nextIds.size() == 0) return idsVisited.size() - 1;
         TreeSet<Integer> longestRoads = new TreeSet<Integer>();
+        //System.out.println(idsVisited);
         for (int j = 0; j < nextIds.size(); j++) {
             ArrayList<Integer> newIdsVisited = new ArrayList<Integer>(idsVisited);
             // continue only to intersections not visited yet
-            if (idsVisited.indexOf(j) == -1) {
+            if (idsVisited.indexOf(nextIds.get(j)) == -1) {
                 newIdsVisited.add(nextIds.get(j));
-                longestRoads.add(findLongestRoad(newIdsVisited, iGraph));
+                longestRoads.add(findLongestRoad(newIdsVisited, iGraph, iCurrent));
             }
         }
         /* base case: dead-ended (into a loop) */
         if (longestRoads.size() == 0) return idsVisited.size();
-        
+        //System.out.println("ever got here?");
         /* recursive case: return the longest road (out of 1 or more candidates, 
                            depending on whether or not there is a fork) */
         return longestRoads.last();
@@ -285,7 +361,7 @@ public class Player {
     
     @Override
     public String toString() {
-        switch (id) {
+        switch (id) { // only the first four players get fancy names
             case BLUE: 
                 return BLUE_NAME;
             case ORANGE:
@@ -295,7 +371,49 @@ public class Player {
             case WHITE:
                 return WHITE_NAME;
             default:
-                return "Invalid player";
+                return "Player " + (id + 1);
         }
+    }
+    
+     /* Testing */
+    
+    public static void main(String args[]) {
+        int VP = 10;
+        Board b = new Board();
+        Intersection[] intersections = b.getIntersections();
+        Road[][] roads = b.getIGraph();
+        Player pOne = new Player(0, 10);
+        Player pTwo = new Player(1, 10);
+        Player pThree = new Player(2, 10);
+        Player pFour = new Player(3, 10);
+        
+        pOne.giveFreeRoads(100);
+        pOne.giveFreeSettlements(100);
+        pOne.giveFreeCities(100);
+        pOne.buildSettlement(intersections[0], null);
+        pOne.buildRoad(roads[0][1], null);
+        pOne.buildSettlement(intersections[3], null);
+        pOne.buildRoad(roads[3][4], null);
+        pOne.buildRoad(roads[4][15],null);
+        pOne.buildRoad(roads[4][5],null);
+        pOne.buildRoad(roads[5][0],null);
+        pOne.buildRoad(roads[1][2],null);
+        pOne.buildRoad(roads[2][3],null);
+        pOne.buildRoad(roads[1][6],null);
+        pOne.buildRoad(roads[6][7],null);
+        pOne.buildRoad(roads[8][7],null);
+        pOne.buildRoad(roads[8][9],null);
+        pOne.buildRoad(roads[2][9],null);
+        pOne.buildRoad(roads[7][24],null);
+        pOne.buildRoad(roads[0][21],null);
+        pOne.buildRoad(roads[21][22],null);
+        pOne.buildRoad(roads[22][23],null); // fails because max number of roads built
+        //System.out.println(roads[22][23]);
+        pOne.buildCity(intersections[0], null);
+        pOne.buildCity(intersections[2], null); // fails because there is no city there
+        System.out.println(pOne.getLongestRoad());
+        b.draw(500);
+        StdDraw.save("result.png");
+        System.exit(0);
     }
 }

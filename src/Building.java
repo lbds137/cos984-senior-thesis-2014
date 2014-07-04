@@ -55,7 +55,7 @@ public class Building implements Comparable<Building> {
     }
     public int compareTo(Building b) {
         // anything is greater than null
-        if (b == null) return buildingType + 1;
+        if (b == null) { return buildingType + 1; }
         // natural ordering defined by values of type constants
         else return buildingType - b.getBuildingType();
     }

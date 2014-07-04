@@ -88,10 +88,10 @@ public class Resource implements Comparable<Resource> {
     public int compareTo(Resource r) {
         // valid resource > null, invalid resource = null
         if (r == null) {
-            if (resourceType == Constants.INVALID) return 0;
-            else return resourceType + 1;
+            if (resourceType == Constants.INVALID) { return 0; }
+            else { return resourceType + 1; }
         }
-        else return resourceType - r.getResourceType();
+        else { return resourceType - r.getResourceType(); }
     }
     
     /* Testing */

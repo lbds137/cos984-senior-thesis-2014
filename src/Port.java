@@ -33,9 +33,7 @@ public class Port {
         this.resource = null;
         
         // port cannot be SPECIFIC without any resource type specified
-        if (portType == SPECIFIC) {
-            this.portType = INLAND;
-        }
+        if (portType == SPECIFIC) { this.portType = INLAND; }
     }
     // given a resource type we can assume it's a SPECIFIC port
     public Port(Resource resource) {
@@ -54,7 +52,7 @@ public class Port {
             }
         }
         // if port is not SPECIFIC, resource is irrelevant (i.e. null)
-        else this.resource = null;
+        else { this.resource = null; }
     }
     
     /* Getters */
@@ -74,17 +72,17 @@ public class Port {
     
     //@Override
     public boolean equals(Port p) {
-        if (p == null) return false;
+        if (p == null) { return false; }
         return resource.equals(p.getResource()) && portType == p.getPortType();
     }
     // "greater" means that this port offers a better trade ratio for specified resource r
     public int compareRatio(Port p, Resource r) {
-        if (this.equals(p)) return 0;
-        if (portType != SPECIFIC && p.getRatio() != SPECIFIC) return p.getRatio() - portType;
+        if (this.equals(p)) { return 0; }
+        if (portType != SPECIFIC && p.getRatio() != SPECIFIC) { return p.getRatio() - portType; }
         int thisRatio = portType;
         int pRatio = p.getRatio();
-        if (portType == SPECIFIC && !resource.equals(r)) thisRatio = INLAND;
-        if (p.getRatio() == SPECIFIC && !p.getResource().equals(r)) pRatio = INLAND;
+        if (portType == SPECIFIC && !resource.equals(r)) { thisRatio = INLAND; }
+        if (p.getRatio() == SPECIFIC && !p.getResource().equals(r)) { pRatio = INLAND; }
         return pRatio - thisRatio;
     }
     @Override

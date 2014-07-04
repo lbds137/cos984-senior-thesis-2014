@@ -45,9 +45,7 @@ public class Game {
         
         while (true) {
             int diceRoll = getDiceRoll();
-            if (diceRoll == 7) {
-                moveRobber();
-            }
+            if (diceRoll == 7) { moveRobber(); }
             else {
                 for (Player p : players) {
                     p.collectResources(diceRoll, resDeck);
@@ -93,9 +91,9 @@ public class Game {
     private Player getNextPlayer(Player p) {
         int index = players.indexOf(p);
         int nextIndex;
-        if (index == -1) return null;
-        else if (index == (players.size() - 1)) nextIndex = 0;
-        else nextIndex = index + 1;
+        if (index == -1) { return null; }
+        else if (index == (players.size() - 1)) { nextIndex = 0; }
+        else { nextIndex = index + 1; }
         return players.get(nextIndex);
     }
     private int getDiceRoll() {

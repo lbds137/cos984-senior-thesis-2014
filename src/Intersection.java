@@ -43,14 +43,14 @@ public class Intersection {
     @Override
     public String toString() {
 		String sPlayer = "Unowned";
-		if (player != null) sPlayer = player.toString(); 
+		if (player != null) { sPlayer = player.toString(); }
         return id + " : " + sPlayer + ", " + building.toString() + ", " + port.toString();
     }
     
     /* Operations */
     
     public boolean upgrade(Player player) {
-        if (this.player == null) this.player = player;
+        if (this.player == null) { this.player = player; }
         return this.player == player && this.building.upgrade();
     }
 }

@@ -128,12 +128,18 @@ public class Player {
                 break;
             }
         }
-        // first two roads are special
-        if (roads.size() < INITIAL_FREE_ROADS) { isRValid = true; } 
+        // first two roads are special: they must be adjacent to a settlement but not necessarily another road
+        if (roads.size() < INITIAL_FREE_ROADS) { 
+            for (int i = 0; i < settlements.size(); i++) {
+                if (r.other(settlements.get(i).getId()) != Constants.INVALID) {
+                    isRValid = true;
+                    break;
+                }
+            }
+        } 
         if (!isRValid) { return false; }
         // attempt to build
         if (!r.build(this)) { return false; }
-        // build
         roads.add(r);
         if (freeRoads == 0) { resDeck.add(resourceCards.remove(Road.ROAD_COST)); }
         else { freeRoads--; }
@@ -213,16 +219,21 @@ public class Player {
             ArrayList<Hex> hexes = buildings.get(i).getHexes();
             for (int j = 0; j < hexes.size(); j++) {
                 Hex h = hexes.get(j);
-                if ((!h.hasRobber()) && (h.getDiceRoll() == diceRoll)) {
+                if (h.hasRobber() || h.getResource().getResourceType() == Resource.DESERT) { continue; }
+                if (h.getDiceRoll() == diceRoll) {
                     int resourceType = h.getResource().getResourceType();
                     Building b = buildings.get(i).getBuilding();
                     resourcesOwed[resourceType] += b.getNumResources();
                 }
             }
         }
-        
         if (!resDeck.canRemove(resourcesOwed)) { return false; }
         resourceCards.add(resDeck.remove(resourcesOwed));
+        return true;
+    }
+    public boolean discard(int[] cardsToRemove, ResourceBundle resDeck) {
+        if (!resourceCards.canRemove(cardsToRemove)) { return false; }
+        resDeck.add(resourceCards.remove(cardsToRemove));
         return true;
     }
     // trade X cards of r for one card of s
@@ -424,11 +435,8 @@ public class Player {
         //pOne.buildCity(intersections[2], null); // fails because there is no city there
         BoardDraw bd = new BoardDraw(b, dim);
         bd.draw();
-        UserInput.buildSettlements(pOne, null, intersections, roads, bd);
-        UserInput.buildSettlements(pTwo, null, intersections, roads, bd);
-        UserInput.buildSettlements(pThree, null, intersections, roads, bd);
-        UserInput.buildSettlements(pFour, null, intersections, roads, bd);
-        //System.out.println(pOne.getLongestRoad());
+        UserInput.doTurn(pOne, null, intersections, roads, bd);
+        System.out.println(pOne.getLongestRoad());
         bd.save("result.png");
         System.exit(0);
     }

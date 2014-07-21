@@ -50,11 +50,15 @@ public class Road {
         if (common(r) == Constants.INVALID) return false;
         else return true;
     }
+    public boolean canBuild() {
+        if (this.player == null) { return true; }
+        else { return false; }
+    }
     
     /* Operations */
     
     public boolean build(Player player) {
-        if (this.player == null) {
+        if (canBuild()) {
             this.player = player;
             return true;
         }

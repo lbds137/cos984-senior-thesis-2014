@@ -49,6 +49,16 @@ public class Intersection {
     
     /* Operations */
     
+    public boolean canBuild(Player player) {
+        return (this.player == null || this.player == player) &&
+                this.building.canUpgrade();
+    }
+    public boolean canBuildSettlement(Player player) {
+        return canBuild(player) && this.building.getBuildingType() == Building.OPEN;
+    }
+    public boolean canBuildCity(Player player) {
+        return canBuild(player) && this.building.getBuildingType() == Building.SETTLEMENT;
+    }
     public boolean upgrade(Player player) {
         if (this.player == null) { this.player = player; }
         return this.player == player && this.building.upgrade();

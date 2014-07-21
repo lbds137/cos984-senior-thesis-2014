@@ -3,11 +3,16 @@ import java.util.Collections;
 
 public class Game {
 
+    /* Constants */
+    
+    public static final int DEFAULT_VP = 10;
+
     /* Fields */
 
     private int numPlayers;
     private ArrayList<Player> players; // ordering = turn order
     private Board board;
+    private BoardDraw bDraw;
     private ResourceBundle resDeck;
     private DevCardBundle devDeck;
     
@@ -19,12 +24,10 @@ public class Game {
     public Game(String gameState) {
         resumeGame(gameState);
     }
-    public Game(int numPlayers) throws Exception {
-        if (numPlayers < 3 || numPlayers > 4) {
-            throw new Exception();
-        }
-        this.numPlayers = numPlayers;
-        
+    public Game(int numPlayers) {
+        if (numPlayers < 3) { this.numPlayers = 3; }
+        else if (numPlayers > 4) { this.numPlayers = 4; }
+        else { this.numPlayers = numPlayers; }
         startGame();
     }
     
@@ -32,6 +35,7 @@ public class Game {
         setUpPlayers();
         setUpBoard();
         setUpDecks();
+        UserInput.init(board.getIntersections(), board.getIGraph(), resDeck, bDraw);
         firstMoves();
         gameLoop();
     }
@@ -42,33 +46,36 @@ public class Game {
     /* MAIN GAME LOOP - WHERE EVERYTHING HAPPENS */
     private void gameLoop() {
         Player pCurrent = players.get(0);
-        
         while (true) {
+            UserInput.doPrivacy();
             int diceRoll = getDiceRoll();
-            if (diceRoll == 7) { moveRobber(); }
+            System.out.println("Dice roll was " + diceRoll + ".");
+            if (diceRoll == 7) { moveRobber(pCurrent); }
             else {
                 for (Player p : players) {
                     p.collectResources(diceRoll, resDeck);
                 }
             }
-            
+            System.out.println("Your hand is: " + pCurrent.getResourceCards());
+            System.out.println("Your VP score is: " + pCurrent.getVP());
+            UserInput.doTurn(pCurrent);
             // todo: remainder of game turn logic
             
             pCurrent = getNextPlayer(pCurrent);
         }
     }
-    
     private void setUpPlayers() {
         players = new ArrayList<Player>(numPlayers);
         for (int i = 0; i < numPlayers; i++) {
-            players.add(new Player(i, 10));
+            players.add(new Player(i, DEFAULT_VP));
         }
-        
         // randomize order of play (no point to actually rolling dice)
         Collections.shuffle(players);
     }
     private void setUpBoard() {
         board = new Board();
+        bDraw = new BoardDraw(board);
+        bDraw.draw();
     }
     private void setUpDecks() {
         resDeck = new ResourceBundle();
@@ -85,9 +92,17 @@ public class Game {
         }
     }
     private void firstMoves() {
-        // todo: players choose initial two settlement and two road locations
+        // prompt to place first settlements and roads in normal order
+        for (int i = 0; i < players.size(); i++) { 
+            UserInput.doPrivacy();
+            UserInput.doInitialTurn(players.get(i)); 
+        }
+        // prompt to place second settlements and roads in reverse order
+        for (int i = players.size() - 1; i >= 0; i--) { 
+            UserInput.doPrivacy();
+            UserInput.doInitialTurn(players.get(i)); 
+        }
     }
-    
     private Player getNextPlayer(Player p) {
         int index = players.indexOf(p);
         int nextIndex;
@@ -99,10 +114,9 @@ public class Game {
     private int getDiceRoll() {
         int yellowDie = (int) (Math.random() * Constants.DIE_SIDES) + 1;
         int redDie = (int) (Math.random() * Constants.DIE_SIDES) + 1;
-        
         return yellowDie + redDie;
     }
-    private void moveRobber() {
+    private void moveRobber(Player p) {
         // todo: player who rolled moves robber and steals from one of the players 
         // whose settlements/cities border the chosen hex
     }
@@ -111,10 +125,10 @@ public class Game {
     
     public static void main(String args[]) {
         try {
-            Game g = new Game(3);
+            Game g = new Game(4);
         }
         catch (Exception e) {
-            System.out.println("Invalid number of players");
+            e.printStackTrace();
         }
     }
 }

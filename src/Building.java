@@ -62,14 +62,17 @@ public class Building implements Comparable<Building> {
     
     /* Operations */
     
-    public boolean upgrade() {
+    public boolean canUpgrade() {
         switch (buildingType) {
-            // only OPEN or SETTLEMENT can be upgraded
-            case OPEN: case SETTLEMENT:
-                buildingType++;
-                return true;
-            default:
-                return false;
+            case OPEN: case SETTLEMENT: return true;
+            default: return false;
+        }
+    }
+    public boolean upgrade() {
+        if (!canUpgrade()) { return false; }
+        else {
+            buildingType++;
+            return true;
         }
     }
 

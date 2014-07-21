@@ -4,6 +4,10 @@ import java.awt.Font;
 
 public class BoardDraw {
 
+    /* Constants */
+    
+    public static final int DEFAULT_DIM = 700;
+
     /* Private fields */
 
     Board board;
@@ -31,7 +35,10 @@ public class BoardDraw {
     double buildingRadius;
     double innerCityRadius;
     double intersectionRadius;
-    double roadRadius;
+    double roadOuterRadius;
+    double roadInnerRadius;
+    // avoid drawing everything all the time
+    boolean firstDraw;
 
     /* Constructors */
     
@@ -48,6 +55,9 @@ public class BoardDraw {
         this.dim = dim;
         initCoords();
         initCanvas();
+    }
+    public BoardDraw(Board board) {
+        this(board, DEFAULT_DIM);
     }
     
     private void initCoords() {
@@ -78,16 +88,23 @@ public class BoardDraw {
         buildingRadius = w / 8;
         innerCityRadius = buildingRadius - (buildingRadius / 3);
         intersectionRadius = buildingRadius / 2;
-        roadRadius = 0.01;
+        roadOuterRadius = 0.015;
+        roadInnerRadius = 0.01;
+        firstDraw = true;
     }
     
     /* Operations */
     
     public void draw() {
-        drawOcean();
-        drawHexes();
+        //if (firstDraw) {
+            drawOcean();
+            drawHexes();
+            //firstDraw = false;
+        //}
+        drawChits();
         drawRoads();
         drawIntersections();
+        //drawPorts();
     }
     public void save(String name) {
         StdDraw.save(name);
@@ -105,11 +122,21 @@ public class BoardDraw {
             StdDraw.filledPolygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
             StdDraw.setPenColor(StdDraw.BLACK);
             StdDraw.polygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
-            StdDraw.setPenColor(StdDraw.WHITE);
-            StdDraw.filledCircle(hexXCenters[i], hexYCenters[i], chitRadius);
-            StdDraw.setPenColor(StdDraw.BLACK);
-            StdDraw.circle(hexXCenters[i], hexYCenters[i], chitRadius);
-            StdDraw.text(hexXCenters[i], hexYCenters[i], " " + hexes[i].getDiceRoll());
+        }
+    }
+    private void drawChits() {
+        for (int i = 0; i < hexes.length; i++) {
+            if (!hexes[i].hasRobber()) {
+                StdDraw.setPenColor(StdDraw.WHITE);
+                StdDraw.filledCircle(hexXCenters[i], hexYCenters[i], chitRadius);
+                StdDraw.setPenColor(StdDraw.BLACK);
+                StdDraw.circle(hexXCenters[i], hexYCenters[i], chitRadius);
+                StdDraw.text(hexXCenters[i], hexYCenters[i], " " + hexes[i].getDiceRoll());
+            }
+            else {
+                StdDraw.setPenColor(StdDraw.BLACK);
+                StdDraw.filledCircle(hexXCenters[i], hexYCenters[i], chitRadius);
+            }
         }
     }
     private void drawRoads() {
@@ -121,16 +148,18 @@ public class BoardDraw {
                 if (road != null) { p = road.getPlayer(); }
                 else { p = null; }
                 if (p != null) {
-                    StdDraw.setPenColor(getPlayerColor(p));
-                    StdDraw.setPenRadius(roadRadius);
                     ArrayList<Integer> both = road.both();
                     double x0 = interXCoords[both.get(0)];
                     double y0 = interYCoords[both.get(0)];
                     double x1 = interXCoords[both.get(1)];
                     double y1 = interYCoords[both.get(1)];
+                    StdDraw.setPenColor(StdDraw.BLACK);
+                    StdDraw.setPenRadius(roadOuterRadius);
+                    StdDraw.line(x0, y0, x1, y1);
+                    StdDraw.setPenRadius(roadInnerRadius);
+                    StdDraw.setPenColor(getPlayerColor(p));
                     StdDraw.line(x0, y0, x1, y1);
                     StdDraw.setPenRadius();
-                    StdDraw.setPenColor(StdDraw.BLACK);
                 }
             }
         }
@@ -157,6 +186,9 @@ public class BoardDraw {
                 }
             }
         }
+    }
+    private void drawPorts() {
+        // todo
     }
     private Color getPlayerColor(Player p) {
         switch (p.getId()) {

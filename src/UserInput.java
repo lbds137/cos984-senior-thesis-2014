@@ -1,113 +1,137 @@
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public final class UserInput {
     
     /* Constants */
     
-    public static final String BEGINNING_INFO = ", you will be prompted to build a settlement and a road this turn. ";
-    public static final String TURN_REQUEST = ", what would you like to do? Valid options are \'build road\', \'build settlement\', \'build city\'. ";
-    public static final String ROAD_REQUEST = ", please enter a start and end location for your road. ";
-    public static final String SETTLEMENT_REQUEST = ", please enter a location for your settlement. ";
-    public static final String CITY_REQUEST = ", please enter a location for your city. ";
-    public static final String INVALID_RESPONSE = ", you entered invalid input. Type \'true\' to try again or \'false\' to abort. ";
-    public static final String CANNOT_BUILD_ROAD = ", you are unable to build a road; aborting. ";
-    public static final String CANNOT_BUILD_SETTLEMENT = ", you are unable to build a settlement; aborting. ";
-    public static final String CANNOT_BUILD_CITY = ", you are unable to build a city; aborting. ";
-    public static final String DONE_TURN = ", are you done with your turn? Type \'true\' for yes and \'false\' for no. ";
+    public static final String COMMA = ", ";
+    public static final String TRY_AGAIN = "Please try again. ";
+    public static final String ABORTING = "Aborting. ";
     
     public static final String BUILD_ROAD = "build road";
     public static final String BUILD_SETTLEMENT = "build settlement";
     public static final String BUILD_CITY = "build city";
+    public static final String BUILD_DEV_CARD = "build dev card";
+    public static final String TRADE_PLAYER = "trade player";
+    public static final String TRADE_PORT = "trade port";
+    public static final String PLAY_DEV_CARD = "play dev card";
+    public static final String END_TURN = "end turn";
     
-    public static void buildRoad(Player p, ResourceBundle resDeck, Road[][] iGraph, BoardDraw bd) {
+    public static final String BEGINNING_INFO = COMMA + "you will be prompted to build a settlement and a road this turn. ";
+    public static final String TURN_REQUEST = COMMA + "what would you like to do? Valid options are: " + BUILD_ROAD + COMMA + 
+                                              BUILD_SETTLEMENT + COMMA + BUILD_CITY + COMMA + BUILD_DEV_CARD + COMMA + 
+                                              TRADE_PLAYER + COMMA + TRADE_PORT + COMMA + PLAY_DEV_CARD + COMMA + END_TURN;
+    public static final String ROAD_REQUEST = COMMA + "please enter a start and end location for your road. ";
+    public static final String SETTLEMENT_REQUEST = COMMA + "please enter a location for your settlement. ";
+    public static final String CITY_REQUEST = COMMA + "please enter a location for your city. ";
+    public static final String CANNOT_BUILD_ROAD = COMMA + "you are unable to build a road. " + ABORTING;
+    public static final String CANNOT_BUILD_SETTLEMENT = COMMA + "you are unable to build a settlement. " + ABORTING;
+    public static final String CANNOT_BUILD_CITY = COMMA + "you are unable to build a city. " + ABORTING;
+    public static final String CANNOT_BUILD_DEV_CARD = COMMA + "you are unable to build a dev card. " + ABORTING;
+    
+    public static final String VALID = "valid";
+    public static final String INVALID_TURN_COMMAND = COMMA + "you entered an invalid command. " + TRY_AGAIN;
+    public static final String INVALID_INTEGER = COMMA + "you did not enter a valid integer. " + TRY_AGAIN;
+    public static final String INVALID_RESOURCE = COMMA + "you entered an invalid resource. " + TRY_AGAIN;
+    public static final String INVALID_ROAD = COMMA + "you cannot build a road there. " + TRY_AGAIN;
+    public static final String INVALID_SETTLEMENT = COMMA + "you cannot build a settlement there. " + TRY_AGAIN;
+    public static final String INVALID_CITY = COMMA + "you cannot build a city there. " + TRY_AGAIN;
+    public static final String INVALID_DEV_CARD = COMMA + "you entered an invalid dev card. " + TRY_AGAIN;
+    
+    /* Static fields */
+    
+    private static Intersection[] intersections; 
+    private static Road[][] iGraph;
+    private static ResourceBundle resDeck;
+    private static Scanner sc;
+    private static BoardDraw bd;
+
+    public static void init(Intersection[] intersections, Road[][] iGraph, 
+                            ResourceBundle resDeck, BoardDraw bd) {
+        UserInput.intersections = intersections;
+        UserInput.iGraph = iGraph;
+        UserInput.resDeck = resDeck;
+        sc = new Scanner(System.in);
+        UserInput.bd = bd;
+    }
+    public static Road getRoad(Player p) {
+        Road r = null;
         // if player has exceeded maximum allowance or doesn't have enough resources, abort
         if (!p.canBuildRoad()) {
             System.out.println(p.toString() + CANNOT_BUILD_ROAD);
-            return;
+            return r;
         }
         int numIntersections = iGraph.length;
-        boolean success = true;
-        boolean tryAgain = true;
+        boolean valid = true;
+        String result = ROAD_REQUEST;
         do {
-            // display error message when appropriate
-            if (!success) {
-                while (tryAgain) {
-                    // deal with bad input
-                    try {
-                        System.out.println(p.toString() + INVALID_RESPONSE);
-                        tryAgain = StdIn.readBoolean();
-                        break;
-                    }
-                    catch (Exception e) { StdIn.resync(); }
+            String input;
+            String[] sInts;
+            String sIntOne = "";
+            String sIntTwo = "";
+            String resultOne;
+            String resultTwo;
+            // check for valid integer input
+            do {
+                input = getNewInput(p, result);
+                sInts = input.split("\\s");
+                if (sInts.length < 2) {
+                    result = INVALID_INTEGER;
+                    continue;
                 }
-                if (!tryAgain) { break; }
-                success = true;
-            }
-            System.out.println(p.toString() + ROAD_REQUEST);
-            int iOne;
-            int iTwo;
-            // deal with bad input
-            try { 
-                iOne = StdIn.readInt();
-                iTwo = StdIn.readInt();
-            }
-            catch (Exception e) {
-                StdIn.resync();
-                success = false;
-                continue;
-            }
-            // throw out locations outside the range of intersections[]
-            if (iOne < 0 || iTwo < 0 || iOne >= numIntersections || iTwo >= numIntersections) {
-                success = false;
-                continue;
-            }
-            if (!success) { continue; }
+                sIntOne = sInts[0];
+                sIntTwo = sInts[1];
+                resultOne = validateInteger(sIntOne);
+                resultTwo = validateInteger(sIntTwo);
+                if (!resultOne.equals(VALID) || !resultTwo.equals(VALID)) {
+                    if (resultOne.equals(VALID)) { result = resultTwo; }
+                    else { result = resultOne; }
+                }
+                else { result = VALID; }
+            } while (!result.equals(VALID));
+            int iOne = Integer.parseInt(sIntOne);
+            int iTwo = Integer.parseInt(sIntTwo);
+            // throw out locations outside the range of intersections[], and 
             // reject roads that aren't on the board (i.e. connecting wrong intersections)
-            if (iGraph[iOne][iTwo] == null) {
-                success = false;
+            if (iOne < 0 || iTwo < 0 || iOne >= numIntersections || iTwo >= numIntersections || 
+                iGraph[iOne][iTwo] == null) {
+                valid = false;
+                result = INVALID_ROAD;
                 continue;
             }
-            // try to build
-            success = p.buildRoad(iGraph[iOne][iTwo], resDeck);
-        } while (!success);
-        bd.draw();
+            r = iGraph[iOne][iTwo];
+            // verify if player p can build a road at the given location
+            valid = p.canBuildRoad(r);
+            if (!valid) { 
+                result = INVALID_ROAD;
+                r = null;
+            }
+        } while (!valid);
+        return r;
     }
-    public static void buildSettlement(Player p, ResourceBundle resDeck, Intersection[] intersections, Road[][] iGraph, BoardDraw bd) {
+    public static Intersection getSettlement(Player p) {
+        Intersection inter = null;
         // if player has exceeded maximum allowance or doesn't have enough resources, abort
         if (!p.canBuildSettlement()) {
             System.out.println(p.toString() + CANNOT_BUILD_SETTLEMENT);
-            return;
+            return inter;
         }
         int numIntersections = intersections.length;
-        boolean success = true;
-        boolean tryAgain = true;
+        boolean valid = true;
+        String result = SETTLEMENT_REQUEST;
         do {
-            // display error message when appropriate
-            if (!success) {
-                while (tryAgain) {
-                    // deal with bad input
-                    try {
-                        System.out.println(p.toString() + INVALID_RESPONSE);
-                        tryAgain = StdIn.readBoolean();
-                        break;
-                    }
-                    catch (Exception e) { StdIn.resync(); }
-                }
-                if (!tryAgain) { break; }
-                success = true;
-            }
-            System.out.println(p.toString() + SETTLEMENT_REQUEST);
-            int location;
-            // deal with bad input
-            try { location = StdIn.readInt(); }
-            catch (Exception e) {
-                StdIn.resync();
-                success = false;
-                continue;
-            }
+            String input;
+            // check for valid integer input
+            do {
+                input = getNewInput(p, result);
+                result = validateInteger(input);
+            } while (!result.equals(VALID));
+            int location = Integer.parseInt(input);
             // throw out locations outside the range of intersections[]
             if (location < 0 || location >= intersections.length) {
-                success = false;
+                valid = false;
+                result = INVALID_SETTLEMENT;
                 continue;
             }
             // check that location provided isn't adjacent to other settlements or cities
@@ -117,104 +141,159 @@ public final class UserInput {
                 if (iGraph[location][i] != null) { neighbors.add(intersections[i]); }
             }
             for (Intersection i : neighbors) { 
-                if (i.getPlayer() != null) { success = false; } 
+                if (i.getPlayer() != null) { 
+                    valid = false;
+                    result = INVALID_SETTLEMENT;
+                    continue;
+                } 
             }
-            if (!success) { continue; }
-            // try to build
-            success = p.buildSettlement(intersections[location], resDeck);
-        } while (!success);
-        bd.draw();
+            inter = intersections[location];
+            // verify if player p can build a settlement at the given location
+            valid = p.canBuildSettlement(inter);
+            if (!valid) { 
+                result = INVALID_SETTLEMENT;
+                inter = null;
+            }
+        } while (!valid);
+        return inter;
     }
-    public static void buildCity(Player p, ResourceBundle resDeck, Intersection[] intersections, BoardDraw bd) {
+    public static Intersection getCity(Player p) {
+        Intersection inter = null;
         // if player has exceeded maximum allowance or doesn't have enough resources, abort
         if (!p.canBuildCity()) {
             System.out.println(p.toString() + CANNOT_BUILD_CITY);
-            return;
+            return inter;
         }
         int numIntersections = intersections.length;
-        boolean success = true;
-        boolean tryAgain = true;
+        boolean valid = true;
+        String result = CITY_REQUEST;
         do {
-            // display error message when appropriate
-            if (!success) {
-                while (tryAgain) {
-                    // deal with bad input
-                    try {
-                        System.out.println(p.toString() + INVALID_RESPONSE);
-                        tryAgain = StdIn.readBoolean();
-                        break;
-                    }
-                    catch (Exception e) { StdIn.resync(); }
-                }
-                if (!tryAgain) { break; }
-                success = true;
-            }
-            System.out.println(p.toString() + CITY_REQUEST);
-            int location;
-            // deal with bad input
-            try { location = StdIn.readInt(); }
-            catch (Exception e) {
-                StdIn.resync();
-                success = false;
-                continue;
-            }
+            String input;
+            // check for valid integer input
+            do {
+                input = getNewInput(p, result);
+                result = validateInteger(input);
+            } while (!result.equals(VALID));
+            int location = Integer.parseInt(input);
             // throw out locations outside the range of intersections[]
             if (location < 0 || location >= intersections.length) {
-                success = false;
+                valid = false;
+                result = INVALID_CITY;
                 continue;
             }
-            if (!success) { continue; }
-            // try to build
-            success = p.buildCity(intersections[location], resDeck);
-        } while (!success);
-        bd.draw();
-    }
-    /*
-    public static void buildSettlements(Player p, ResourceBundle resDeck, Intersection[] intersections, Road[][] iGraph, BoardDraw bd) {
-        boolean doneBuilding = false;
-        do {
-            buildSettlement(p, resDeck, intersections, iGraph, bd);
-            while (!doneBuilding) {
-                try {
-                    System.out.println(p.toString() + DONE_BUILDING_SETTLEMENT);
-                    doneBuilding = StdIn.readBoolean();
-                    break;
-                }
-                catch (Exception e) { StdIn.resync(); }
+            inter = intersections[location];
+            // verify if player p can build a city at the given location
+            valid = p.canBuildCity(inter);
+            if (!valid) { 
+                result = INVALID_CITY;
+                inter = null;
             }
-            if (doneBuilding) { break; }
-        } while (p.canBuildSettlement());
+        } while (!valid);
+        return inter;
     }
-    */
-    public static void doTurn(Player p, ResourceBundle resDeck, Intersection[] intersections, Road[][] iGraph, BoardDraw bd) {
+    public static void doTurn(Player p) {
         boolean done = false;
         do {
-            System.out.println(p.toString() + TURN_REQUEST);
-            String s = StdIn.readLine();
-            System.out.println("\'" + s.toLowerCase() + "\'");
-            switch (s.toLowerCase()) {
+            String input = getNewInput(p, TURN_REQUEST);
+            String result = validateTurnCommand(input);
+            while (!result.equals(VALID)) {
+                input = getNewInput(p, result);
+                result = validateTurnCommand(input);
+            }
+            switch (input.toLowerCase()) {
                 case BUILD_ROAD:
-                    buildRoad(p, resDeck, iGraph, bd);
+                    Road r = getRoad(p);
+                    if (r != null) { p.buildRoad(r, resDeck); }
                     break;
                 case BUILD_SETTLEMENT:
-                    buildSettlement(p, resDeck, intersections, iGraph, bd);
+                    Intersection i = getSettlement(p);
+                    if (i != null) { p.buildSettlement(i, resDeck); }
                     break;
                 case BUILD_CITY:
-                    buildCity(p, resDeck, intersections, bd);
+                    Intersection j = getCity(p);
+                    if (j != null) { p.buildCity(j, resDeck); }
+                    break;
+                case BUILD_DEV_CARD: case TRADE_PLAYER: case TRADE_PORT: case PLAY_DEV_CARD: 
+                    System.out.println("The desired functionality is not yet implemented. Please try a different command.");
+                    break;
+                case END_TURN:
+                    done = true;
                     break;
                 default:
                     //
             }
-            while (!done) {
-                try {
-                    System.out.println(p.toString() + DONE_TURN);
-                    done = StdIn.readBoolean();
-                    StdIn.resync();
-                    break;
-                }
-                catch (Exception e) { StdIn.resync(); }
+            bd.draw();
+        } while (!done);
+    }
+    public static void doInitialTurn(Player p) {
+        System.out.println(p.toString() + BEGINNING_INFO);
+        Intersection i = getSettlement(p);
+        p.buildSettlement(i, resDeck);
+        bd.draw();
+        Road r = getRoad(p);
+        p.buildRoad(r, resDeck);
+        bd.draw();
+    }
+    // prompt player p for new input, where str is the prompt string
+    public static String getNewInput(Player p, String str) {
+        System.out.println(p.toString() + str);
+        return sc.nextLine();
+    }
+    public static String validateTurnCommand(String sCommand) {
+        switch (sCommand.toLowerCase()) {
+            case BUILD_ROAD: case BUILD_SETTLEMENT:
+            case BUILD_CITY: case BUILD_DEV_CARD:
+            case TRADE_PLAYER: case TRADE_PORT:
+            case PLAY_DEV_CARD: case END_TURN:
+                return VALID;
+            default: return INVALID_TURN_COMMAND;
+        }
+    }
+    public static String validateInteger(String sInteger) {
+        try {
+            int integer = Integer.parseInt(sInteger);
+            return VALID;
+        }
+        catch (Exception e) { return INVALID_INTEGER; }
+    }
+    public static String validateResource(String sResource) {
+        switch (sResource.toLowerCase()) {
+            case Resource.WOOL_NAME:
+            case Resource.GRAIN_NAME:
+            case Resource.LUMBER_NAME:
+            case Resource.BRICK_NAME:
+            case Resource.ORE_NAME:
+                return VALID;
+            default: return INVALID_RESOURCE;
+        }
+    }
+    public static String validateDevCard(String sDevCard) {
+        switch (sDevCard.toLowerCase()) {
+            case DevCard.KNIGHT_NAME:
+            case DevCard.ROAD_NAME:
+            case DevCard.PLENTY_NAME:
+            case DevCard.MONOPOLY_NAME:
+            case DevCard.CHAPEL_NAME:
+            case DevCard.UNIVERSITY_NAME:
+            case DevCard.PALACE_NAME:
+            case DevCard.LIBRARY_NAME:
+            case DevCard.MARKET_NAME:
+                return VALID;
+            default: return INVALID_DEV_CARD;
+        }
+    }
+    // clear screen so other players can't peek
+    public static void doPrivacy() {
+        try {
+            String os = System.getProperty("os.name");
+            if (os.contains("Windows")) { Runtime.getRuntime().exec("cls"); }
+            else { 
+                Runtime.getRuntime().exec("clear");
+                System.out.print("\033[H\033[2J");
             }
-            if (done) { break; }
-        } while (true);
+        }
+        catch (Exception e) {
+            // 
+        }
     }
 }

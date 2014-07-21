@@ -85,5 +85,19 @@ public class ResourceBundle {
 	public boolean isEmpty() {
 		return size() == 0;
 	}
+	
+	/* Inherits / overrides */
+    
+    @Override
+    public String toString() {
+        if (isEmpty()) { return "(empty)"; }
+        String s = "";
+        for (int i = 0; i < Resource.NUM_TYPES; i++) {
+            String res = "" + Resource.CARD_NAMES[i];
+            int count = bundle.get(i).size();
+            s += res + ": x" + count + "; "; 
+        }
+        return s;
+    }
 }
 

@@ -5,7 +5,6 @@ public class Player {
     
     /* Constants */
     
-    public static final int NUM_PLAYERS = 4;
     public static final int BLUE = 0;
     public static final int ORANGE = 1;
     public static final int RED = 2;
@@ -46,9 +45,9 @@ public class Player {
     public Player(int id, int VP) {
         if (id < 0) { System.exit(1); }
         this.id = id;
-        maxRoads = VP + (VP / 2);
-        maxSettlements = maxRoads - VP;
-        maxCities = maxSettlements - (VP / (Resource.NUM_TYPES * 2));
+        maxRoads = VP + (VP / 2); // default = 15
+        maxSettlements = maxRoads - VP; // default = 5
+        maxCities = maxSettlements - (VP / (Resource.NUM_TYPES * 2)); // default = 4
         roads = new ArrayList<Road>(maxRoads);
         settlements = new ArrayList<Intersection>(maxSettlements);
         cities = new ArrayList<Intersection>(maxCities);
@@ -97,49 +96,74 @@ public class Player {
     public int getPublicVP() {
         return publicVP;
     }
-    public int getPrivateVP() {
+    public int getVP() {
         return publicVP + privateVP;
     }
     
-    /* Operations */
+    /* Verification methods */
     
     public boolean canBuildRoad() {
         return (roads.size() < maxRoads) && 
                (freeRoads > 0 || resourceCards.canRemove(Road.ROAD_COST));
     }
+    public boolean canBuildRoad(Road r) {
+        // is the player able to build ANY road? is the given road already owned?
+        if (!canBuildRoad() || !r.canBuild()) { return false; }
+        boolean isValid = false;
+        // roads must either be adjacent to a settlement/city or another road
+        for (int i = 0; !isValid || i < settlements.size(); i++) {
+            if (r.other(settlements.get(i).getId()) != Constants.INVALID) { isValid = true; }
+        }
+        for (int i = 0; !isValid || i < cities.size(); i++) {
+            if (r.other(cities.get(i).getId()) != Constants.INVALID) { isValid = true; }
+        }
+        for (int i = 0; !isValid || i < roads.size(); i++) {
+            if (roads.get(i).isNeighbor(r)) { isValid = true; }
+        }
+        return isValid;
+    }
     public boolean canBuildSettlement() {
         return (settlements.size() < maxSettlements) && 
                (freeSettlements > 0 || resourceCards.canRemove(Building.SETTLEMENT_COST));
+    }
+    public boolean canBuildSettlement(Intersection i) {
+        // is the player able to build ANY settlement? is the given location viable?
+        if (!canBuildSettlement() || !i.canBuildSettlement(this)) { return false; }
+        // must check if settlement is adjacent to a road owned by this player
+        /* NOTE: it is the responsibility of the Game class to check whether 
+           settlement location is valid (i.e. not adjacent to another settlement) */
+        int id = i.getId();
+        boolean isValid = false;
+        // first two settlements are special
+        if (settlements.size() < INITIAL_FREE_SETTLEMENTS) { isValid = true; }
+        else {
+            for (int k = 0; k < roads.size(); k++) {
+                if (roads.get(k).other(id) != Constants.INVALID) {
+                    isValid = true;
+                    break;
+                }
+            }
+        }
+        return isValid;
     }
     public boolean canBuildCity() {
         return (cities.size() < maxCities) && (settlements.size() > 0) &&
                (freeCities > 0 || resourceCards.canRemove(Building.CITY_COST));
     }
+    public boolean canBuildCity(Intersection i) {
+        // is the player able to build ANY city? is the given location viable?
+        if (!canBuildCity() || !i.canBuildCity(this)) { return false; }
+        // must check if there exists a settlement owned by this player
+        if (settlements.indexOf(i) == -1) { return false; }
+        else { return true; }
+    }
+    
+    /* Operations */
     
     // build the road and return a boolean status (true if success, false if failure)
     public boolean buildRoad(Road r, ResourceBundle resDeck) {
-        // is the player able to build ANY road?
-        if (!canBuildRoad()) { return false; }
-        // must check if road is adjacent to a road owned by this player
-        boolean isRValid = false;
-        for (int i = 0; i < roads.size(); i++) {
-            if (roads.get(i).isNeighbor(r)) {
-                isRValid = true;
-                break;
-            }
-        }
-        // first two roads are special: they must be adjacent to a settlement but not necessarily another road
-        if (roads.size() < INITIAL_FREE_ROADS) { 
-            for (int i = 0; i < settlements.size(); i++) {
-                if (r.other(settlements.get(i).getId()) != Constants.INVALID) {
-                    isRValid = true;
-                    break;
-                }
-            }
-        } 
-        if (!isRValid) { return false; }
-        // attempt to build
-        if (!r.build(this)) { return false; }
+        if (!canBuildRoad(r)) { return false; }
+        r.build(this);
         roads.add(r);
         if (freeRoads == 0) { resDeck.add(resourceCards.remove(Road.ROAD_COST)); }
         else { freeRoads--; }
@@ -147,27 +171,8 @@ public class Player {
     }
     // build the settlement and return a boolean status (true if success, false if failure)
     public boolean buildSettlement(Intersection i, ResourceBundle resDeck) {
-        // is the player able to build ANY settlement?
-        if (!canBuildSettlement()) { return false; }
-        // must check if settlement is adjacent to a road owned by this player
-        /* todo: don't forget to have Game class check whether settlement location is valid 
-           (i.e. not adjacent to another settlement) */
-        int id = i.getId();
-        boolean isSValid = false;
-        for (int k = 0; k < roads.size(); k++) {
-            if (roads.get(k).other(id) != Constants.INVALID) {
-                isSValid = true;
-                break;
-            }
-        }
-        // first two settlements are special
-        if (settlements.size() < INITIAL_FREE_SETTLEMENTS) { isSValid = true; } 
-        if (!isSValid) { return false; }
-        // must check if there exists an unowned and empty space for building
-        if (i.getPlayer() != null || i.getBuilding().getBuildingType() != Building.OPEN) { return false; }
-        // attempt to build
-        if (!i.upgrade(this)) { return false; }
-        // build
+        if (!canBuildSettlement(i)) { return false; }
+        i.upgrade(this);
         settlements.add(i);
         if (freeSettlements == 0) { resDeck.add(resourceCards.remove(Building.SETTLEMENT_COST)); }
         else { freeSettlements--; }
@@ -176,13 +181,8 @@ public class Player {
     }
     // build the city and return a boolean status (true if success, false if failure)
     public boolean buildCity(Intersection i, ResourceBundle resDeck) {
-        // is the player able to build ANY city?
-        if (!canBuildCity()) { return false; }
-        // must check if there exists a settlement owned by this player
-        if (settlements.indexOf(i) == -1) { return false; }
-        // attempt to build
-        if (!i.upgrade(this)) { return false; }
-        // build
+        if (!canBuildCity(i)) { return false; }
+        i.upgrade(this);
         settlements.remove(i);
         cities.add(i);
         if (freeCities == 0) { resDeck.add(resourceCards.remove(Building.CITY_COST)); }
@@ -435,7 +435,8 @@ public class Player {
         //pOne.buildCity(intersections[2], null); // fails because there is no city there
         BoardDraw bd = new BoardDraw(b, dim);
         bd.draw();
-        UserInput.doTurn(pOne, null, intersections, roads, bd);
+        UserInput.init(intersections, roads, null, bd);
+        UserInput.doTurn(pOne);
         System.out.println(pOne.getLongestRoad());
         bd.save("result.png");
         System.exit(0);

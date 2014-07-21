@@ -2,8 +2,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import java.awt.Font;
-
 public class Board {
 
     /* Constants */

@@ -93,7 +93,7 @@ public class ResourceBundle {
         if (isEmpty()) { return "(empty)"; }
         String s = "";
         for (int i = 0; i < Resource.NUM_TYPES; i++) {
-            String res = "" + Resource.CARD_NAMES[i];
+            String res = "" + Resource.CARD_NAMES.get(i);
             int count = bundle.get(i).size();
             s += res + ": x" + count + "; "; 
         }

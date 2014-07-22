@@ -111,13 +111,13 @@ public class Player {
         if (!canBuildRoad() || !r.canBuild()) { return false; }
         boolean isValid = false;
         // roads must either be adjacent to a settlement/city or another road
-        for (int i = 0; !isValid || i < settlements.size(); i++) {
+        for (int i = 0; !isValid && i < settlements.size(); i++) {
             if (r.other(settlements.get(i).getId()) != Constants.INVALID) { isValid = true; }
         }
-        for (int i = 0; !isValid || i < cities.size(); i++) {
+        for (int i = 0; !isValid && i < cities.size(); i++) {
             if (r.other(cities.get(i).getId()) != Constants.INVALID) { isValid = true; }
         }
-        for (int i = 0; !isValid || i < roads.size(); i++) {
+        for (int i = 0; !isValid && i < roads.size(); i++) {
             if (roads.get(i).isNeighbor(r)) { isValid = true; }
         }
         return isValid;
@@ -237,14 +237,14 @@ public class Player {
         return true;
     }
     // trade X cards of r for one card of s
-    public boolean doPortTrade(Resource r, Resource s, ResourceBundle resDeck) {
-        int ratio = findBestRatio(r);
+    public boolean doPortTrade(int r, int s, ResourceBundle resDeck) {
+        int ratio = findBestRatio(new Resource(r));
         int[] rRemove = new int[Resource.NUM_TYPES];
-        rRemove[r.getResourceType()] = ratio;
+        rRemove[r] = ratio;
         
-        if (!resourceCards.canRemove(rRemove) || !resDeck.canRemove(s.getResourceType())) { return false; }
+        if (!resourceCards.canRemove(rRemove) || !resDeck.canRemove(s)) { return false; }
         resDeck.add(resourceCards.remove(rRemove));
-        resourceCards.add(resDeck.remove(s.getResourceType()));
+        resourceCards.add(resDeck.remove(s));
         return true;
     }
     public DevCard playDevCard(int type) {
@@ -395,7 +395,12 @@ public class Player {
         }
     }
     
-     /* Testing */
+    /* Printing */
+    public void printResourceCards() {
+        System.out.println("Your hand is: " + resourceCards);
+    }
+    
+    /* Testing */
     
     public static void main(String args[]) {
         int VP = 10;

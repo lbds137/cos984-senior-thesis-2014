@@ -73,7 +73,11 @@ public class Port {
     //@Override
     public boolean equals(Port p) {
         if (p == null) { return false; }
-        return resource.equals(p.getResource()) && portType == p.getPortType();
+        if (portType == p.getPortType()) {
+            if (portType == SPECIFIC) { return resource.equals(p.getResource()); }
+            else { return true; }
+        }
+        else { return false; }
     }
     // "greater" means that this port offers a better trade ratio for specified resource r
     public int compareRatio(Port p, Resource r) {

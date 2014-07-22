@@ -402,6 +402,10 @@ public class Player {
     public void printResourceCards() {
         System.out.println("Your hand is: " + resourceCards);
     }
+    // prints *the sum of public and private* VP
+    public void printVP() {
+        System.out.println("Your VP score is: " + getVP());
+    }
     
     /* Testing */
     

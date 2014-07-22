@@ -16,15 +16,18 @@ public final class UserInput {
     public static final String TRADE_PLAYER = "trade player";
     public static final String TRADE_PORT = "trade port";
     public static final String PLAY_DEV_CARD = "play dev card";
+    public static final String PRINT_RESOURCE_CARDS = "print resource cards";
     public static final String END_TURN = "end turn";
     
     public static final String BEGINNING_INFO = COMMA + "you will be prompted to build a settlement and a road this turn. ";
     public static final String TURN_REQUEST = COMMA + "what would you like to do? Valid options are: " + BUILD_ROAD + COMMA + 
                                               BUILD_SETTLEMENT + COMMA + BUILD_CITY + COMMA + BUILD_DEV_CARD + COMMA + 
-                                              TRADE_PLAYER + COMMA + TRADE_PORT + COMMA + PLAY_DEV_CARD + COMMA + END_TURN;
+                                              TRADE_PLAYER + COMMA + TRADE_PORT + COMMA + PLAY_DEV_CARD + COMMA + 
+                                              PRINT_RESOURCE_CARDS + COMMA + END_TURN;
     public static final String ROAD_REQUEST = COMMA + "please enter a start and end location for your road. ";
     public static final String SETTLEMENT_REQUEST = COMMA + "please enter a location for your settlement. ";
     public static final String CITY_REQUEST = COMMA + "please enter a location for your city. ";
+    public static final String PORT_TRADE_REQUEST = COMMA + "please enter a resource for port trade, followed by the resource to trade for. ";
     public static final String CANNOT_BUILD_ROAD = COMMA + "you are unable to build a road. " + ABORTING;
     public static final String CANNOT_BUILD_SETTLEMENT = COMMA + "you are unable to build a settlement. " + ABORTING;
     public static final String CANNOT_BUILD_CITY = COMMA + "you are unable to build a city. " + ABORTING;
@@ -38,6 +41,7 @@ public final class UserInput {
     public static final String INVALID_SETTLEMENT = COMMA + "you cannot build a settlement there. " + TRY_AGAIN;
     public static final String INVALID_CITY = COMMA + "you cannot build a city there. " + TRY_AGAIN;
     public static final String INVALID_DEV_CARD = COMMA + "you entered an invalid dev card. " + TRY_AGAIN;
+    public static final String INVALID_TRADE = COMMA + "you cannot afford that trade. " + TRY_AGAIN;
     
     /* Static fields */
     
@@ -191,6 +195,40 @@ public final class UserInput {
         } while (!valid);
         return inter;
     }
+    public static void doPortTrade(Player p) {
+        boolean success = true;
+        String result = PORT_TRADE_REQUEST;
+        do {
+            String input;
+            String[] sRes;
+            String sResOne = "";
+            String sResTwo = "";
+            String resultOne;
+            String resultTwo;
+            // check for valid resource input
+            do {
+                input = getNewInput(p, result);
+                sRes = input.split("\\s");
+                if (sRes.length < 2) {
+                    result = INVALID_RESOURCE;
+                    continue;
+                }
+                sResOne = sRes[0];
+                sResTwo = sRes[1];
+                resultOne = validateResource(sResOne);
+                resultTwo = validateResource(sResTwo);
+                if (!resultOne.equals(VALID) || !resultTwo.equals(VALID)) {
+                    if (resultOne.equals(VALID)) { result = resultTwo; }
+                    else { result = resultOne; }
+                }
+                else { result = VALID; }
+            } while (!result.equals(VALID));
+            // verify if player p can do the trade
+            success = p.doPortTrade(Resource.getResourceType(sResOne), 
+                                    Resource.getResourceType(sResTwo), resDeck);
+            if (!success) { result = INVALID_TRADE; }
+        } while (!success);
+    }
     public static void doTurn(Player p) {
         boolean done = false;
         do {
@@ -213,8 +251,14 @@ public final class UserInput {
                     Intersection j = getCity(p);
                     if (j != null) { p.buildCity(j, resDeck); }
                     break;
-                case BUILD_DEV_CARD: case TRADE_PLAYER: case TRADE_PORT: case PLAY_DEV_CARD: 
+                case TRADE_PORT:
+                    doPortTrade(p);
+                    break;
+                case BUILD_DEV_CARD: case TRADE_PLAYER: case PLAY_DEV_CARD: 
                     System.out.println("The desired functionality is not yet implemented. Please try a different command.");
+                    break;
+                case PRINT_RESOURCE_CARDS:
+                    p.printResourceCards();
                     break;
                 case END_TURN:
                     done = true;
@@ -244,7 +288,8 @@ public final class UserInput {
             case BUILD_ROAD: case BUILD_SETTLEMENT:
             case BUILD_CITY: case BUILD_DEV_CARD:
             case TRADE_PLAYER: case TRADE_PORT:
-            case PLAY_DEV_CARD: case END_TURN:
+            case PLAY_DEV_CARD: case PRINT_RESOURCE_CARDS:
+            case END_TURN:
                 return VALID;
             default: return INVALID_TURN_COMMAND;
         }
@@ -257,15 +302,10 @@ public final class UserInput {
         catch (Exception e) { return INVALID_INTEGER; }
     }
     public static String validateResource(String sResource) {
-        switch (sResource.toLowerCase()) {
-            case Resource.WOOL_NAME:
-            case Resource.GRAIN_NAME:
-            case Resource.LUMBER_NAME:
-            case Resource.BRICK_NAME:
-            case Resource.ORE_NAME:
-                return VALID;
-            default: return INVALID_RESOURCE;
+        if (Resource.getResourceType(sResource) != Constants.INVALID) {
+            return VALID;
         }
+        else { return INVALID_RESOURCE; }
     }
     public static String validateDevCard(String sDevCard) {
         switch (sDevCard.toLowerCase()) {

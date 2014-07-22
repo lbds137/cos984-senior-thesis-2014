@@ -56,7 +56,7 @@ public class Game {
                     p.collectResources(diceRoll, resDeck);
                 }
             }
-            System.out.println("Your hand is: " + pCurrent.getResourceCards());
+            pCurrent.printResourceCards();
             System.out.println("Your VP score is: " + pCurrent.getVP());
             UserInput.doTurn(pCurrent);
             // todo: remainder of game turn logic

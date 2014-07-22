@@ -1,4 +1,6 @@
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Resource implements Comparable<Resource> {
     
@@ -25,7 +27,9 @@ public class Resource implements Comparable<Resource> {
     public static final String LUMBER_NAME = "Lumber";
     public static final String BRICK_NAME = "Brick";
     public static final String ORE_NAME = "Ore";
-    public static final String[] CARD_NAMES = {"Wool","Grain","Lumber","Brick","Ore"};
+    //public static final String[] CARD_NAMES = {"Wool","Grain","Lumber","Brick","Ore"};
+    public static final ArrayList<String> CARD_NAMES = 
+        new ArrayList<String>(Arrays.asList("Wool","Grain","Lumber","Brick","Ore"));
     // set of 19 tiles out of which the board is created
     public static final Integer[] DEFAULT_TILES = {DESERT,BRICK,BRICK,BRICK,GRAIN,
                                                    GRAIN,GRAIN,GRAIN,LUMBER,LUMBER,
@@ -93,6 +97,22 @@ public class Resource implements Comparable<Resource> {
             else { return resourceType + 1; }
         }
         else { return resourceType - r.getResourceType(); }
+    }
+    
+    /* Static methods */
+    
+    public static int getResourceType(String sResource) {
+        String s = sResource.toLowerCase();
+        s = Character.toUpperCase(s.charAt(0)) + s.substring(1);
+        switch (s) {
+            case Resource.WOOL_NAME:
+            case Resource.GRAIN_NAME:
+            case Resource.LUMBER_NAME:
+            case Resource.BRICK_NAME:
+            case Resource.ORE_NAME:
+                return CARD_NAMES.indexOf(s);
+            default: return Constants.INVALID;
+        }
     }
     
     /* Testing */

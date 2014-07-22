@@ -46,7 +46,7 @@ public class Game {
     /* MAIN GAME LOOP - WHERE EVERYTHING HAPPENS */
     private void gameLoop() {
         Player pCurrent = players.get(0);
-        while (true) {
+        while (getWinner() == null) {
             UserInput.doPrivacy();
             int diceRoll = getDiceRoll();
             System.out.println("Dice roll was " + diceRoll + ".");
@@ -56,13 +56,13 @@ public class Game {
                     p.collectResources(diceRoll, resDeck);
                 }
             }
-            pCurrent.printResourceCards();
-            System.out.println("Your VP score is: " + pCurrent.getVP());
             UserInput.doTurn(pCurrent);
             // todo: remainder of game turn logic
             
             pCurrent = getNextPlayer(pCurrent);
         }
+        Player winner = getWinner();
+        System.out.println(winner + " has won the game with " + winner.getVP() + " victory points!");
     }
     private void setUpPlayers() {
         players = new ArrayList<Player>(numPlayers);
@@ -119,6 +119,14 @@ public class Game {
     private void moveRobber(Player p) {
         // todo: player who rolled moves robber and steals from one of the players 
         // whose settlements/cities border the chosen hex
+    }
+    // returns null if no winner yet
+    private Player getWinner() {
+        Player winner = null;
+        for (Player p : players) {
+            if (p.getVP() >= DEFAULT_VP) { winner = p; }
+        }
+        return winner;
     }
     
     /* Testing */

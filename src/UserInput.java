@@ -94,6 +94,7 @@ public final class UserInput {
                 }
                 else { result = VALID; }
             } while (!result.equals(VALID));
+            valid = true;
             int iOne = Integer.parseInt(sIntOne);
             int iTwo = Integer.parseInt(sIntTwo);
             // throw out locations outside the range of intersections[], and 
@@ -131,6 +132,7 @@ public final class UserInput {
                 input = getNewInput(p, result);
                 result = validateInteger(input);
             } while (!result.equals(VALID));
+            valid = true;
             int location = Integer.parseInt(input);
             // throw out locations outside the range of intersections[]
             if (location < 0 || location >= intersections.length) {
@@ -178,6 +180,7 @@ public final class UserInput {
                 input = getNewInput(p, result);
                 result = validateInteger(input);
             } while (!result.equals(VALID));
+            valid = true;
             int location = Integer.parseInt(input);
             // throw out locations outside the range of intersections[]
             if (location < 0 || location >= intersections.length) {
@@ -232,6 +235,9 @@ public final class UserInput {
     public static void doTurn(Player p) {
         boolean done = false;
         do {
+            System.out.println();
+            p.printResourceCards();
+            p.printVP();
             String input = getNewInput(p, TURN_REQUEST);
             String result = validateTurnCommand(input);
             while (!result.equals(VALID)) {
@@ -270,6 +276,7 @@ public final class UserInput {
         } while (!done);
     }
     public static void doInitialTurn(Player p) {
+        System.out.println();
         System.out.println(p.toString() + BEGINNING_INFO);
         Intersection i = getSettlement(p);
         p.buildSettlement(i, resDeck);
@@ -324,16 +331,6 @@ public final class UserInput {
     }
     // clear screen so other players can't peek
     public static void doPrivacy() {
-        try {
-            String os = System.getProperty("os.name");
-            if (os.contains("Windows")) { Runtime.getRuntime().exec("cls"); }
-            else { 
-                Runtime.getRuntime().exec("clear");
-                System.out.print("\033[H\033[2J");
-            }
-        }
-        catch (Exception e) {
-            // 
-        }
+        for (int i = 0; i < 100; i++) { System.out.println(); }
     }
 }

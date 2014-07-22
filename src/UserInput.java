@@ -148,9 +148,9 @@ public final class UserInput {
                 if (i.getPlayer() != null) { 
                     valid = false;
                     result = INVALID_SETTLEMENT;
-                    continue;
                 } 
             }
+            if (!valid) { continue; }
             inter = intersections[location];
             // verify if player p can build a settlement at the given location
             valid = p.canBuildSettlement(inter);

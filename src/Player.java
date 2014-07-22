@@ -110,15 +110,18 @@ public class Player {
         // is the player able to build ANY road? is the given road already owned?
         if (!canBuildRoad() || !r.canBuild()) { return false; }
         boolean isValid = false;
-        // roads must either be adjacent to a settlement/city or another road
+        // the first two roads must be adjacent to a settlement
         for (int i = 0; !isValid && i < settlements.size(); i++) {
             if (r.other(settlements.get(i).getId()) != Constants.INVALID) { isValid = true; }
         }
-        for (int i = 0; !isValid && i < cities.size(); i++) {
-            if (r.other(cities.get(i).getId()) != Constants.INVALID) { isValid = true; }
-        }
-        for (int i = 0; !isValid && i < roads.size(); i++) {
-            if (roads.get(i).isNeighbor(r)) { isValid = true; }
+        // non-special roads must either be adjacent to a settlement, city, or another road
+        if (roads.size() >= INITIAL_FREE_ROADS) {
+            for (int i = 0; !isValid && i < cities.size(); i++) {
+                if (r.other(cities.get(i).getId()) != Constants.INVALID) { isValid = true; }
+            }
+            for (int i = 0; !isValid && i < roads.size(); i++) {
+                if (roads.get(i).isNeighbor(r)) { isValid = true; }
+            }
         }
         return isValid;
     }

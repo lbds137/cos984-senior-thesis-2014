@@ -6,6 +6,7 @@ public class Board {
 
     /* Constants */
 
+    // radius = number of rings (3 for a standard Catan board)
     public static final int DEFAULT_RADIUS = 3;
 
     /* Fields */
@@ -15,7 +16,6 @@ public class Board {
     private int numIntersections;
     private ArrayList<ArrayList<Integer>> hRings;
     private ArrayList<ArrayList<Integer>> iRings;
-    // existence of edge denoted by 'true'; 'false' otherwise
     private boolean[][] hGraph;
     // existence of edge denoted by Road object; 'null' otherwise
     private Road[][] iGraph;
@@ -24,6 +24,7 @@ public class Board {
     // row index: intersection id; col index: hex id
     private ArrayList<ArrayList<Integer>> iHMapping;
     private Hex[] hexes;
+    private ArrayList<Integer> portLocations;
     private Intersection[] intersections;
     private int robberIndex; // location of the robber in hexes[]
     
@@ -40,6 +41,7 @@ public class Board {
         initIGraph();
         initMappings();
         initHexes();
+        initPortLocations();
         initIntersections();
     }
     // build a board from a saved state
@@ -262,11 +264,14 @@ public class Board {
         for (int i = 0; i < n; i++) {
             hexes[i] = new Hex(i, new Resource(shuffledLand.get(i)), shuffledDiceRolls.get(i));
         }
-        hexes[robberIndex].placeRobber(); // actually place the robber on the desert hex
+        hexes[robberIndex].placeRobber();
+    }
+    private void initPortLocations() {
+        
     }
     private void initIntersections() {
         int n = numIntersections;
-        ArrayList<Port> ports = getPorts();
+        ArrayList<Port> ports = generatePorts();
         
         intersections = new Intersection[n];
         for (int i = 0; i < n; i++) {
@@ -295,6 +300,7 @@ public class Board {
                         for (int j = 0; j < decider; j++) land.add(Resource.DESERT);
                         break;
                     case 4: 
+                        // add one of each resource except ore
                         for (int j = 0; j < decider; j++) land.add(j);
                         break;
                     default: // we shouldn't be here
@@ -380,26 +386,57 @@ public class Board {
         }
         return diceRolls;
     }
-    // needs to be updated to perform dynamic generation for larger boards
-    private ArrayList<Port> getPorts() {
-        ArrayList<Port> ports = new ArrayList<Port>(numIntersections);
-		// each intersection initialized with a dummy INLAND port
-        for (int i = 0; i < numIntersections; i++) { ports.add(new Port(Port.INLAND)); }
-        ArrayList<Port> shuffledPorts = new ArrayList<Port>(Port.LOCATIONS.length);
-        for (int i = 0; i < Port.NUM_GENERIC; i++) { shuffledPorts.add(new Port(Port.GENERIC)); }
-        for (int i = 0; i < Port.NUM_SPECIFIC / Resource.NUM_TYPES; i++) {
+    private ArrayList<Port> generatePorts() {
+        int numI = iRings.get(radius - 1).size(); // # intersections in last ring
+        int numPortsI = (int) (numI * Port.PORT_RATIO); // # intersections with ports
+        numPortsI -= numPortsI % 2; // must be even
+        int numPortsL = numPortsI / 2; // # logical ports
+        // we want the number of specific ports to be about half of the ports, but also
+        // it needs to be a multiple of Resource.NUM_TYPES
+        int numSpecificL = (numPortsL / 2) + (Resource.NUM_TYPES - ((numPortsL / 2) % Resource.NUM_TYPES));
+        int numGenericL = numPortsL - numSpecificL;
+        /* Initialize logical ports */
+        ArrayList<Port> portsL = new ArrayList<Port>(numPortsL);
+        for (int i = 0; i < numGenericL; i++) { portsL.add(new Port(Port.GENERIC)); }
+        for (int i = 0; i < numSpecificL / Resource.NUM_TYPES; i++) {
             for (int j = 0; j < Resource.NUM_TYPES; j++) {
-                shuffledPorts.add(new Port(Port.SPECIFIC, new Resource(j)));
+                portsL.add(new Port(Port.SPECIFIC, new Resource(j)));
             }
         }
-        Collections.shuffle(shuffledPorts);
-        // need to update port locations to be dynamically located
-        for (int i = 0; i < Port.LOCATIONS.length; i++) {
-            for (int j = 0; j < Port.LOCATIONS[i].length; j++) {
-                ports.set(Port.LOCATIONS[i][j], shuffledPorts.get(i));
+        Collections.shuffle(portsL);
+        /* Randomize port locations */
+        int numInlandI = numI - numPortsI; 
+        int numAvailable = numInlandI; // how many inland ports are left to distribute
+        Port inland = new Port(Port.INLAND); // use one inland port for all references
+        ArrayList<Port> portsI = new ArrayList<Port>(numIntersections);
+        // add inland port references to all intersections not in last ring
+        for (int i = 0; i < numIntersections - numI; i++) { portsI.add(inland); }
+        for (int i = 0; i < numPortsL; i++) {
+            // separate real ports with one inland port
+            portsI.add(inland);
+            numAvailable--;
+            portsI.add(portsL.get(i));
+            portsI.add(portsL.get(i));
+        }
+        int portsISize = portsI.size(); // need to keep track of this because size will change
+        // distribute remaining inland ports
+        while (numAvailable > 0) {
+            for (int i = numIntersections - numI; numAvailable > 0 && i < portsISize; i++) {
+                double rand = Math.random();
+                if (portsI.get(i).getPortType() == Port.INLAND && rand > 0.5) {
+                    portsI.add(i, inland);
+                    portsISize++;
+                    i++;
+                    numAvailable--;
+                }
             }
         }
-        return ports;
+        // initialize portLocations field (used by BoardDraw class)
+        portLocations = new ArrayList<Integer>(numPortsI);
+        for (int i = numIntersections - numI; i < portsISize; i++) {
+            if (portsI.get(i).getPortType() != Port.INLAND) { portLocations.add(i); }
+        }
+        return portsI;
     }
     
     /* Getters */
@@ -424,6 +461,10 @@ public class Board {
     }
     public Intersection[] getIntersections() {
         return intersections;
+    }
+    // get the locations of ONLY the maritime ports (i.e. GENERIC and SPECIFIC but not INLAND)
+    public ArrayList<Integer> getPortLocations() {
+        return portLocations;
     }
     
     /* Operations */

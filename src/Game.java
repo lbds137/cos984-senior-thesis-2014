@@ -63,6 +63,7 @@ public class Game {
         }
         Player winner = getWinner();
         System.out.println(winner + " has won the game with " + winner.getVP() + " victory points!");
+        bDraw.save("final_board_state.png");
     }
     private void setUpPlayers() {
         players = new ArrayList<Player>(numPlayers);

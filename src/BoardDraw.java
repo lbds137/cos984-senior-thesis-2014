@@ -7,6 +7,7 @@ public class BoardDraw {
     /* Constants */
     
     public static final int DEFAULT_DIM = 700;
+    public static final int PLACES_TO_ROUND = 3;
 
     /* Private fields */
 
@@ -16,6 +17,7 @@ public class BoardDraw {
     ArrayList<ArrayList<Integer>> iRings;
     Road[][] iGraph;
     Hex[] hexes;
+    ArrayList<Integer> portLocations;
     Intersection[] intersections;
     int numHexes;
     int numIntersections;
@@ -31,14 +33,15 @@ public class BoardDraw {
     HexShape[] hexShapes;
     double[] interXCoords;
     double[] interYCoords;
+    double[] portXCoords;
+    double[] portYCoords;
     double chitRadius;
+    double portRadius;
     double buildingRadius;
     double innerCityRadius;
     double intersectionRadius;
     double roadOuterRadius;
     double roadInnerRadius;
-    // avoid drawing everything all the time
-    boolean firstDraw;
 
     /* Constructors */
     
@@ -49,6 +52,7 @@ public class BoardDraw {
         iRings = board.getIRings();
         iGraph = board.getIGraph();
         hexes = board.getHexes();
+        portLocations = board.getPortLocations();
         intersections = board.getIntersections();
         numHexes = hexes.length;
         numIntersections = intersections.length;
@@ -71,13 +75,15 @@ public class BoardDraw {
         hexShapes[0] = new HexShape(xCenter, yCenter, HexShape.BALANCE, w, HexShape.BALANCE_WIDTH);
         h = hexShapes[0].getBalanceHeight();
         s = hexShapes[0].getSide();
-        hexXCenters = getHexXCenters(xCenter, w);
-        hexYCenters = getHexYCenters(yCenter, h, s);
+        hexXCenters = getHexXCenters();
+        hexYCenters = getHexYCenters();
         for (int i = 1; i < numHexes; i++) {
             hexShapes[i] = new HexShape(hexXCenters[i], hexYCenters[i], HexShape.BALANCE, w, HexShape.BALANCE_WIDTH);
         }
-        interXCoords = getInterXCoords(xCenter, w);
-        interYCoords = getInterYCoords(yCenter, h, s);
+        interXCoords = getInterXCoords();
+        interYCoords = getInterYCoords();
+        // port coordinates must be calculated together
+        initPortCoords();
     }
     private void initCanvas() {
         StdDraw.setCanvasSize((int) dim, (int) dim);
@@ -85,26 +91,23 @@ public class BoardDraw {
         StdDraw.setYscale(0, dim);
         StdDraw.setFont(new Font("Arial", Font.BOLD, (int) (w / 6)));
         chitRadius = w / 5;
+        portRadius = w / 6;
         buildingRadius = w / 8;
         innerCityRadius = buildingRadius - (buildingRadius / 3);
         intersectionRadius = buildingRadius / 2;
         roadOuterRadius = 0.015;
         roadInnerRadius = 0.01;
-        firstDraw = true;
     }
     
     /* Operations */
     
     public void draw() {
-        //if (firstDraw) {
-            drawOcean();
-            drawHexes();
-            //firstDraw = false;
-        //}
+        drawOcean();
+        drawHexes();
         drawChits();
         drawRoads();
+        drawPorts();
         drawIntersections();
-        //drawPorts();
     }
     public void save(String name) {
         StdDraw.save(name);
@@ -134,7 +137,7 @@ public class BoardDraw {
                 StdDraw.text(hexXCenters[i], hexYCenters[i], " " + hexes[i].getDiceRoll());
             }
             else {
-                StdDraw.setPenColor(StdDraw.BLACK);
+                StdDraw.setPenColor(StdDraw.DARK_GRAY);
                 StdDraw.filledCircle(hexXCenters[i], hexYCenters[i], chitRadius);
             }
         }
@@ -188,7 +191,27 @@ public class BoardDraw {
         }
     }
     private void drawPorts() {
-        // todo
+        for (int i = 0; i < portLocations.size(); i += 2) {
+            // draw lines showing which intersections the port applies to
+            double x0 = interXCoords[portLocations.get(i)];
+            double y0 = interYCoords[portLocations.get(i)];
+            double x1 = interXCoords[portLocations.get(i + 1)];
+            double y1 = interYCoords[portLocations.get(i + 1)];
+            double x2 = portXCoords[i / 2];
+            double y2 = portYCoords[i / 2];
+            StdDraw.setPenColor(StdDraw.BLACK);
+            StdDraw.line(x0, y0, x2, y2);
+            StdDraw.line(x1, y1, x2, y2);
+            // draw the port
+            Port port = intersections[portLocations.get(i)].getPort();
+            if (port.getPortType() == Port.SPECIFIC) {
+                StdDraw.setPenColor(port.getResource().getColor());
+            }
+            else { StdDraw.setPenColor(StdDraw.BLACK); }
+            StdDraw.filledCircle(portXCoords[i / 2], portYCoords[i / 2], portRadius);
+            StdDraw.setPenColor(StdDraw.BLACK);
+            StdDraw.circle(portXCoords[i / 2], portYCoords[i / 2], portRadius);
+        }
     }
     private Color getPlayerColor(Player p) {
         switch (p.getId()) {
@@ -199,7 +222,7 @@ public class BoardDraw {
             default: return StdDraw.BLACK;
         }
     }
-    private double[] getHexXCenters(double xCenter, double w) {
+    private double[] getHexXCenters() {
         double[] xCenters = new double[numHexes];
         xCenters[0] = xCenter;
         for (int i = 1; i < radius; i++) {
@@ -219,7 +242,7 @@ public class BoardDraw {
         }
         return xCenters;
     }
-    private double[] getHexYCenters(double yCenter, double h, double s) {
+    private double[] getHexYCenters() {
         double[] yCenters = new double[numHexes];
         yCenters[0] = yCenter;
         for (int i = 1; i < radius; i++) {
@@ -239,7 +262,7 @@ public class BoardDraw {
         }
         return yCenters;
     }
-    private double[] getInterXCoords(double xCenter, double w) {
+    private double[] getInterXCoords() {
         double[] xCoords = new double[numIntersections];
         // we don't know yCenter here but it doesn't matter, so we can use xCenter for both x and y
         HexShape hFirst = new HexShape(xCenter, xCenter, HexShape.BALANCE, w, HexShape.BALANCE_WIDTH);
@@ -275,7 +298,7 @@ public class BoardDraw {
         }
         return xCoords;
     }
-    private double[] getInterYCoords(double yCenter, double h, double s) {
+    private double[] getInterYCoords() {
         double[] yCoords = new double[numIntersections];
         // we don't know yCenter here but it doesn't matter, so we can use yCenter for both x and y
         HexShape hFirst = new HexShape(yCenter, yCenter, HexShape.BALANCE, h, HexShape.BALANCE_HEIGHT);
@@ -310,6 +333,33 @@ public class BoardDraw {
             iOffset += curIRingSize;
         }
         return yCoords;
+    }
+    private void initPortCoords() {
+        portXCoords = new double[portLocations.size() / 2];
+        portYCoords = new double[portLocations.size() / 2];
+        for (int i = 0; i < portLocations.size(); i += 2) {
+            double xOne = interXCoords[portLocations.get(i)];
+            double xTwo = interXCoords[portLocations.get(i + 1)];
+            double yOne = interYCoords[portLocations.get(i)];
+            double yTwo = interYCoords[portLocations.get(i + 1)];
+            double xDiff = round(xTwo - xOne);
+            double yDiff = round(yTwo - yOne);
+            int decider;
+            if (xDiff < 0 && yDiff < 0) { decider = 0; }
+            else if (xDiff == 0 && yDiff < 0) { decider = 1; }
+            else if (xDiff > 0 && yDiff < 0) { decider = 2; }
+            else if (xDiff > 0 && yDiff > 0) { decider = 3; }
+            else if (xDiff == 0 && yDiff > 0) { decider = 4; }
+            else /* if (xDiff < 0 && yDiff > 0) */ { decider = 5; }
+            // use dummy hex shape to calculate lengths
+            HexShape shape = new HexShape(0, 0, HexShape.BALANCE, s / 2, HexShape.SIDE);
+            double wTemp = shape.getBalanceWidth();
+            double hTemp = shape.getBalanceHeight();
+            double sTemp = shape.getSide();
+            // use decider to find coordinates
+            portXCoords[i / 2] = getNextX(xOne + (xDiff / 2), wTemp, decider);
+            portYCoords[i / 2] = getNextY(yOne + (yDiff / 2), hTemp, sTemp, decider);
+        }
     }
     private double getNextX(double x, double w, int transType) {
         double xNew = x;
@@ -347,5 +397,9 @@ public class BoardDraw {
                 // we shouldn't be here
         }
         return yNew;
+    }
+    // needed because port coordinate calculation is sensitive to precision
+    private double round(double d) {
+        return ((double) Math.round(d * (10 * PLACES_TO_ROUND))) / (10 * PLACES_TO_ROUND);
     }
 }

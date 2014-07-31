@@ -139,6 +139,12 @@ public class BoardDraw {
             else {
                 StdDraw.setPenColor(StdDraw.DARK_GRAY);
                 StdDraw.filledCircle(hexXCenters[i], hexYCenters[i], chitRadius);
+                StdDraw.setPenColor(StdDraw.BLACK);
+                StdDraw.circle(hexXCenters[i], hexYCenters[i], chitRadius);
+                // "R" is for "Robber"
+                StdDraw.setPenColor(StdDraw.WHITE);
+                StdDraw.text(hexXCenters[i], hexYCenters[i], "R");
+                StdDraw.setPenColor(StdDraw.BLACK);
             }
         }
     }
@@ -211,6 +217,9 @@ public class BoardDraw {
             StdDraw.filledCircle(portXCoords[i / 2], portYCoords[i / 2], portRadius);
             StdDraw.setPenColor(StdDraw.BLACK);
             StdDraw.circle(portXCoords[i / 2], portYCoords[i / 2], portRadius);
+            StdDraw.setPenColor(StdDraw.WHITE);
+            StdDraw.text(portXCoords[i / 2], portYCoords[i / 2], port.toString().substring(0, 2));
+            StdDraw.setPenColor(StdDraw.BLACK);
         }
     }
     private Color getPlayerColor(Player p) {

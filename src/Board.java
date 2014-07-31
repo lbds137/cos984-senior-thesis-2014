@@ -41,7 +41,6 @@ public class Board {
         initIGraph();
         initMappings();
         initHexes();
-        initPortLocations();
         initIntersections();
     }
     // build a board from a saved state
@@ -266,9 +265,6 @@ public class Board {
         }
         hexes[robberIndex].placeRobber();
     }
-    private void initPortLocations() {
-        
-    }
     private void initIntersections() {
         int n = numIntersections;
         ArrayList<Port> ports = generatePorts();
@@ -469,11 +465,21 @@ public class Board {
     
     /* Operations */
     
-    public void moveRobber(int index) {
-        if (index < 0 || index > hexes.length) { return; }
+    // move the robber and pick a random player whose buildings border the chosen hex
+    public Player moveRobber(int index) {
         hexes[robberIndex].removeRobber();
         robberIndex = index;
         hexes[robberIndex].placeRobber();
+        // since we're not using a set, if a player has more settlements s/he is more likely to be picked
+        ArrayList<Player> candidatePlayers = new ArrayList<Player>();
+        for (int i = 0; i < hIMapping.get(index).size(); i++) {
+            Intersection inter = intersections[hIMapping.get(index).get(i)];
+            Player p = inter.getPlayer();
+            if (p != null && p.getResourceCards().size() != 0) { candidatePlayers.add(p); }
+        }
+        if (candidatePlayers.size() == 0) { return null; }
+        int randIndex = (int) (Math.random() * candidatePlayers.size());
+        return candidatePlayers.get(randIndex);
     }
     
     /* Debug */

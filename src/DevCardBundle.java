@@ -56,7 +56,7 @@ public class DevCardBundle {
         int temp = 0;
         for ( ; temp < rand; rowIndex++) { temp += size(rowIndex); }
         if (temp > rand) { rowIndex--; } // whoops, we overshot
-        while (size(rowIndex) == 0) { rowIndex++; }
+        //while (size(rowIndex) == 0) { rowIndex++; }
         
         return remove(rowIndex);
     }

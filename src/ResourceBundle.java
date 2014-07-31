@@ -67,6 +67,19 @@ public class ResourceBundle {
         }
         return b;
     }
+    // doesn't seem to work correctly
+    public Resource removeRandom() { // remove a random resource card
+        if (size() == 0) { return null; }
+        
+        int rand = (int) (Math.random() * size());
+        int rowIndex = 0;
+        int temp = 0;
+        for ( ; temp < rand; rowIndex++) { temp += size(rowIndex); }
+        if (temp > rand) { rowIndex--; } // whoops, we overshot
+        //while (size(rowIndex) == 0) { rowIndex++; }
+        
+        return remove(rowIndex);
+    }
 	public int size(int resourceType) {
 		int test = new Resource(resourceType).getResourceType();
 		if (test != resourceType) return 0; // size is always 0 for invalid resource types

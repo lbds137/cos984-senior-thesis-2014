@@ -239,6 +239,26 @@ public class Player {
         resDeck.add(resourceCards.remove(cardsToRemove));
         return true;
     }
+    // discard random cards if hand size is larger than 7
+    public void discard(ResourceBundle resDeck) {
+        int numToDiscard = 0;
+        if (resourceCards.size() > 7) { numToDiscard = resourceCards.size() / 2; }
+        while (numToDiscard > 0) { 
+            resDeck.add(resourceCards.removeRandom());
+            numToDiscard--;
+        }
+    }
+    // random card stolen by robber
+    public void giveResource(Player other) {
+        Resource r = resourceCards.removeRandom();
+        if (r == null) { return; }
+        other.receiveResource(r);
+        System.out.println(other + " stole a card (" + r + ") from " + this + "!"); 
+    }
+    // receive stolen card
+    public void receiveResource(Resource r) {
+        resourceCards.add(r);
+    }
     // trade X cards of r for one card of s
     public boolean doPortTrade(int r, int s, ResourceBundle resDeck) {
         int ratio = findBestRatio(new Resource(r));
@@ -405,52 +425,5 @@ public class Player {
     // prints *the sum of public and private* VP
     public void printVP() {
         System.out.println("Your VP score is: " + getVP());
-    }
-    
-    /* Testing */
-    
-    public static void main(String args[]) {
-        int VP = 10;
-        Board b = new Board();
-        int dim = 700;
-        Intersection[] intersections = b.getIntersections();
-        Road[][] roads = b.getIGraph();
-        Player pOne = new Player(0, 10);
-        Player pTwo = new Player(1, 10);
-        Player pThree = new Player(2, 10);
-        Player pFour = new Player(3, 10);
-        
-        pOne.giveFreeRoads(100);
-        pOne.giveFreeSettlements(100);
-        pOne.giveFreeCities(100);
-        //pOne.buildSettlement(intersections[0], null);
-        //pOne.buildSettlement(intersections[3], null);
-        /*
-        pOne.buildRoad(roads[0][1], null);
-        pOne.buildRoad(roads[3][4], null);
-        pOne.buildRoad(roads[4][15],null);
-        pOne.buildRoad(roads[4][5],null);
-        pOne.buildRoad(roads[5][0],null);
-        pOne.buildRoad(roads[1][2],null);
-        pOne.buildRoad(roads[2][3],null);
-        pOne.buildRoad(roads[1][6],null);
-        pOne.buildRoad(roads[6][7],null);
-        pOne.buildRoad(roads[8][7],null);
-        pOne.buildRoad(roads[8][9],null);
-        pOne.buildRoad(roads[2][9],null);
-        pOne.buildRoad(roads[7][24],null);
-        pOne.buildRoad(roads[0][21],null);
-        pOne.buildRoad(roads[21][22],null);
-        pOne.buildRoad(roads[22][23],null); // fails because max number of roads built
-        */
-        //pOne.buildCity(intersections[0], null);
-        //pOne.buildCity(intersections[2], null); // fails because there is no city there
-        BoardDraw bd = new BoardDraw(b, dim);
-        bd.draw();
-        UserInput.init(intersections, roads, null, bd);
-        UserInput.doTurn(pOne);
-        System.out.println(pOne.getLongestRoad());
-        bd.save("result.png");
-        System.exit(0);
     }
 }

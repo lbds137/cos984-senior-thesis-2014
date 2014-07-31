@@ -20,6 +20,7 @@ public final class UserInput {
     public static final String END_TURN = "end turn";
     
     public static final String BEGINNING_INFO = COMMA + "you will be prompted to build a settlement and a road this turn. ";
+    public static final String ROBBER_REQUEST = COMMA +"a 7 was rolled on your turn. Please enter a hex to which to move the robber. ";
     public static final String TURN_REQUEST = COMMA + "what would you like to do? Valid options are: " + BUILD_ROAD + COMMA + 
                                               BUILD_SETTLEMENT + COMMA + BUILD_CITY + COMMA + BUILD_DEV_CARD + COMMA + 
                                               TRADE_PLAYER + COMMA + TRADE_PORT + COMMA + PLAY_DEV_CARD + COMMA + 
@@ -44,20 +45,41 @@ public final class UserInput {
     public static final String INVALID_TRADE = COMMA + "you cannot afford that trade. " + TRY_AGAIN;
     
     /* Static fields */
-    
+    private static Hex[] hexes;
     private static Intersection[] intersections; 
     private static Road[][] iGraph;
     private static ResourceBundle resDeck;
     private static Scanner sc;
     private static BoardDraw bd;
 
-    public static void init(Intersection[] intersections, Road[][] iGraph, 
-                            ResourceBundle resDeck, BoardDraw bd) {
-        UserInput.intersections = intersections;
-        UserInput.iGraph = iGraph;
+    public static void init(Board b, ResourceBundle resDeck, BoardDraw bd) {
+        UserInput.hexes = b.getHexes();
+        UserInput.intersections = b.getIntersections();
+        UserInput.iGraph = b.getIGraph();
         UserInput.resDeck = resDeck;
         sc = new Scanner(System.in);
         UserInput.bd = bd;
+    }
+    public static int getHex(Player p) {
+        boolean valid = true;
+        String result = ROBBER_REQUEST;
+        int location;
+        do {
+            String input;
+            // check for valid integer input
+            do {
+                input = getNewInput(p, result);
+                result = validateInteger(input);
+            } while (!result.equals(VALID));
+            valid = true;
+            location = Integer.parseInt(input);
+            // throw out locations outside the range of hexes[]
+            if (location < 0 || location >= hexes.length) {
+                valid = false;
+                result = INVALID_SETTLEMENT;
+            }
+        } while (!valid);
+        return location;
     }
     public static Road getRoad(Player p) {
         Road r = null;

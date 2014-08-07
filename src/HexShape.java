@@ -56,7 +56,6 @@ public class HexShape {
                 givenSide(param);
                 break;
         }
-        
         computeCoords();
     }
     private void givenSide(double side) {

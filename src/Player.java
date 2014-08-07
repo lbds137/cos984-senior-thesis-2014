@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.TreeSet;
+import java.awt.Color;
 
 public class Player {
     
@@ -17,6 +18,8 @@ public class Player {
     public static final int INITIAL_FREE_SETTLEMENTS = 2;
     public static final int LONGEST_ROAD_VP = 2;
     public static final int LARGEST_ARMY_VP = 2;
+    public static final Color[] PLAYER_COLORS = {StdDraw.BLUE,StdDraw.ORANGE,
+                                                 StdDraw.RED,StdDraw.WHITE};
     
     /* Fields */
     

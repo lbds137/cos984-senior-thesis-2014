@@ -7,7 +7,10 @@ public class BoardDraw {
     /* Constants */
     
     public static final int DEFAULT_DIM = 700;
+    public static final int REF_DIM = 1000;
     public static final int PLACES_TO_ROUND = 3;
+    public static final double ROAD_OUTER_RADIUS = 0.015;
+    public static final double ROAD_INNER_RADIUS = 0.01;
 
     /* Private fields */
 
@@ -75,28 +78,24 @@ public class BoardDraw {
         hexShapes[0] = new HexShape(xCenter, yCenter, HexShape.BALANCE, w, HexShape.BALANCE_WIDTH);
         h = hexShapes[0].getBalanceHeight();
         s = hexShapes[0].getSide();
-        hexXCenters = getHexXCenters();
-        hexYCenters = getHexYCenters();
+        initHexCenters();
         for (int i = 1; i < numHexes; i++) {
             hexShapes[i] = new HexShape(hexXCenters[i], hexYCenters[i], HexShape.BALANCE, w, HexShape.BALANCE_WIDTH);
         }
-        interXCoords = getInterXCoords();
-        interYCoords = getInterYCoords();
-        // port coordinates must be calculated together
+        initInterCoords();
         initPortCoords();
     }
     private void initCanvas() {
         StdDraw.setCanvasSize((int) dim, (int) dim);
         StdDraw.setXscale(0, dim);
         StdDraw.setYscale(0, dim);
-        StdDraw.setFont(new Font("Arial", Font.BOLD, (int) (w / 6)));
         chitRadius = w / 5;
         portRadius = w / 6;
         buildingRadius = w / 8;
         innerCityRadius = buildingRadius - (buildingRadius / 3);
-        intersectionRadius = buildingRadius / 2;
-        roadOuterRadius = 0.015;
-        roadInnerRadius = 0.01;
+        intersectionRadius = buildingRadius - (buildingRadius / 4);
+        roadOuterRadius = ROAD_OUTER_RADIUS;
+        roadInnerRadius = ROAD_INNER_RADIUS;
     }
     
     /* Operations */
@@ -109,6 +108,12 @@ public class BoardDraw {
         drawPorts();
         drawIntersections();
     }
+    public void drawRef() {
+        drawRefHexes();
+        drawRefChits();
+        drawRefPorts();
+        drawRefIntersections();
+    }
     public void save(String name) {
         StdDraw.save(name);
     }
@@ -120,33 +125,54 @@ public class BoardDraw {
         StdDraw.filledPolygon(ocean.getXCoords(), ocean.getYCoords());
     }
     private void drawHexes() {
-        for (int i = 0; i < hexes.length; i++) {
-            StdDraw.setPenColor(hexes[i].getResource().getColor());
-            StdDraw.filledPolygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
-            StdDraw.setPenColor(StdDraw.BLACK);
-            StdDraw.polygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
-        }
+        for (int i = 0; i < hexes.length; i++) { drawHex(i); }
+    }
+    private void drawRefHexes() {
+        for (int i = 0; i < hexes.length; i++) { drawEmptyHex(i); }
+    }
+    private void drawHex(int i) {
+        StdDraw.setPenColor(hexes[i].getResource().getColor());
+        StdDraw.filledPolygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
+        drawEmptyHex(i);
+    }
+    private void drawEmptyHex(int i) {
+        StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.polygon(hexShapes[i].getXCoords(), hexShapes[i].getYCoords());
     }
     private void drawChits() {
         for (int i = 0; i < hexes.length; i++) {
-            if (!hexes[i].hasRobber()) {
-                StdDraw.setPenColor(StdDraw.WHITE);
-                StdDraw.filledCircle(hexXCenters[i], hexYCenters[i], chitRadius);
-                StdDraw.setPenColor(StdDraw.BLACK);
-                StdDraw.circle(hexXCenters[i], hexYCenters[i], chitRadius);
-                StdDraw.text(hexXCenters[i], hexYCenters[i], " " + hexes[i].getDiceRoll());
-            }
-            else {
-                StdDraw.setPenColor(StdDraw.DARK_GRAY);
-                StdDraw.filledCircle(hexXCenters[i], hexYCenters[i], chitRadius);
-                StdDraw.setPenColor(StdDraw.BLACK);
-                StdDraw.circle(hexXCenters[i], hexYCenters[i], chitRadius);
-                // "R" is for "Robber"
-                StdDraw.setPenColor(StdDraw.WHITE);
-                StdDraw.text(hexXCenters[i], hexYCenters[i], "R");
-                StdDraw.setPenColor(StdDraw.BLACK);
-            }
+            if (!hexes[i].hasRobber()) { drawNormalChit(i); }
+            else { drawRobberChit(i); }
         }
+    }
+    private void drawRefChits() {
+        for (int i = 0; i < hexes.length; i++) { drawIdChit(i); }
+    }
+    private void drawNormalChit(int i) {
+        StdDraw.setPenColor(StdDraw.WHITE);
+        StdDraw.filledCircle(hexXCenters[i], hexYCenters[i], chitRadius);
+        drawIdChit(i);
+        StdDraw.setFont(new Font("Arial", Font.BOLD, (int) (w / 5)));
+        StdDraw.text(hexXCenters[i], hexYCenters[i], "" + hexes[i].getDiceRoll());
+    }
+    private void drawRobberChit(int i) {
+        StdDraw.setPenColor(StdDraw.DARK_GRAY);
+        StdDraw.filledCircle(hexXCenters[i], hexYCenters[i], chitRadius);
+        drawEmptyChit(i);
+        // "R" is for "Robber"
+        StdDraw.setPenColor(StdDraw.WHITE);
+        StdDraw.setFont(new Font("Arial", Font.BOLD, (int) (w / 5)));
+        StdDraw.text(hexXCenters[i], hexYCenters[i], "R");
+    }
+    private void drawIdChit(int i) {
+        drawEmptyChit(i);
+        double yOffset = chitRadius - (chitRadius / 4);
+        StdDraw.setFont(new Font("Arial", Font.BOLD, (int) (w / 11)));
+        StdDraw.text(hexXCenters[i], hexYCenters[i] - yOffset, "" + hexes[i].getId());
+    }
+    private void drawEmptyChit(int i) {
+        StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.circle(hexXCenters[i], hexYCenters[i], chitRadius);
     }
     private void drawRoads() {
         StdDraw.setPenColor(StdDraw.BLACK);
@@ -175,107 +201,119 @@ public class BoardDraw {
     }
     private void drawIntersections() {
         for (int i = 0; i < numIntersections; i++) {
-            Intersection inter = intersections[i];
-            Player p = inter.getPlayer();
-            Building b = inter.getBuilding();
-            if (p == null) { 
-                StdDraw.setPenColor(StdDraw.WHITE);
-                StdDraw.filledCircle(interXCoords[i], interYCoords[i], intersectionRadius);
-                StdDraw.setPenColor(StdDraw.BLACK);
-                StdDraw.circle(interXCoords[i], interYCoords[i], intersectionRadius);
-            }
-            else { 
-                StdDraw.setPenColor(getPlayerColor(p));
-                StdDraw.filledCircle(interXCoords[i], interYCoords[i], buildingRadius);
-                StdDraw.setPenColor(StdDraw.BLACK);
-                StdDraw.circle(interXCoords[i], interYCoords[i], buildingRadius);
-                if (b.getBuildingType() == Building.CITY) {
-                    StdDraw.setPenColor(StdDraw.BLACK);
-                    StdDraw.filledCircle(interXCoords[i], interYCoords[i], innerCityRadius);
-                }
-            }
+            Player p = intersections[i].getPlayer();
+            if (p != null) { drawIntersection(i); }
+            else { drawIdIntersection(i); }
         }
+    }
+    private void drawRefIntersections() {
+        for (int i = 0; i < numIntersections; i++) { drawIdIntersection(i); }
+    }
+    private void drawIntersection(int i) {
+        Player p = intersections[i].getPlayer();
+        Building b = intersections[i].getBuilding();
+        StdDraw.setPenColor(getPlayerColor(p));
+        StdDraw.filledCircle(interXCoords[i], interYCoords[i], buildingRadius);
+        StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.circle(interXCoords[i], interYCoords[i], buildingRadius);
+        if (b.getBuildingType() == Building.CITY) {
+            StdDraw.setPenColor(StdDraw.BLACK);
+            StdDraw.filledCircle(interXCoords[i], interYCoords[i], innerCityRadius);
+        }
+    }
+    private void drawIdIntersection(int i) {
+        drawEmptyIntersection(i);
+        StdDraw.setFont(new Font("Arial", Font.BOLD, (int) (w / 10)));
+        StdDraw.text(interXCoords[i], interYCoords[i], "" + intersections[i].getId());
+    }
+    private void drawEmptyIntersection(int i) {
+        StdDraw.setPenColor(StdDraw.WHITE);
+        StdDraw.filledCircle(interXCoords[i], interYCoords[i], intersectionRadius);
+        StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.circle(interXCoords[i], interYCoords[i], intersectionRadius);
     }
     private void drawPorts() {
         for (int i = 0; i < portLocations.size(); i += 2) {
-            // draw lines showing which intersections the port applies to
-            double x0 = interXCoords[portLocations.get(i)];
-            double y0 = interYCoords[portLocations.get(i)];
-            double x1 = interXCoords[portLocations.get(i + 1)];
-            double y1 = interYCoords[portLocations.get(i + 1)];
-            double x2 = portXCoords[i / 2];
-            double y2 = portYCoords[i / 2];
-            StdDraw.setPenColor(StdDraw.BLACK);
-            StdDraw.line(x0, y0, x2, y2);
-            StdDraw.line(x1, y1, x2, y2);
-            // draw the port
-            Port port = intersections[portLocations.get(i)].getPort();
-            if (port.getPortType() == Port.SPECIFIC) {
-                StdDraw.setPenColor(port.getResource().getColor());
-            }
-            else { StdDraw.setPenColor(StdDraw.BLACK); }
-            StdDraw.filledCircle(portXCoords[i / 2], portYCoords[i / 2], portRadius);
-            StdDraw.setPenColor(StdDraw.BLACK);
-            StdDraw.circle(portXCoords[i / 2], portYCoords[i / 2], portRadius);
-            StdDraw.setPenColor(StdDraw.WHITE);
-            StdDraw.text(portXCoords[i / 2], portYCoords[i / 2], port.toString().substring(0, 2));
-            StdDraw.setPenColor(StdDraw.BLACK);
+            drawPortLines(i);
+            drawPort(i);
         }
+    }
+    private void drawRefPorts() {
+        for (int i = 0; i < portLocations.size(); i += 2) {
+            drawPortLines(i);
+            drawRefPort(i);
+        }
+    }
+    private void drawPortLines(int i) {
+        double x0 = interXCoords[portLocations.get(i)];
+        double y0 = interYCoords[portLocations.get(i)];
+        double x1 = interXCoords[portLocations.get(i + 1)];
+        double y1 = interYCoords[portLocations.get(i + 1)];
+        double x2 = portXCoords[i / 2];
+        double y2 = portYCoords[i / 2];
+        StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.line(x0, y0, x2, y2);
+        StdDraw.line(x1, y1, x2, y2);
+    }
+    private void drawPort(int i) {
+        Port port = intersections[portLocations.get(i)].getPort();
+        if (port.getPortType() == Port.SPECIFIC) { StdDraw.setPenColor(port.getResource().getColor()); }
+        else { StdDraw.setPenColor(StdDraw.BLACK); }
+        StdDraw.filledCircle(portXCoords[i / 2], portYCoords[i / 2], portRadius);
+        drawEmptyPort(i);
+        StdDraw.setPenColor(StdDraw.WHITE);
+        StdDraw.setFont(new Font("Arial", Font.BOLD, (int) (w / 9)));
+        StdDraw.text(portXCoords[i / 2], portYCoords[i / 2], port.toString().substring(0, 3));
+    }
+    private void drawRefPort(int i) {
+        StdDraw.setPenColor(StdDraw.WHITE);
+        StdDraw.filledCircle(portXCoords[i / 2], portYCoords[i / 2], portRadius);
+        drawEmptyPort(i);
+        StdDraw.setFont(new Font("Arial", Font.BOLD, (int) (w / 10)));
+        StdDraw.text(portXCoords[i / 2], portYCoords[i / 2], portLocations.get(i) + "," + portLocations.get(i + 1));
+    }
+    private void drawEmptyPort(int i) {
+        StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.circle(portXCoords[i / 2], portYCoords[i / 2], portRadius);
     }
     private Color getPlayerColor(Player p) {
         switch (p.getId()) {
-            case Player.BLUE: return StdDraw.BLUE;
-            case Player.ORANGE: return StdDraw.ORANGE;
-            case Player.RED: return StdDraw.RED;
-            case Player.WHITE: return StdDraw.WHITE;
+            case Player.BLUE: case Player.ORANGE: case Player.RED: case Player.WHITE:
+                return Player.PLAYER_COLORS[p.getId()];
             default: return StdDraw.BLACK;
         }
     }
-    private double[] getHexXCenters() {
-        double[] xCenters = new double[numHexes];
-        xCenters[0] = xCenter;
+    private void initHexCenters() {
+        hexXCenters = new double[numHexes];
+        hexYCenters = new double[numHexes];
+        hexXCenters[0] = xCenter;
+        hexYCenters[0] = yCenter;
         for (int i = 1; i < radius; i++) {
             ArrayList<Integer> curHRing = hRings.get(i);
             int curHRingSize = curHRing.size();
             for (int j = 0; j < curHRingSize; j++) {
                 int curHex = curHRing.get(j);
-                if (j == 0) { xCenters[curHex] = xCenter + (i * w); }
+                if (j == 0) { 
+                    hexXCenters[curHex] = xCenter + (i * w); 
+                    hexYCenters[curHex] = yCenter;
+                }
                 int nextHex;
                 if (j + 1 < curHRingSize) { nextHex = curHRing.get(j + 1); }
                 else {
                     nextHex = Constants.INVALID;
                     continue;
                 }
-                xCenters[nextHex] = getNextX(xCenters[curHex], w, j / i);
+                hexXCenters[nextHex] = getNextX(hexXCenters[curHex], w, j / i);
+                hexYCenters[nextHex] = getNextY(hexYCenters[curHex], h, s, j / i);
             }
         }
-        return xCenters;
     }
-    private double[] getHexYCenters() {
-        double[] yCenters = new double[numHexes];
-        yCenters[0] = yCenter;
-        for (int i = 1; i < radius; i++) {
-            ArrayList<Integer> curHRing = hRings.get(i);
-            int curHRingSize = curHRing.size();
-            for (int j = 0; j < curHRingSize; j++) {
-                int curHex = curHRing.get(j);
-                if (j == 0) { yCenters[curHex] = yCenter; }
-                int nextHex;
-                if (j + 1 < curHRingSize) { nextHex = curHRing.get(j + 1); }
-                else {
-                    nextHex = Constants.INVALID;
-                    continue;
-                }
-                yCenters[nextHex] = getNextY(yCenters[curHex], h, s, j / i);
-            }
-        }
-        return yCenters;
-    }
-    private double[] getInterXCoords() {
-        double[] xCoords = new double[numIntersections];
-        // we don't know yCenter here but it doesn't matter, so we can use xCenter for both x and y
-        HexShape hFirst = new HexShape(xCenter, xCenter, HexShape.BALANCE, w, HexShape.BALANCE_WIDTH);
-        System.arraycopy(hFirst.getXCoords(), 0, xCoords, 0, hFirst.getXCoords().length);
+    private void initInterCoords() {
+        interXCoords = new double[numIntersections];
+        interYCoords = new double[numIntersections];
+        HexShape hFirst = new HexShape(xCenter, yCenter, HexShape.BALANCE, w, HexShape.BALANCE_WIDTH);
+        System.arraycopy(hFirst.getXCoords(), 0, interXCoords, 0, hFirst.getXCoords().length);
+        System.arraycopy(hFirst.getYCoords(), 0, interYCoords, 0, hFirst.getYCoords().length);
         int iOffset = iRings.get(0).size();
         int oddStart = 1;
         int evenStart = 2;
@@ -285,63 +323,30 @@ public class BoardDraw {
             int curIRingSize = curIRing.size();
             int iOdd = oddStart;
             int iEven = evenStart;
-            xCoords[iOffset + iOdd] = xCenter + (i * w) + (w / 2);
-            xCoords[iOffset + iEven] = xCenter + (i * w) + (w / 2);
+            interXCoords[iOffset + iOdd] = xCenter + (i * w) + (w / 2);
+            interXCoords[iOffset + iEven] = xCenter + (i * w) + (w / 2);
+            interYCoords[iOffset + iOdd] = yCenter - (s / 2);
+            interYCoords[iOffset + iEven] = yCenter + (s / 2);
             int oddInc = i + 1;
             int evenInc = i;
             for (int j = 0; j < HexShape.NUM_SIDES; j++) {
                 for (int k = 0; k < oddInc; k++) {
                     iOdd = (iOdd + 2) % curIRingSize;
                     int prevIOdd = (iOdd - 2 + curIRingSize) % curIRingSize;
-                    xCoords[iOffset + iOdd] = getNextX(xCoords[iOffset + prevIOdd], w, j);
+                    interXCoords[iOffset + iOdd] = getNextX(interXCoords[iOffset + prevIOdd], w, j);
+                    interYCoords[iOffset + iOdd] = getNextY(interYCoords[iOffset + prevIOdd], h, s, j);
                 }
                 for (int k = 0; k < evenInc; k++) {
                     iEven = (iEven + 2) % curIRingSize;
                     int prevIEven = (iEven - 2 + curIRingSize) % curIRingSize;
-                    xCoords[iOffset + iEven] = getNextX(xCoords[iOffset + prevIEven], w, j);
+                    interXCoords[iOffset + iEven] = getNextX(interXCoords[iOffset + prevIEven], w, j);
+                    interYCoords[iOffset + iEven] = getNextY(interYCoords[iOffset + prevIEven], h, s, j);
                 }
                 oddInc = ((oddInc + 1 - i) % 2) + i;
                 evenInc = ((evenInc + 1 - i) % 2) + i;
             }
             iOffset += curIRingSize;
         }
-        return xCoords;
-    }
-    private double[] getInterYCoords() {
-        double[] yCoords = new double[numIntersections];
-        // we don't know yCenter here but it doesn't matter, so we can use yCenter for both x and y
-        HexShape hFirst = new HexShape(yCenter, yCenter, HexShape.BALANCE, h, HexShape.BALANCE_HEIGHT);
-        System.arraycopy(hFirst.getYCoords(), 0, yCoords, 0, hFirst.getYCoords().length);
-        int iOffset = iRings.get(0).size();
-        int oddStart = 1;
-        int evenStart = 2;
-        // we already dealt with ring 0 so start at 1
-        for (int i = 1; i < radius; i++) {
-            ArrayList<Integer> curIRing = iRings.get(i);
-            int curIRingSize = curIRing.size();
-            int iOdd = oddStart;
-            int iEven = evenStart;
-            yCoords[iOffset + iOdd] = yCenter - (s / 2);
-            yCoords[iOffset + iEven] = yCenter + (s / 2);
-            int oddInc = i + 1;
-            int evenInc = i;
-            for (int j = 0; j < HexShape.NUM_SIDES; j++) {
-                for (int k = 0; k < oddInc; k++) {
-                    iOdd = (iOdd + 2) % curIRingSize;
-                    int prevIOdd = (iOdd - 2 + curIRingSize) % curIRingSize;
-                    yCoords[iOffset + iOdd] = getNextY(yCoords[iOffset + prevIOdd], h, s, j);
-                }
-                for (int k = 0; k < evenInc; k++) {
-                    iEven = (iEven + 2) % curIRingSize;
-                    int prevIEven = (iEven - 2 + curIRingSize) % curIRingSize;
-                    yCoords[iOffset + iEven] = getNextY(yCoords[iOffset + prevIEven], h, s, j);
-                }
-                oddInc = ((oddInc + 1 - i) % 2) + i;
-                evenInc = ((evenInc + 1 - i) % 2) + i; 
-            }
-            iOffset += curIRingSize;
-        }
-        return yCoords;
     }
     private void initPortCoords() {
         portXCoords = new double[portLocations.size() / 2];
@@ -410,5 +415,21 @@ public class BoardDraw {
     // needed because port coordinate calculation is sensitive to precision
     private double round(double d) {
         return ((double) Math.round(d * (10 * PLACES_TO_ROUND))) / (10 * PLACES_TO_ROUND);
+    }
+    
+    /* Static methods */
+    
+    public static void saveReference() {
+        Board b = new Board();
+        BoardDraw bd = new BoardDraw(b, REF_DIM);
+        bd.drawRef();
+        bd.save("reference_board.png");
+    }
+    
+    /* Testing */
+    
+    public static void main(String[] args) {
+        saveReference();
+        System.exit(0);
     }
 }

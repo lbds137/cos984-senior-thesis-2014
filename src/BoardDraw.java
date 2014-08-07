@@ -7,7 +7,8 @@ public class BoardDraw {
     /* Constants */
     
     public static final int DEFAULT_DIM = 700;
-    public static final int REF_DIM = 1000;
+    public static final int NORMAL_REF_DIM = 1000;
+    public static final int HUGE_REF_DIM = 2000;
     public static final int PLACES_TO_ROUND = 3;
     public static final double ROAD_OUTER_RADIUS = 0.015;
     public static final double ROAD_INNER_RADIUS = 0.01;
@@ -223,7 +224,7 @@ public class BoardDraw {
     }
     private void drawIdIntersection(int i) {
         drawEmptyIntersection(i);
-        StdDraw.setFont(new Font("Arial", Font.BOLD, (int) (w / 10)));
+        StdDraw.setFont(new Font("Arial", Font.BOLD, (int) (w / 11)));
         StdDraw.text(interXCoords[i], interYCoords[i], "" + intersections[i].getId());
     }
     private void drawEmptyIntersection(int i) {
@@ -269,8 +270,8 @@ public class BoardDraw {
         StdDraw.setPenColor(StdDraw.WHITE);
         StdDraw.filledCircle(portXCoords[i / 2], portYCoords[i / 2], portRadius);
         drawEmptyPort(i);
-        StdDraw.setFont(new Font("Arial", Font.BOLD, (int) (w / 10)));
-        StdDraw.text(portXCoords[i / 2], portYCoords[i / 2], portLocations.get(i) + "," + portLocations.get(i + 1));
+        //StdDraw.setFont(new Font("Arial", Font.BOLD, (int) (w / 11)));
+        //StdDraw.text(portXCoords[i / 2], portYCoords[i / 2], portLocations.get(i) + "," + portLocations.get(i + 1));
     }
     private void drawEmptyPort(int i) {
         StdDraw.setPenColor(StdDraw.BLACK);
@@ -419,17 +420,24 @@ public class BoardDraw {
     
     /* Static methods */
     
-    public static void saveReference() {
+    public static void saveNormalReference() {
         Board b = new Board();
-        BoardDraw bd = new BoardDraw(b, REF_DIM);
+        BoardDraw bd = new BoardDraw(b, NORMAL_REF_DIM);
         bd.drawRef();
-        bd.save("reference_board.png");
+        bd.save("reference_board_normal.png");
+    }
+    public static void saveHugeReference() {
+        Board b = new Board(6);
+        BoardDraw bd = new BoardDraw(b, HUGE_REF_DIM);
+        bd.drawRef();
+        bd.save("reference_board_huge.png");
     }
     
     /* Testing */
     
     public static void main(String[] args) {
-        saveReference();
+        saveNormalReference();
+        saveHugeReference();
         System.exit(0);
     }
 }

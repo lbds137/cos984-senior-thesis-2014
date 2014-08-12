@@ -19,10 +19,10 @@ public class BoardDraw {
     int radius;
     ArrayList<ArrayList<Integer>> hRings;
     ArrayList<ArrayList<Integer>> iRings;
-    Road[][] iGraph;
     Hex[] hexes;
     ArrayList<Integer> portLocations;
     Intersection[] intersections;
+    Road[][] roads;
     int numHexes;
     int numIntersections;
     double dim;
@@ -51,15 +51,15 @@ public class BoardDraw {
     
     public BoardDraw(Board board, double dim) {
         this.board = board;
-        radius = board.getRadius();
-        hRings = board.getHRings();
-        iRings = board.getIRings();
-        iGraph = board.getIGraph();
+        radius = Rules.getRadius();
+        numHexes = Rules.getNumHexes();
+        numIntersections = Rules.getNumIntersections();
+        hRings = Rules.getHRings();
+        iRings = Rules.getIRings();
         hexes = board.getHexes();
         portLocations = board.getPortLocations();
         intersections = board.getIntersections();
-        numHexes = hexes.length;
-        numIntersections = intersections.length;
+        roads = board.getRoads();
         this.dim = dim;
         initCoords();
         initCanvas();
@@ -179,7 +179,7 @@ public class BoardDraw {
         StdDraw.setPenColor(StdDraw.BLACK);
         for (int i = 0; i < numIntersections; i++) {
             for (int j = i + 1; j < numIntersections; j++) {
-                Road road = iGraph[i][j];
+                Road road = roads[i][j];
                 Player p;
                 if (road != null) { p = road.getPlayer(); }
                 else { p = null; }
@@ -410,28 +410,5 @@ public class BoardDraw {
     // needed because port coordinate calculation is sensitive to precision
     private double round(double d) {
         return ((double) Math.round(d * (10 * PLACES_TO_ROUND))) / (10 * PLACES_TO_ROUND);
-    }
-    
-    /* Static methods */
-    
-    public static void saveNormalReference() {
-        Board b = new Board();
-        BoardDraw bd = new BoardDraw(b, NORMAL_REF_DIM);
-        bd.drawRef();
-        bd.save("reference_board_normal.png");
-    }
-    public static void saveHugeReference() {
-        Board b = new Board(6);
-        BoardDraw bd = new BoardDraw(b, HUGE_REF_DIM);
-        bd.drawRef();
-        bd.save("reference_board_huge.png");
-    }
-    
-    /* Testing */
-    
-    public static void main(String[] args) {
-        saveNormalReference();
-        saveHugeReference();
-        System.exit(0);
     }
 }

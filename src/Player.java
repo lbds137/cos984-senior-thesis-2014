@@ -10,16 +10,8 @@ public class Player {
     public static final int ORANGE = 1;
     public static final int RED = 2;
     public static final int WHITE = 3;
-    public static final String BLUE_NAME = "Blue Player";
-    public static final String ORANGE_NAME = "Orange Player";
-    public static final String RED_NAME = "Red Player";
-    public static final String WHITE_NAME = "White Player";
-    public static final int INITIAL_FREE_ROADS = 2;
-    public static final int INITIAL_FREE_SETTLEMENTS = 2;
-    public static final int LONGEST_ROAD_VP = 2;
-    public static final int LARGEST_ARMY_VP = 2;
     public static final Color[] COLORS = {StdDraw.BLUE,StdDraw.ORANGE,
-                                                 StdDraw.RED,StdDraw.WHITE};
+                                          StdDraw.RED,StdDraw.WHITE};
     public static final String[] NAMES = {"Blue Player","Orange Player",
                                           "Red Player","White Player"};
     
@@ -56,8 +48,8 @@ public class Player {
         roads = new ArrayList<Road>(maxRoads);
         settlements = new ArrayList<Intersection>(maxSettlements);
         cities = new ArrayList<Intersection>(maxCities);
-        freeRoads = INITIAL_FREE_ROADS;
-        freeSettlements = INITIAL_FREE_SETTLEMENTS;
+        freeRoads = Rules.INITIAL_FREE_ROADS;
+        freeSettlements = Rules.INITIAL_FREE_SETTLEMENTS;
         freeCities = 0; // used for debugging
         resourceCards = new ResourceBundle();
         devCards = new DevCardBundle();
@@ -109,7 +101,7 @@ public class Player {
     
     public boolean canBuildRoad() {
         return (roads.size() < maxRoads) && 
-               (freeRoads > 0 || resourceCards.canRemove(Road.ROAD_COST));
+               (freeRoads > 0 || resourceCards.canRemove(Rules.ROAD_COST));
     }
     public boolean canBuildRoad(Road r) {
         // is the player able to build ANY road? is the given road already owned?
@@ -120,7 +112,7 @@ public class Player {
             if (r.other(settlements.get(i).getId()) != Constants.INVALID) { isValid = true; }
         }
         // non-special roads must either be adjacent to a settlement, city, or another road
-        if (roads.size() >= INITIAL_FREE_ROADS) {
+        if (roads.size() >= Rules.INITIAL_FREE_ROADS) {
             for (int i = 0; !isValid && i < cities.size(); i++) {
                 if (r.other(cities.get(i).getId()) != Constants.INVALID) { isValid = true; }
             }
@@ -132,7 +124,7 @@ public class Player {
     }
     public boolean canBuildSettlement() {
         return (settlements.size() < maxSettlements) && 
-               (freeSettlements > 0 || resourceCards.canRemove(Building.SETTLEMENT_COST));
+               (freeSettlements > 0 || resourceCards.canRemove(Rules.SETTLEMENT_COST));
     }
     public boolean canBuildSettlement(Intersection i) {
         // is the player able to build ANY settlement? is the given location viable?
@@ -143,7 +135,7 @@ public class Player {
         int id = i.getId();
         boolean isValid = false;
         // first two settlements are special
-        if (settlements.size() < INITIAL_FREE_SETTLEMENTS) { isValid = true; }
+        if (settlements.size() < Rules.INITIAL_FREE_SETTLEMENTS) { isValid = true; }
         else {
             for (int k = 0; k < roads.size(); k++) {
                 if (roads.get(k).other(id) != Constants.INVALID) {
@@ -156,7 +148,7 @@ public class Player {
     }
     public boolean canBuildCity() {
         return (cities.size() < maxCities) && (settlements.size() > 0) &&
-               (freeCities > 0 || resourceCards.canRemove(Building.CITY_COST));
+               (freeCities > 0 || resourceCards.canRemove(Rules.CITY_COST));
     }
     public boolean canBuildCity(Intersection i) {
         // is the player able to build ANY city? is the given location viable?
@@ -173,7 +165,7 @@ public class Player {
         if (!canBuildRoad(r)) { return false; }
         r.build(this);
         roads.add(r);
-        if (freeRoads == 0) { resDeck.add(resourceCards.remove(Road.ROAD_COST)); }
+        if (freeRoads == 0) { resDeck.add(resourceCards.remove(Rules.ROAD_COST)); }
         else { freeRoads--; }
         return true;
     }
@@ -182,7 +174,7 @@ public class Player {
         if (!canBuildSettlement(i)) { return false; }
         i.upgrade(this);
         settlements.add(i);
-        if (freeSettlements == 0) { resDeck.add(resourceCards.remove(Building.SETTLEMENT_COST)); }
+        if (freeSettlements == 0) { resDeck.add(resourceCards.remove(Rules.SETTLEMENT_COST)); }
         else { freeSettlements--; }
         publicVP++;
         return true;
@@ -193,20 +185,20 @@ public class Player {
         i.upgrade(this);
         settlements.remove(i);
         cities.add(i);
-        if (freeCities == 0) { resDeck.add(resourceCards.remove(Building.CITY_COST)); }
+        if (freeCities == 0) { resDeck.add(resourceCards.remove(Rules.CITY_COST)); }
         publicVP++;
         return true;
     }
     // build a dev card and return a boolean status (true if success, false if failure)
     public boolean buildDevCard(DevCardBundle devDeck, ResourceBundle resDeck) {
         // must check that this player has enough resources to build a dev card
-        if (!resourceCards.canRemove(DevCard.DEV_CARD_COST)) { return false; }
+        if (!resourceCards.canRemove(Rules.DEV_CARD_COST)) { return false; }
         // attempt to draw a dev card
         DevCard card = devDeck.removeRandom();
         if (card == null) { return false; }
         // draw card
         devCards.add(card);
-        resDeck.add(resourceCards.remove(DevCard.DEV_CARD_COST));
+        resDeck.add(resourceCards.remove(Rules.DEV_CARD_COST));
         // if VP card is drawn, save VP
         switch (card.getCardType()) {
             case DevCard.CHAPEL: case DevCard.UNIVERSITY: case DevCard.PALACE: 
@@ -304,19 +296,19 @@ public class Player {
     }
     public void giveLongestRoad() {
         hasLongestRoad = true;
-        publicVP += LONGEST_ROAD_VP;
+        publicVP += Rules.LONGEST_ROAD_VP;
     }
     public void takeLongestRoad() {
         hasLongestRoad = false;
-        publicVP -= LONGEST_ROAD_VP;
+        publicVP -= Rules.LONGEST_ROAD_VP;
     }
     public void giveLargestArmy() {
         hasLargestArmy = true;
-        publicVP += LARGEST_ARMY_VP;
+        publicVP += Rules.LARGEST_ARMY_VP;
     }
     public void takeLargestArmy() {
         hasLargestArmy = false;
-        publicVP -= LARGEST_ARMY_VP;
+        publicVP -= Rules.LARGEST_ARMY_VP;
     }
     
     /* Private helpers */

@@ -19,8 +19,6 @@ public class DevCard {
         new ArrayList<String>(Arrays.asList("Knight","Road Building","Year Of Plenty",
                                             "Monopoly","Chapel","University","Palace",
                                             "Library","Market"));
-	public static final int[] MAX_CARDS = {14,2,2,2,1,1,1,1,1}; // max number of each type
-	public static final int[] DEV_CARD_COST = {1,1,0,0,1};
     
     /* Fields */
     

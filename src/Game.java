@@ -34,6 +34,7 @@ public class Game {
     }
     
     private void startGame() {
+        Rules.init(radius);
         setUpPlayers();
         setUpBoard();
         setUpDecks();
@@ -81,7 +82,7 @@ public class Game {
         Collections.shuffle(players);
     }
     private void setUpBoard() {
-        board = new Board(radius);
+        board = new Board();
         bDraw = new BoardDraw(board);
         bDraw.draw();
     }
@@ -94,7 +95,7 @@ public class Game {
         }
         devDeck = new DevCardBundle();
         for (int i = 0; i < DevCard.NUM_TYPES; i++) {
-            for (int j = 0; j < DevCard.MAX_CARDS[i]; j++) {
+            for (int j = 0; j < Rules.MAX_DEV_CARDS[i]; j++) {
                 devDeck.add(new DevCard(i));
             }
         }
@@ -120,8 +121,8 @@ public class Game {
         return players.get(nextIndex);
     }
     private int getDiceRoll() {
-        int yellowDie = (int) (Math.random() * Constants.DIE_SIDES) + 1;
-        int redDie = (int) (Math.random() * Constants.DIE_SIDES) + 1;
+        int yellowDie = (int) (Math.random() * Rules.DIE_SIDES) + 1;
+        int redDie = (int) (Math.random() * Rules.DIE_SIDES) + 1;
         return yellowDie + redDie;
     }
     private void moveRobber(Player p) {

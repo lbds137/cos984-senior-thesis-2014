@@ -6,8 +6,6 @@ public class Port {
     public static final int INLAND = 4; // not a port
     public static final int GENERIC = 3;
     public static final int SPECIFIC = 2;
-    // ratio of port to non-port intersections in outer ring (for radius 3 = 18/30 = 6/10)
-    public static final double PORT_RATIO = 0.6;
     public static final String INLAND_NAME = "Inland";
     public static final String GENERIC_NAME = "Generic";
 

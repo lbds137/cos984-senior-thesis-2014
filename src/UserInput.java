@@ -48,7 +48,7 @@ public final class UserInput {
     
     private static Hex[] hexes;
     private static Intersection[] intersections; 
-    private static Road[][] iGraph;
+    private static Road[][] roads;
     private static ResourceBundle resDeck;
     private static Scanner sc;
     private static BoardDraw bd;
@@ -56,7 +56,7 @@ public final class UserInput {
     public static void init(Board b, ResourceBundle resDeck, BoardDraw bd) {
         UserInput.hexes = b.getHexes();
         UserInput.intersections = b.getIntersections();
-        UserInput.iGraph = b.getIGraph();
+        UserInput.roads = b.getRoads();
         UserInput.resDeck = resDeck;
         sc = new Scanner(System.in);
         UserInput.bd = bd;
@@ -89,7 +89,7 @@ public final class UserInput {
             System.out.println(p.toString() + CANNOT_BUILD_ROAD);
             return r;
         }
-        int numIntersections = iGraph.length;
+        int numIntersections = roads.length;
         boolean valid = true;
         String result = ROAD_REQUEST;
         do {
@@ -123,12 +123,12 @@ public final class UserInput {
             // throw out locations outside the range of intersections[], and 
             // reject roads that aren't on the board (i.e. connecting wrong intersections)
             if (iOne < 0 || iTwo < 0 || iOne >= numIntersections || iTwo >= numIntersections || 
-                iGraph[iOne][iTwo] == null) {
+                roads[iOne][iTwo] == null) {
                 valid = false;
                 result = INVALID_ROAD;
                 continue;
             }
-            r = iGraph[iOne][iTwo];
+            r = roads[iOne][iTwo];
             // verify if player p can build a road at the given location
             valid = p.canBuildRoad(r);
             if (!valid) { 
@@ -167,7 +167,7 @@ public final class UserInput {
             ArrayList<Intersection> neighbors = new ArrayList<Intersection>(HexShape.NUM_SIDES / 2);
             for (int i = 0; i < numIntersections; i++) {
                 if (i == location) { continue; }
-                if (iGraph[location][i] != null) { neighbors.add(intersections[i]); }
+                if (roads[location][i] != null) { neighbors.add(intersections[i]); }
             }
             for (Intersection i : neighbors) { 
                 if (i.getPlayer() != null) { 

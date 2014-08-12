@@ -25,14 +25,14 @@ public class DevCardBundle {
 	/* Operations */
 
 	public boolean add(DevCard d) {
-		if (bundle.get(d.getCardType()).size() >= DevCard.MAX_CARDS[d.getCardType()]) { return false; }
+		if (bundle.get(d.getCardType()).size() >= Rules.MAX_DEV_CARDS[d.getCardType()]) { return false; }
 		bundle.get(d.getCardType()).add(d);
 		return true;
 	}
 	public boolean add(DevCardBundle b) {
         // check that the maximum number of cards for each type isn't exceeded
         for (int i = 0; i < DevCard.NUM_TYPES; i++) {
-            if ((bundle.get(i).size() + b.size(i)) > DevCard.MAX_CARDS[i]) { return false; }
+            if ((bundle.get(i).size() + b.size(i)) > Rules.MAX_DEV_CARDS[i]) { return false; }
         }
         // perform the actual addition
         for (int i = 0; i < DevCard.NUM_TYPES; i++) {

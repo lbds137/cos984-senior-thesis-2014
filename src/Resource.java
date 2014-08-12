@@ -15,16 +15,11 @@ public class Resource implements Comparable<Resource> {
     public static final int LUMBER = 2;
     public static final int BRICK = 3;
     public static final int ORE = 4;
-    public static final Color[] COLORS = {new Color(0, 204, 0), new Color(255, 204, 0),
-                                          new Color(0, 102, 0), new Color(204, 102, 0),
-                                          new Color(102, 102, 102), new Color(255, 255, 153)};
+    public static final Color[] COLORS = {new Color(255, 255, 153), new Color(0, 204, 0),
+                                          new Color(255, 204, 0), new Color(0, 102, 0), 
+                                          new Color(204, 102, 0), new Color(102, 102, 102)};
     public static final ArrayList<String> NAMES = 
-        new ArrayList<String>(Arrays.asList("Wool","Grain","Lumber","Brick","Ore","Desert"));
-    // set of 19 tiles out of which the board is created
-    public static final Integer[] DEFAULT_TILES = {DESERT,BRICK,BRICK,BRICK,GRAIN,
-                                                   GRAIN,GRAIN,GRAIN,LUMBER,LUMBER,
-                                                   LUMBER,LUMBER,ORE,ORE,ORE,WOOL,
-                                                   WOOL,WOOL,WOOL};
+        new ArrayList<String>(Arrays.asList("Desert","Wool","Grain","Lumber","Brick","Ore"));
     
     /* Fields */
     
@@ -52,9 +47,8 @@ public class Resource implements Comparable<Resource> {
     public Color getColor() {
         switch (resourceType) {
             case WOOL: case GRAIN: case LUMBER: 
-            case BRICK: case ORE: 
-                return COLORS[resourceType];
-            case DESERT: return COLORS[NUM_TYPES];
+            case BRICK: case ORE: case DESERT:
+                return COLORS[resourceType + 1];
             default: return null;
         }
     }
@@ -69,9 +63,8 @@ public class Resource implements Comparable<Resource> {
     public String toString() {
         switch (resourceType) {
             case WOOL: case GRAIN: case LUMBER: 
-            case BRICK: case ORE: 
-                return NAMES.get(resourceType);
-            case DESERT: return NAMES.get(NUM_TYPES);
+            case BRICK: case ORE: case DESERT:
+                return NAMES.get(resourceType + 1);
             default: return "Invalid resource";
         }
     }
@@ -91,11 +84,10 @@ public class Resource implements Comparable<Resource> {
         String s = sResource.toLowerCase();
         s = Character.toUpperCase(s.charAt(0)) + s.substring(1);
         int i = NAMES.indexOf(s);
-        switch (i) {
+        switch (i - 1) {
             case WOOL: case GRAIN: case LUMBER:
-            case BRICK: case ORE:
-                return i;
-            case NUM_TYPES: return DESERT;
+            case BRICK: case ORE: case DESERT:
+                return i - 1;
             default: return Constants.INVALID;
         }
     }

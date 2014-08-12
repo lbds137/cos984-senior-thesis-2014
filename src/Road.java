@@ -2,10 +2,6 @@ import java.util.ArrayList;
 
 public class Road {
 
-	/* Constants */
-	
-	public static final int[] ROAD_COST = {0,0,1,1,0};
-	
     /* Fields */
 
     private int iOne;

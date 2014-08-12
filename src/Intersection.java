@@ -64,4 +64,3 @@ public class Intersection {
         return this.player == player && this.building.upgrade();
     }
 }
-

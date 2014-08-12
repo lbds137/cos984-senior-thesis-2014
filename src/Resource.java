@@ -15,21 +15,11 @@ public class Resource implements Comparable<Resource> {
     public static final int LUMBER = 2;
     public static final int BRICK = 3;
     public static final int ORE = 4;
-    public static final Color DESERT_COLOR = new Color(255, 255, 153);
-    public static final Color WOOL_COLOR = new Color(0, 204, 0);
-    public static final Color GRAIN_COLOR = new Color(255, 204, 0);
-    public static final Color LUMBER_COLOR = new Color(0, 102, 0);
-    public static final Color BRICK_COLOR = new Color(204, 102, 0);
-    public static final Color ORE_COLOR = new Color(102, 102, 102);
-    public static final String DESERT_NAME = "Desert";
-    public static final String WOOL_NAME = "Wool";
-    public static final String GRAIN_NAME = "Grain";
-    public static final String LUMBER_NAME = "Lumber";
-    public static final String BRICK_NAME = "Brick";
-    public static final String ORE_NAME = "Ore";
-    //public static final String[] CARD_NAMES = {"Wool","Grain","Lumber","Brick","Ore"};
-    public static final ArrayList<String> CARD_NAMES = 
-        new ArrayList<String>(Arrays.asList("Wool","Grain","Lumber","Brick","Ore"));
+    public static final Color[] COLORS = {new Color(0, 204, 0), new Color(255, 204, 0),
+                                          new Color(0, 102, 0), new Color(204, 102, 0),
+                                          new Color(102, 102, 102), new Color(255, 255, 153)};
+    public static final ArrayList<String> NAMES = 
+        new ArrayList<String>(Arrays.asList("Wool","Grain","Lumber","Brick","Ore","Desert"));
     // set of 19 tiles out of which the board is created
     public static final Integer[] DEFAULT_TILES = {DESERT,BRICK,BRICK,BRICK,GRAIN,
                                                    GRAIN,GRAIN,GRAIN,LUMBER,LUMBER,
@@ -61,12 +51,10 @@ public class Resource implements Comparable<Resource> {
     
     public Color getColor() {
         switch (resourceType) {
-            case DESERT: return DESERT_COLOR;
-            case WOOL: return WOOL_COLOR;
-            case GRAIN: return GRAIN_COLOR;
-            case LUMBER: return LUMBER_COLOR;
-            case BRICK: return BRICK_COLOR;
-            case ORE: return ORE_COLOR;
+            case WOOL: case GRAIN: case LUMBER: 
+            case BRICK: case ORE: 
+                return COLORS[resourceType];
+            case DESERT: return COLORS[NUM_TYPES];
             default: return null;
         }
     }
@@ -80,12 +68,10 @@ public class Resource implements Comparable<Resource> {
     @Override
     public String toString() {
         switch (resourceType) {
-            case DESERT: return DESERT_NAME;
-            case WOOL: return WOOL_NAME;
-            case GRAIN: return GRAIN_NAME;
-            case LUMBER: return LUMBER_NAME;
-            case BRICK: return BRICK_NAME;
-            case ORE: return ORE_NAME;
+            case WOOL: case GRAIN: case LUMBER: 
+            case BRICK: case ORE: 
+                return NAMES.get(resourceType);
+            case DESERT: return NAMES.get(NUM_TYPES);
             default: return "Invalid resource";
         }
     }
@@ -104,29 +90,13 @@ public class Resource implements Comparable<Resource> {
     public static int getResourceType(String sResource) {
         String s = sResource.toLowerCase();
         s = Character.toUpperCase(s.charAt(0)) + s.substring(1);
-        switch (s) {
-            case Resource.WOOL_NAME:
-            case Resource.GRAIN_NAME:
-            case Resource.LUMBER_NAME:
-            case Resource.BRICK_NAME:
-            case Resource.ORE_NAME:
-                return CARD_NAMES.indexOf(s);
+        int i = NAMES.indexOf(s);
+        switch (i) {
+            case WOOL: case GRAIN: case LUMBER:
+            case BRICK: case ORE:
+                return i;
+            case NUM_TYPES: return DESERT;
             default: return Constants.INVALID;
         }
     }
-    
-    /* Testing */
-    
-    public static void main(String[] args) {
-        Resource r = new Resource(Resource.BRICK);
-        Resource q = new Resource(Resource.ORE);
-        Resource s = null;
-        System.out.println(r.toString());
-        System.out.println(q.toString());
-        System.out.println(r.compareTo(q));
-        System.out.println(r.equals(q));
-        System.out.println(q.compareTo(s));
-        System.out.println(q.equals(s));
-    }
 }
-

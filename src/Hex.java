@@ -47,11 +47,4 @@ public class Hex {
     public String toString() {
         return "Hex " + id + " " + resource.toString() + " " + diceRoll;
     }
-    
-    /* Testing */
-    
-    public static void main(String[] args) {
-        Hex h = new Hex(1, new Resource(Resource.BRICK), 8);
-        System.out.println(h.toString());
-    }
 }

@@ -6,16 +6,10 @@ public class Port {
     public static final int INLAND = 4; // not a port
     public static final int GENERIC = 3;
     public static final int SPECIFIC = 2;
-    public static final int NUM_SPECIFIC = Resource.NUM_TYPES;
-    public static final int NUM_GENERIC = 4;
     // ratio of port to non-port intersections in outer ring (for radius 3 = 18/30 = 6/10)
     public static final double PORT_RATIO = 0.6;
     public static final String INLAND_NAME = "Inland";
     public static final String GENERIC_NAME = "Generic";
-    // there are 9 ports, and each port appears at two intersections
-    public static final int[][] LOCATIONS = {{25,26},{28,29},{32,33},
-                                            {35,36},{38,39},{42,43},
-                                            {45,46},{48,49},{52,53}};
 
     /* Fields */
 
@@ -84,7 +78,6 @@ public class Port {
     // "greater" means that this port offers a better trade ratio for specified resource r
     public int compareRatio(Port p, Resource r) {
         if (this.equals(p)) { return 0; }
-        if (portType != SPECIFIC && p.getRatio() != SPECIFIC) { return p.getRatio() - portType; }
         int thisRatio = portType;
         int pRatio = p.getRatio();
         if (portType == SPECIFIC && !resource.equals(r)) { thisRatio = INLAND; }
@@ -109,21 +102,4 @@ public class Port {
         }
         return s + " (" + portType + ":1)";
     }
-    
-    /* Testing */
-
-    public static void main(String[] args) {
-        Port p = new Port(Port.SPECIFIC, new Resource(Resource.WOOL));
-        Port q = new Port(Port.SPECIFIC, new Resource(Resource.LUMBER));
-        Port r = new Port(Port.GENERIC);
-        System.out.println(p.toString());
-        System.out.println(q.toString());
-        System.out.println(p.equals(q));
-        System.out.println(q.equals(p));
-        System.out.println(q.equals(r));
-        Resource k = new Resource(Resource.WOOL);
-        System.out.println(q.compareRatio(p, k));
-        System.out.println(q.compareRatio(r, k));
-    }
 }
-

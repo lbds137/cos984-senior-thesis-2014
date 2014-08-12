@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class DevCard {
     
     /* Constants */
@@ -12,17 +15,11 @@ public class DevCard {
     public static final int PALACE = 6;
     public static final int LIBRARY = 7;
     public static final int MARKET = 8;
-    public static final String KNIGHT_NAME = "Knight";
-    public static final String ROAD_NAME = "Road Building";
-    public static final String PLENTY_NAME = "Year Of Plenty";
-    public static final String MONOPOLY_NAME = "Monopoly";
-    public static final String CHAPEL_NAME = "Chapel";
-    public static final String UNIVERSITY_NAME = "University";
-    public static final String PALACE_NAME = "Palace";
-    public static final String LIBRARY_NAME = "Library";
-    public static final String MARKET_NAME = "Market";
-    // max number of each type
-	public static final int[] MAX_CARDS = {14,2,2,2,1,1,1,1,1};
+    public static final ArrayList<String> NAMES = 
+        new ArrayList<String>(Arrays.asList("Knight","Road Building","Year Of Plenty",
+                                            "Monopoly","Chapel","University","Palace",
+                                            "Library","Market"));
+	public static final int[] MAX_CARDS = {14,2,2,2,1,1,1,1,1}; // max number of each type
 	public static final int[] DEV_CARD_COST = {1,1,0,0,1};
     
     /* Fields */
@@ -54,17 +51,25 @@ public class DevCard {
     @Override
     public String toString() {
         switch (cardType) {
-            case KNIGHT: return KNIGHT_NAME;
-            case ROAD: return ROAD_NAME;
-            case PLENTY: return PLENTY_NAME;
-            case MONOPOLY: return MONOPOLY_NAME;
-            case CHAPEL: return CHAPEL_NAME;
-            case UNIVERSITY: return UNIVERSITY_NAME;
-            case PALACE: return PALACE_NAME;
-            case LIBRARY: return LIBRARY_NAME;
-            case MARKET: return MARKET_NAME;
+            case KNIGHT: case ROAD: case PLENTY: case MONOPOLY: 
+            case CHAPEL: case UNIVERSITY: case PALACE: 
+            case LIBRARY: case MARKET: 
+                return NAMES.get(cardType);
             default: return "Invalid development card";
         }
     }
+    
+    /* Static methods */
+    
+    public static int getDevCardType(String sDevCard) {
+        String s = sDevCard.toLowerCase();
+        s = Character.toUpperCase(s.charAt(0)) + s.substring(1);
+        int i = NAMES.indexOf(s);
+        switch (i) {
+            case KNIGHT: case ROAD: case PLENTY: case MONOPOLY: case CHAPEL:
+            case UNIVERSITY: case PALACE: case LIBRARY: case MARKET:
+                return i;
+            default: return Constants.INVALID;
+        }
+    }
 }
-

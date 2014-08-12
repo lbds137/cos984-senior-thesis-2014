@@ -62,6 +62,7 @@ public class Board {
             }
         }
         numHexes = curIndex;
+        System.out.println(numHexes);
     }
     private void initIRings() {
         iRings = new ArrayList<ArrayList<Integer>>(radius);

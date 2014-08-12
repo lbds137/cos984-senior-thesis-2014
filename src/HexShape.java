@@ -22,7 +22,7 @@ public class HexShape {
     private double yCenter;
     private double[] xCoords;
     private double[] yCoords;
-    
+    // measurements
     private double side;
     private double flatWidth;
     private double flatHeight;

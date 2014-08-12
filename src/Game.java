@@ -10,6 +10,7 @@ public class Game {
     /* Fields */
 
     private int numPlayers;
+    private int radius;
     private ArrayList<Player> players; // ordering = turn order
     private Board board;
     private BoardDraw bDraw;
@@ -24,10 +25,11 @@ public class Game {
     public Game(String gameState) {
         resumeGame(gameState);
     }
-    public Game(int numPlayers) {
+    public Game(int numPlayers, int radius) {
         if (numPlayers < 3) { this.numPlayers = 3; }
         else if (numPlayers > 4) { this.numPlayers = 4; }
         else { this.numPlayers = numPlayers; }
+        this.radius = radius;
         startGame();
     }
     
@@ -79,7 +81,7 @@ public class Game {
         Collections.shuffle(players);
     }
     private void setUpBoard() {
-        board = new Board();
+        board = new Board(radius);
         bDraw = new BoardDraw(board);
         bDraw.draw();
     }
@@ -139,10 +141,12 @@ public class Game {
     /* Testing */
     
     public static void main(String args[]) {
+        // First argument is number of players, second argument number of rings for board size
         try {
-            Game g = new Game(4);
+            Game g = new Game(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
         }
         catch (Exception e) {
+            System.out.println("Usage: \"java Game NUM_PLAYERS BOARD_SIZE\"\n");
             e.printStackTrace();
         }
     }

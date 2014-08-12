@@ -45,6 +45,7 @@ public final class UserInput {
     public static final String INVALID_TRADE = COMMA + "you cannot afford that trade. " + TRY_AGAIN;
     
     /* Static fields */
+    
     private static Hex[] hexes;
     private static Intersection[] intersections; 
     private static Road[][] iGraph;
@@ -331,25 +332,12 @@ public final class UserInput {
         catch (Exception e) { return INVALID_INTEGER; }
     }
     public static String validateResource(String sResource) {
-        if (Resource.getResourceType(sResource) != Constants.INVALID) {
-            return VALID;
-        }
+        if (Resource.getResourceType(sResource) != Constants.INVALID) { return VALID; }
         else { return INVALID_RESOURCE; }
     }
     public static String validateDevCard(String sDevCard) {
-        switch (sDevCard.toLowerCase()) {
-            case DevCard.KNIGHT_NAME:
-            case DevCard.ROAD_NAME:
-            case DevCard.PLENTY_NAME:
-            case DevCard.MONOPOLY_NAME:
-            case DevCard.CHAPEL_NAME:
-            case DevCard.UNIVERSITY_NAME:
-            case DevCard.PALACE_NAME:
-            case DevCard.LIBRARY_NAME:
-            case DevCard.MARKET_NAME:
-                return VALID;
-            default: return INVALID_DEV_CARD;
-        }
+        if (DevCard.getDevCardType(sDevCard) != Constants.INVALID) { return VALID; }
+        else { return INVALID_DEV_CARD; }
     }
     // clear screen so other players can't peek
     public static void doPrivacy() {

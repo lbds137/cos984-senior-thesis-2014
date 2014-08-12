@@ -193,7 +193,7 @@ public class BoardDraw {
                     StdDraw.setPenRadius(roadOuterRadius);
                     StdDraw.line(x0, y0, x1, y1);
                     StdDraw.setPenRadius(roadInnerRadius);
-                    StdDraw.setPenColor(getPlayerColor(p));
+                    StdDraw.setPenColor(Player.getPlayerColor(p));
                     StdDraw.line(x0, y0, x1, y1);
                     StdDraw.setPenRadius();
                 }
@@ -213,7 +213,7 @@ public class BoardDraw {
     private void drawIntersection(int i) {
         Player p = intersections[i].getPlayer();
         Building b = intersections[i].getBuilding();
-        StdDraw.setPenColor(getPlayerColor(p));
+        StdDraw.setPenColor(Player.getPlayerColor(p));
         StdDraw.filledCircle(interXCoords[i], interYCoords[i], buildingRadius);
         StdDraw.setPenColor(StdDraw.BLACK);
         StdDraw.circle(interXCoords[i], interYCoords[i], buildingRadius);
@@ -277,13 +277,7 @@ public class BoardDraw {
         StdDraw.setPenColor(StdDraw.BLACK);
         StdDraw.circle(portXCoords[i / 2], portYCoords[i / 2], portRadius);
     }
-    private Color getPlayerColor(Player p) {
-        switch (p.getId()) {
-            case Player.BLUE: case Player.ORANGE: case Player.RED: case Player.WHITE:
-                return Player.PLAYER_COLORS[p.getId()];
-            default: return StdDraw.BLACK;
-        }
-    }
+    
     private void initHexCenters() {
         hexXCenters = new double[numHexes];
         hexYCenters = new double[numHexes];

@@ -4,7 +4,6 @@ import java.util.Arrays;
 public final class Constants  {
     
     public static final int INVALID = -10;
-    
     // dice roll chits
     public static final int DIE_SIDES = 6;
     public static final int NUM_DICE_ROLLS = 11; // the number of *distinct* possible rolls

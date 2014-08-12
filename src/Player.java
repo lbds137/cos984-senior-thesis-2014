@@ -18,8 +18,10 @@ public class Player {
     public static final int INITIAL_FREE_SETTLEMENTS = 2;
     public static final int LONGEST_ROAD_VP = 2;
     public static final int LARGEST_ARMY_VP = 2;
-    public static final Color[] PLAYER_COLORS = {StdDraw.BLUE,StdDraw.ORANGE,
+    public static final Color[] COLORS = {StdDraw.BLUE,StdDraw.ORANGE,
                                                  StdDraw.RED,StdDraw.WHITE};
+    public static final String[] NAMES = {"Blue Player","Orange Player",
+                                          "Red Player","White Player"};
     
     /* Fields */
     
@@ -408,14 +410,8 @@ public class Player {
     @Override
     public String toString() {
         switch (id) { // only the first four players get fancy names
-            case BLUE: 
-                return BLUE_NAME;
-            case ORANGE:
-                return ORANGE_NAME;
-            case RED:
-                return RED_NAME;
-            case WHITE:
-                return WHITE_NAME;
+            case BLUE: case ORANGE: case RED: case WHITE:
+                return NAMES[id];
             default:
                 return "Player " + (id + 1);
         }
@@ -428,5 +424,15 @@ public class Player {
     // prints *the sum of public and private* VP
     public void printVP() {
         System.out.println("Your VP score is: " + getVP());
+    }
+    
+    /* Static methods */
+    
+    public static Color getPlayerColor(Player p) {
+        switch (p.getId()) {
+            case BLUE: case ORANGE: case RED: case WHITE:
+                return COLORS[p.getId()];
+            default: return StdDraw.BLACK;
+        }
     }
 }

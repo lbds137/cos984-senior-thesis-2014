@@ -197,6 +197,20 @@ public class Player {
         }
         return true;
     }
+    // 
+    public boolean collectStartingResources(ResourceBundle resDeck) {
+        int[] resourcesOwed = new int[Resource.NUM_TYPES];
+        Intersection secondSettlement = settlements.get(1);
+        ArrayList<Hex> hexes = secondSettlement.getHexes();
+        for (Hex h : hexes) {
+            int resourceType = h.getResource().getResourceType();
+            Building b = secondSettlement.getBuilding();
+            resourcesOwed[resourceType] += b.getNumResources();
+        }
+        if (!resDeck.canRemove(resourcesOwed)) { return false; }
+        resourceCards.add(resDeck.remove(resourcesOwed));
+        return true;
+    }
     // attempts to collect resources (fails if deck doesn't have enough cards)
     public boolean collectResources(int diceRoll, ResourceBundle resDeck) {
         int[] resourcesOwed = new int[Resource.NUM_TYPES];

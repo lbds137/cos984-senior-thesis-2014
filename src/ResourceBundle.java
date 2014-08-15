@@ -67,18 +67,12 @@ public class ResourceBundle {
         }
         return b;
     }
-    // doesn't seem to work correctly
-    public Resource removeRandom() { // remove a random resource card
+    // remove a random resource card
+    public Resource removeRandom() {
         if (size() == 0) { return null; }
-        
-        int rand = (int) (Math.random() * size());
-        int rowIndex = 0;
-        int temp = 0;
-        for ( ; temp < rand; rowIndex++) { temp += size(rowIndex); }
-        if (temp > rand) { rowIndex--; } // whoops, we overshot
-        //while (size(rowIndex) == 0) { rowIndex++; }
-        
-        return remove(rowIndex);
+        int rand = 0;
+        do { rand = (int) (Math.random() * Resource.NUM_TYPES); } while (size(rand) == 0);
+        return remove(rand);
     }
     public int size(int resourceType) {
         int test = new Resource(resourceType).getResourceType();
@@ -109,6 +103,20 @@ public class ResourceBundle {
             s += res + ": x" + count + "; "; 
         }
         return s;
+    }
+    
+    public static void main(String[] args) {
+        Rules.init(3);
+        ResourceBundle resDeck = new ResourceBundle();
+        for (int i = 0; i < Resource.NUM_TYPES; i++) {
+            for (int j = 0; j < Rules.getNumHexes(); j++) {
+                resDeck.add(new Resource(i));
+            }
+        }
+        System.out.println("about to start removing");
+        while (!resDeck.isEmpty()) {
+            System.out.println(resDeck.removeRandom());
+        }
     }
 }
 

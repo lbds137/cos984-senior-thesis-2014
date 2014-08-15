@@ -36,6 +36,7 @@ public class Game {
         setUpDecks();
         UserInput.init(board, resDeck, bDraw);
         firstMoves();
+        giveStartingResources();
         gameLoop();
     }
     // if a certain constructor is called, resume the game (i.e. saved game state read from file on disk)
@@ -107,6 +108,9 @@ public class Game {
             UserInput.doPrivacy();
             UserInput.doInitialTurn(players.get(i)); 
         }
+    }
+    private void giveStartingResources() {
+        for (Player p : players) { p.collectStartingResources(resDeck); }
     }
     private Player getNextPlayer(Player p) {
         int index = players.indexOf(p);

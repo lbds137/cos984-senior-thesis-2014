@@ -50,15 +50,9 @@ public class DevCardBundle {
 	}
 	public DevCard removeRandom() { // simulate drawing from a shuffled deck
         if (size() == 0) { return null; }
-        
-        int rand = (int) (Math.random() * size());
-        int rowIndex = 0;
-        int temp = 0;
-        for ( ; temp < rand; rowIndex++) { temp += size(rowIndex); }
-        if (temp > rand) { rowIndex--; } // whoops, we overshot
-        //while (size(rowIndex) == 0) { rowIndex++; }
-        
-        return remove(rowIndex);
+        int rand = 0;
+        do { rand = (int) (Math.random() * DevCard.NUM_TYPES); } while (size(rand) != 0);
+        return remove(rand);
     }
 	public int size(int devCardType) {
 		int test = new DevCard(devCardType).getCardType();

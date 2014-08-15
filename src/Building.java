@@ -69,4 +69,3 @@ public class Building implements Comparable<Building> {
         }
     }
 }
-

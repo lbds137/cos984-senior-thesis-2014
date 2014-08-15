@@ -143,12 +143,20 @@ public class Game {
     
     public static void main(String args[]) {
         // First argument is number of players, second argument number of rings for board size
+        if (args.length < 2) { 
+            System.out.println("Usage: \"java Game NUM_PLAYERS BOARD_SIZE\"");
+        }
+        int numPlayers;
+        int radius;
         try {
-            Game g = new Game(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+            numPlayers = Integer.parseInt(args[0]);
+            radius = Integer.parseInt(args[1]);
         }
         catch (Exception e) {
-            System.out.println("Usage: \"java Game NUM_PLAYERS BOARD_SIZE\"\n");
-            e.printStackTrace();
+            System.out.println("One or more of the arguments entered was invalid. Using default values instead.");
+            numPlayers = Rules.MIN_PLAYERS;
+            radius = Rules.DEFAULT_RADIUS;
         }
+        Game g = new Game(numPlayers, radius);
     }
 }

@@ -8,6 +8,7 @@ public class Rules {
     
     // radius = number of rings (3 for a standard Catan board)
     public static final int DEFAULT_RADIUS = 3;
+    public static final int MIN_PLAYERS = 3;
     // 1x Desert, 4x Wool Grain Lumber, 3x Brick Ore
     public static final int[] DEFAULT_HEXES = {1,4,4,4,3,3};
     public static final int DIE_SIDES = 6;

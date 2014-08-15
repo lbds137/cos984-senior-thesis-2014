@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-public final class Rules {
+public class Rules {
     
     /* Constants */
     
@@ -44,6 +44,11 @@ public final class Rules {
     private static ArrayList<Integer> hexTiles;
     private static ArrayList<Integer> diceRolls;
     private static ArrayList<Port> ports;
+    private static int maxVP; // default = 10
+    private static int maxRoads; // default = 15
+    private static int maxSettlements; // default = 5
+    private static int maxCities; // default = 4
+    
 
     public static void init(int radius) {
         if (!initialized) { // we only initialize once
@@ -56,6 +61,7 @@ public final class Rules {
             initHexTiles();
             initDiceRolls();
             initPorts();
+            initPlayerLimits();
             initialized = true;
         }
         else { System.out.println("The Rules class has already been initialized. No action was performed."); }
@@ -75,6 +81,10 @@ public final class Rules {
     public static ArrayList<Integer> getHexTiles() { return hexTiles; }
     public static ArrayList<Integer> getDiceRolls() { return diceRolls; }
     public static ArrayList<Port> getPorts() { return ports; }
+    public static int getMaxVP() { return maxVP; }
+    public static int getMaxRoads() { return maxRoads; }
+    public static int getMaxSettlements() { return maxSettlements; }
+    public static int getMaxCities() { return maxCities; }
     
     /* Private helpers */
     
@@ -364,5 +374,11 @@ public final class Rules {
                 ports.add(new Port(Port.SPECIFIC, new Resource(j)));
             }
         }
+    }
+    private static void initPlayerLimits() {
+        maxVP = (numHexes + 1) / 2;
+        maxRoads = maxVP + (maxVP / 2);
+        maxSettlements = maxRoads - maxVP;
+        maxCities = maxSettlements - (maxVP / (Resource.NUM_TYPES * 2));
     }
 }

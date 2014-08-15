@@ -3,10 +3,6 @@ import java.util.Collections;
 
 public class Game {
 
-    /* Constants */
-    
-    public static final int DEFAULT_VP = 10;
-
     /* Fields */
 
     private int numPlayers;
@@ -76,7 +72,7 @@ public class Game {
     private void setUpPlayers() {
         players = new ArrayList<Player>(numPlayers);
         for (int i = 0; i < numPlayers; i++) {
-            players.add(new Player(i, DEFAULT_VP));
+            players.add(new Player(i));
         }
         // randomize order of play (no point to actually rolling dice)
         Collections.shuffle(players);
@@ -134,7 +130,7 @@ public class Game {
     private Player getWinner() {
         Player winner = null;
         for (Player p : players) {
-            if (p.getVP() >= DEFAULT_VP) { winner = p; }
+            if (p.getVP() >= Rules.getMaxVP()) { winner = p; }
         }
         return winner;
     }

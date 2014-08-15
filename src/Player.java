@@ -18,9 +18,6 @@ public class Player {
     /* Fields */
     
     private int id;
-    private int maxRoads;
-    private int maxSettlements;
-    private int maxCities;
     private ArrayList<Road> roads;
     private ArrayList<Intersection> settlements;
     private ArrayList<Intersection> cities;
@@ -31,7 +28,6 @@ public class Player {
     private ResourceBundle resourceCards;
     private DevCardBundle devCards;
     private DevCardBundle playedDevCards;
-    private int targetVP;
     private int publicVP;
     private int privateVP;
     private boolean hasLongestRoad;
@@ -39,22 +35,18 @@ public class Player {
     
     /* Constructors */
     
-    public Player(int id, int VP) {
+    public Player(int id) {
         if (id < 0) { System.exit(1); }
         this.id = id;
-        maxRoads = VP + (VP / 2); // default = 15
-        maxSettlements = maxRoads - VP; // default = 5
-        maxCities = maxSettlements - (VP / (Resource.NUM_TYPES * 2)); // default = 4
-        roads = new ArrayList<Road>(maxRoads);
-        settlements = new ArrayList<Intersection>(maxSettlements);
-        cities = new ArrayList<Intersection>(maxCities);
+        roads = new ArrayList<Road>(Rules.getMaxRoads());
+        settlements = new ArrayList<Intersection>(Rules.getMaxSettlements());
+        cities = new ArrayList<Intersection>(Rules.getMaxCities());
         freeRoads = Rules.INITIAL_FREE_ROADS;
         freeSettlements = Rules.INITIAL_FREE_SETTLEMENTS;
         freeCities = 0; // used for debugging
         resourceCards = new ResourceBundle();
         devCards = new DevCardBundle();
         playedDevCards = new DevCardBundle();
-        targetVP = VP;
         publicVP = 0;
         privateVP = 0;
         hasLongestRoad = false;
@@ -100,22 +92,19 @@ public class Player {
     /* Verification methods */
     
     public boolean canBuildRoad() {
-        return (roads.size() < maxRoads) && 
+        return (roads.size() < Rules.getMaxRoads()) && 
                (freeRoads > 0 || resourceCards.canRemove(Rules.ROAD_COST));
     }
     public boolean canBuildRoad(Road r) {
         // is the player able to build ANY road? is the given road already owned?
         if (!canBuildRoad() || !r.canBuild()) { return false; }
         boolean isValid = false;
-        // the first two roads must be adjacent to a settlement
-        for (int i = 0; !isValid && i < settlements.size(); i++) {
-            if (r.other(settlements.get(i).getId()) != Constants.INVALID) { isValid = true; }
+        // the first road must be adjacent to the first settlement and the second road to the second settlement
+        if (roads.size() < Rules.INITIAL_FREE_ROADS) {
+            if (r.other(settlements.get(roads.size()).getId()) != Constants.INVALID) { isValid = true; }
         }
-        // non-special roads must either be adjacent to a settlement, city, or another road
-        if (roads.size() >= Rules.INITIAL_FREE_ROADS) {
-            for (int i = 0; !isValid && i < cities.size(); i++) {
-                if (r.other(cities.get(i).getId()) != Constants.INVALID) { isValid = true; }
-            }
+        // non-special roads must be adjacent to another road
+        else {
             for (int i = 0; !isValid && i < roads.size(); i++) {
                 if (roads.get(i).isNeighbor(r)) { isValid = true; }
             }
@@ -123,7 +112,7 @@ public class Player {
         return isValid;
     }
     public boolean canBuildSettlement() {
-        return (settlements.size() < maxSettlements) && 
+        return (settlements.size() < Rules.getMaxSettlements()) && 
                (freeSettlements > 0 || resourceCards.canRemove(Rules.SETTLEMENT_COST));
     }
     public boolean canBuildSettlement(Intersection i) {
@@ -147,7 +136,7 @@ public class Player {
         return isValid;
     }
     public boolean canBuildCity() {
-        return (cities.size() < maxCities) && (settlements.size() > 0) &&
+        return (cities.size() < Rules.getMaxCities()) && (settlements.size() > 0) &&
                (freeCities > 0 || resourceCards.canRemove(Rules.CITY_COST));
     }
     public boolean canBuildCity(Intersection i) {

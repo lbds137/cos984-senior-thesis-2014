@@ -43,11 +43,11 @@ public class ResourceBundle {
         else return true;
     }
     public boolean canRemove(int[] resourceCounts) {
-        if (resourceCounts.length != Resource.NUM_TYPES) return false; // lengths must match
+        if (resourceCounts.length != Resource.NUM_TYPES) { return false; } // lengths must match
         
         boolean canRemove = true;
         for (int i = 0; i < resourceCounts.length; i++) {
-            if (resourceCounts[i] > size(i)) canRemove = false;
+            if (resourceCounts[i] > size(i)) { canRemove = false; }
         }
         return canRemove;
     }
@@ -104,7 +104,7 @@ public class ResourceBundle {
         if (isEmpty()) { return "(empty)"; }
         String s = "";
         for (int i = 0; i < Resource.NUM_TYPES; i++) {
-            String res = "" + Resource.NAMES.get(i);
+            String res = "" + Resource.NAMES.get(i + 1);
             int count = bundle.get(i).size();
             s += res + ": x" + count + "; "; 
         }

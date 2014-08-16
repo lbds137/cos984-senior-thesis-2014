@@ -159,25 +159,15 @@ public class Rules {
                     int nextPrevHex = nextRing.get((j - 1 + sextant + nextRingSize) % nextRingSize);
                     hGraph[curCurHex][nextPrevHex] = true;
                     hGraph[nextPrevHex][curCurHex] = hGraph[curCurHex][nextPrevHex];
-                    // same in next ring
-                    int nextCurHex = nextRing.get(j + sextant);
-                    hGraph[curCurHex][nextCurHex] = true;
-                    hGraph[nextCurHex][curCurHex] = hGraph[curCurHex][nextCurHex];
-                    // next in next ring
-                    int nextNextHex = nextRing.get(j + 1 + sextant);
-                    hGraph[curCurHex][nextNextHex] = true;
-                    hGraph[nextNextHex][curCurHex] = hGraph[curCurHex][nextNextHex];
                 }
-                else {
-                    // prev in next ring
-                    int nextPrevHex = nextRing.get(j + sextant);
-                    hGraph[curCurHex][nextPrevHex] = true;
-                    hGraph[nextPrevHex][curCurHex] = hGraph[curCurHex][nextPrevHex];
-                    // next in next ring
-                    int nextNextHex = nextRing.get(j + 1 + sextant);
-                    hGraph[curCurHex][nextNextHex] = true;
-                    hGraph[nextNextHex][curCurHex] = hGraph[curCurHex][nextNextHex];
-                }
+                // same in next ring
+                int nextCurHex = nextRing.get(j + sextant);
+                hGraph[curCurHex][nextCurHex] = true;
+                hGraph[nextCurHex][curCurHex] = hGraph[curCurHex][nextCurHex];
+                // next in next ring
+                int nextNextHex = nextRing.get(j + 1 + sextant);
+                hGraph[curCurHex][nextNextHex] = true;
+                hGraph[nextNextHex][curCurHex] = hGraph[curCurHex][nextNextHex];
             }
         }
     }

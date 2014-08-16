@@ -353,26 +353,26 @@ public class BoardDraw {
             double yTwo = interYCoords[portLocations.get(i + 1)];
             double xDiff = round(xTwo - xOne);
             double yDiff = round(yTwo - yOne);
-            int decider;
-            if (xDiff < 0 && yDiff < 0) { decider = 0; }
-            else if (xDiff == 0 && yDiff < 0) { decider = 1; }
-            else if (xDiff > 0 && yDiff < 0) { decider = 2; }
-            else if (xDiff > 0 && yDiff > 0) { decider = 3; }
-            else if (xDiff == 0 && yDiff > 0) { decider = 4; }
-            else /* if (xDiff < 0 && yDiff > 0) */ { decider = 5; }
+            int direction;
+            if (xDiff < 0 && yDiff < 0) { direction = HexShape.NW; }
+            else if (xDiff == 0 && yDiff < 0) { direction = HexShape.W; }
+            else if (xDiff > 0 && yDiff < 0) { direction = HexShape.SW; }
+            else if (xDiff > 0 && yDiff > 0) { direction = HexShape.SE; }
+            else if (xDiff == 0 && yDiff > 0) { direction = HexShape.E; }
+            else /* if (xDiff < 0 && yDiff > 0) */ { direction = HexShape.NE; }
             // use dummy hex shape to calculate lengths
             HexShape shape = new HexShape(0, 0, HexShape.BALANCE, s / 2, HexShape.SIDE);
             double wTemp = shape.getBalanceWidth();
             double hTemp = shape.getBalanceHeight();
             double sTemp = shape.getSide();
             // use decider to find coordinates
-            portXCoords[i / 2] = getNextX(xOne + (xDiff / 2), wTemp, decider);
-            portYCoords[i / 2] = getNextY(yOne + (yDiff / 2), hTemp, sTemp, decider);
+            portXCoords[i / 2] = getNextX(xOne + (xDiff / 2), wTemp, direction);
+            portYCoords[i / 2] = getNextY(yOne + (yDiff / 2), hTemp, sTemp, direction);
         }
     }
-    private double getNextX(double x, double w, int transType) {
+    private double getNextX(double x, double w, int direction) {
         double xNew = x;
-        switch (transType) {
+        switch (direction) {
             case 0: case 2:
                 xNew -= w / 2;
                 break;
@@ -390,9 +390,9 @@ public class BoardDraw {
         }
         return xNew;
     }
-    private double getNextY(double y, double h, double s, int transType) {
+    private double getNextY(double y, double h, double s, int direction) {
         double yNew = y;
-        switch (transType) {
+        switch (direction) {
             case 0: case 5:
                 yNew += (h + s) / 2;
                 break;

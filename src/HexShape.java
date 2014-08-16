@@ -4,14 +4,19 @@ public class HexShape {
     /* Constants */
     
     public static final int NUM_SIDES = 6;
-    
     // parameter selector
     public static final int SIDE = 0;
     public static final int FLAT_WIDTH = 1;
     public static final int FLAT_HEIGHT = 2;
     public static final int BALANCE_WIDTH = 3;
     public static final int BALANCE_HEIGHT = 4;
-    
+    // (balance) cardinal directions
+    public static final int NW = 0;
+    public static final int W = 1;
+    public static final int SW = 2;
+    public static final int SE = 3;
+    public static final int E = 4;
+    public static final int NE = 5;
     // rotation selector
     public static final int FLAT = 0;
     public static final int BALANCE = 1;

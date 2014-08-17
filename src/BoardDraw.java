@@ -49,7 +49,7 @@ public class BoardDraw {
 
     /* Constructors */
     
-    public BoardDraw(Board board, double dim) {
+    public BoardDraw(Board board, int dim) {
         this.board = board;
         radius = Rules.getRadius();
         numHexes = Rules.getNumHexes();
@@ -60,7 +60,7 @@ public class BoardDraw {
         portLocations = board.getPortLocations();
         intersections = board.getIntersections();
         roads = board.getRoads();
-        this.dim = dim;
+        this.dim = (double) dim;
         initCoords();
         initCanvas();
     }

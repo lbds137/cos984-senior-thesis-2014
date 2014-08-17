@@ -7,6 +7,7 @@ public class Game {
 
     private int numPlayers;
     private int radius;
+    private int dim;
     private ArrayList<Player> players; // ordering = turn order
     private Board board;
     private BoardDraw bDraw;
@@ -21,11 +22,12 @@ public class Game {
     public Game(String gameState) {
         resumeGame(gameState);
     }
-    public Game(int numPlayers, int radius) {
-        if (numPlayers < 3) { this.numPlayers = 3; }
-        else if (numPlayers > 4) { this.numPlayers = 4; }
+    public Game(int numPlayers, int radius, int dim) {
+        if (numPlayers < 2) { this.numPlayers = 2; }
         else { this.numPlayers = numPlayers; }
-        this.radius = radius;
+        if (radius < 3) { this.radius = 3; }
+        else { this.radius = radius; }
+        this.dim = dim;
         startGame();
     }
     
@@ -80,7 +82,7 @@ public class Game {
     }
     private void setUpBoard() {
         board = new Board();
-        bDraw = new BoardDraw(board);
+        bDraw = new BoardDraw(board, dim);
         bDraw.draw();
     }
     private void setUpDecks() {
@@ -143,20 +145,23 @@ public class Game {
     
     public static void main(String args[]) {
         // First argument is number of players, second argument number of rings for board size
-        if (args.length < 2) { 
-            System.out.println("Usage: \"java Game NUM_PLAYERS BOARD_SIZE\"");
+        if (args.length < 3) { 
+            System.out.println("Usage: \"java Game NUM_PLAYERS BOARD_RADIUS BOARD_DIMENSIONS \"");
         }
         int numPlayers;
         int radius;
+        int dim;
         try {
             numPlayers = Integer.parseInt(args[0]);
             radius = Integer.parseInt(args[1]);
+            dim = Integer.parseInt(args[2]);
         }
         catch (Exception e) {
-            System.out.println("One or more of the arguments entered was invalid. Using default values instead.");
+            System.out.println("One or more of the arguments entered was invalid, or one or more arguments were missing. Using default values instead.");
             numPlayers = Rules.MIN_PLAYERS;
             radius = Rules.DEFAULT_RADIUS;
+            dim = BoardDraw.DEFAULT_DIM;
         }
-        Game g = new Game(numPlayers, radius);
+        Game g = new Game(numPlayers, radius, dim);
     }
 }

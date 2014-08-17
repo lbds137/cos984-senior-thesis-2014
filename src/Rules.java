@@ -45,10 +45,10 @@ public class Rules {
     private static ArrayList<Integer> hexTiles;
     private static ArrayList<Integer> diceRolls;
     private static ArrayList<Port> ports;
-    private static int maxVP; // default = 10
-    private static int maxRoads; // default = 15
-    private static int maxSettlements; // default = 5
-    private static int maxCities; // default = 4
+    private static int maxVP; // default (for radius 3) = 10
+    private static int maxRoads; // default (for radius 3) = 15
+    private static int maxSettlements; // default (for radius 3) = 5
+    private static int maxCities; // default (for radius 3) = 4
     
 
     public static void init(int radius) {
@@ -224,14 +224,12 @@ public class Rules {
         iHMapping = new ArrayList<ArrayList<Integer>>(numIntersections);
         for (int i = 0; i < numIntersections; i++) {
             iHMapping.add(new ArrayList<Integer>(HexShape.NUM_SIDES / 2));
-        }
-        
+        }        
         for (int i = 0; i < radius; i++) {
             ArrayList<Integer> curHRing = hRings.get(i);
             int curHRingSize = curHRing.size();
             ArrayList<Integer> curIRing = iRings.get(i);
             int curIRingSize = curIRing.size();
-            
             ArrayList<Integer> prevIRing;
             int prevIRingSize;
             if (i > 0) {
@@ -263,9 +261,8 @@ public class Rules {
                 for (int k = 0; k < numCurI; k++) {
                     hIMapping.get(curHRing.get(j)).add(curIRing.get(curIIndex));
                     iHMapping.get(curIRing.get(curIIndex)).add(curHRing.get(j));
-                    if (k + 1 < numCurI) curIIndex = (curIIndex + 1) % curIRingSize;
+                    if (k + 1 < numCurI) { curIIndex = (curIIndex + 1) % curIRingSize; }
                 }
-                if (i == 0) { continue; } // there are no previous rings for ring 0
                 for (int k = 0; k < numPrevI; k++) {
                     hIMapping.get(curHRing.get(j)).add(prevIRing.get(prevIIndex));
                     iHMapping.get(prevIRing.get(prevIIndex)).add(curHRing.get(j));
@@ -291,11 +288,11 @@ public class Rules {
                 int decider = curRingSize % Resource.NUM_TYPES;
                 switch (decider) {
                     case 0: break;
-                    case 1: case 2: case 3: // we want to sporadically add new deserts
+                    case 1: case 2: case 4: // we want to sporadically add new deserts
                         for (int j = 0; j < decider; j++) hexTiles.add(Resource.DESERT);
                         break;
-                    case 4: 
-                        // add one of each resource except ore
+                    case 3: 
+                        // add one of each resource except brick and ore
                         for (int j = 0; j < decider; j++) hexTiles.add(j);
                         break;
                     default: // we shouldn't be here
@@ -332,7 +329,7 @@ public class Rules {
                         break;
                     // corresponds to hex tile generation's case 4
                     case 4: 
-                        rollsToAdd = new ArrayList<Integer>(Arrays.asList(5, 6, 8, 9));
+                        rollsToAdd = new ArrayList<Integer>(Arrays.asList(7, 7, 7, 7));
                         break;
                     // corresponds to hex tile generation's case 1
                     case 6: 
@@ -340,7 +337,7 @@ public class Rules {
                         break;
                     // corresponds to hex tile generation's case 3
                     case 8:
-                        rollsToAdd = new ArrayList<Integer>(Arrays.asList(5, 6, 7, 7, 7, 8, 9, 10));
+                        rollsToAdd = new ArrayList<Integer>(Arrays.asList(3, 4, 5, 6, 8, 9, 10, 11));
                         break;
                     case 1: case 3: case 5: case 7: case 9: default: // we shouldn't be here
                 }

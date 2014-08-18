@@ -313,7 +313,7 @@ public class Rules {
                 int curRingSize = curRing.size();
                 for (int j = 0; j < curRingSize / (DEFAULT_DICE_ROLLS.length - 1); j++) {
                     for (int k = 0; k < DEFAULT_DICE_ROLLS.length; k++) {
-                        int rollToAdd = k + 2;
+                        int rollToAdd = k + 2; // values range from 2 to 12, not 0 to 10, so add 2
                         if (rollToAdd == 7) { continue; }
                         diceRolls.add(rollToAdd);
                     }

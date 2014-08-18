@@ -19,10 +19,6 @@ public class Board {
         initIntersections();
         initRoads();
     }
-    // build a board from a saved state
-    public Board(String state) {
-        // TODO
-    }
     
     private void initHexes() {
         int n = Rules.getNumHexes();

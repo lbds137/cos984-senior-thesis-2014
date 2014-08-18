@@ -19,9 +19,6 @@ public class Game {
     private Player largestArmyOwner;
     private int largestArmySize;
     
-    public Game(String gameState) {
-        resumeGame(gameState);
-    }
     public Game(int numPlayers, int radius, int dim) {
         if (numPlayers < 2) { this.numPlayers = 2; }
         else { this.numPlayers = numPlayers; }
@@ -40,10 +37,6 @@ public class Game {
         firstMoves();
         giveStartingResources();
         gameLoop();
-    }
-    // if a certain constructor is called, resume the game (i.e. saved game state read from file on disk)
-    private void resumeGame(String state) {
-        // todo
     }
     /* MAIN GAME LOOP - WHERE EVERYTHING HAPPENS */
     private void gameLoop() {

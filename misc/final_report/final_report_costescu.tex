@@ -188,20 +188,45 @@ The hex tile generation algorithm begins by adding the standard 19 hex tiles, wh
 \hypertarget{sec:dice_roll_chits}{}
 \subsubsection{Dice Roll Chits}
 
+Since every hex tile in Catan must have a dice roll chit associated with it (except for Desert tiles, but those can be dealt with by simply assigning them chits of value 7), it is necessary to generate a number of dice roll chits equal to the number of hex tiles in \lstinline$hRings$. For radius equal to 3, the default dice roll chit frequency distribution is used, which is stored in \lstinline$DEFAULT_DICE_ROLLS$. Because dice roll values are in the range 2-12 but the indices of \lstinline$DEFAULT_DICE_ROLLS$ are in the range 0-10, an offset of 2 must be used to transform loop indices \lstinline$i$ into actual rolls, as in the following code fragment: \lstinline$diceRolls.add(i + 2)$. 
+
+For radius larger than 3, the default chits are added to \lstinline$diceRolls$ as in the standard case, but then an additional step of generating new chits for each hex ring is performed. It is essential to ensure that the chits generated here match up with the hex tiles already initialized, such that the number of dice rolls equal to 7 is equal to the number of Desert tiles and the number of dice rolls not equal to 7 is equal to the number of non-Desert tiles. A helpful observation here is that the number of non-Desert resources (5) happens to divide the number of non-Desert dice roll chits (10) evenly, so the assignment task is reduced to matching up the cases for nonzero values of \lstinline$curRingSize % (DEFAULT_DICE_ROLLS.length - 1)$ in \lstinline$initDiceRolls$, the method presently being discussed, to the cases for nonzero values of \lstinline$curRingSize % Resource.NUM_TYPES$ in \lstinline$initHexTiles$ (the subject of the previous section).
+
+While \lstinline$curRingSize % (DEFAULT_DICE_ROLLS.length - 1)$ (range 0-9) has twice as many cases as \lstinline$curRingSize % Resource.NUM_TYPES$ (range 0-4), in fact the odd cases (1, 3, 5, and 7) can be discarded since all hex rings except the first one (already dealt with in the default chit initialization step) contain an even number of hexes. The remaining cases match up in the following way: values less than 5 correspond identically (0 to 0, 2 to 2, and 4 to 4), and values greater than 5 correspond to the result of taking their modulo for 5 (6 to 1 and 8 to 3). Recall that, in \lstinline$initHexTiles$, all cases except case 3 add Desert tiles, which means that cases 2, 4, and 6 in \lstinline$initDiceRolls$ must add the appropriate number of chits equal to 7. Cases 2 and 4 are straightforward, adding 2 and 4 chits equal to 7, respectively, but case 6 is a bit trickier because 5 chits not equal to 7 must be added in addition to the one chit equal to 7. The 5 most common dice rolls are chosen, with ties being broken in favor of larger values (an arbitrary choice to satisfy an unavoidable decision). In a similar way, case 8 adds one of each dice roll, except for 2, 7, and 12.
+
+\hypertarget{sec:ports}{}
+\subsubsection{Ports}
+
+The components of board generation discussed thus far have all been located in \lstinline$Rules$, since that class deals with as many unchanging rules for a given board radius as possible. The last board generation component that fits this criteria is the task of determining how many maritime ports are to be added and what their types should be. For a standard board of radius 3, these details are specified by the rules of Catan, but again it is necessary to attempt to extrapolate from the rules in a reasonable way so that larger boards can be generated appropriately. Before the algorithm that does this is discussed, however, the basic \lstinline$Port$ data type must first be briefly explained. 
+
+There are three basic port types represented in \lstinline$Port$, which are stored as integer constants: \lstinline$INLAND$, \lstinline$GENERIC$, and \lstinline$SPECIFIC$. \lstinline$INLAND$ is not technically a maritime port type, but it is used as a dummy port for intersections that are not associated with a real maritime port, thereby enforcing the game rule which states that, no matter where settlements and cities are built, players are allowed to trade 4 resources of one type for another resource of a different type. \lstinline$GENERIC$, as its name suggests, corresponds to the generic port type discussed in the \hyperlink{sec:engaging_in_trade}{Engaging in Trade} section above, which enables players to use a 3:1 trade ratio for any resource type. \lstinline$SPECIFIC$ corresponds to the resource port type discussed in the same section, enabling players to use a 2:1 trade ratio when trading a specific resource type for any other type. 
+
+The methods in \lstinline$Port$ implement some basic functionality for interacting with ports, including retrieval methods for the fields of the class and an overridden \lstinline$toString$ method. The most interesting method in the class is titled \lstinline$compareRatio$ and takes a (different) \lstinline$Port$ instance and a \lstinline$Resource$ instance as parameters. The task of \lstinline$compareRatio$ is to determine whether \lstinline$this$ or \lstinline$p$ (the other port) has a better (lower) trade ratio for the given resource parameter \lstinline$r$. When a port is of the \lstinline$SPECIFIC$ type but for the wrong resource (i.e. a resource type different from that of \lstinline$r$), it is treated as functionally equivalent to an \lstinline$INLAND$ port. The output of \lstinline$compareRatio$ is an integer that follows the conventions of the \lstinline$compare$ method required for classes that implement the Java \lstinline$Comparable$ interface, which is to say that the return value is negative if \lstinline$p$ has the better ratio, 0 if the ratios are equal, and positive if \lstinline$this$ has the better ratio.
+
+Now that the \lstinline$Port$ data type has been introduced, the discussion of the algorithm for generating the proper number of ports of each type can begin. The first step is to determine how many total maritime ports are needed for a given board radius, such that not too few and not too many ports are distributed around the edge of the island of Catan. Recall from the \hyperlink{sec:game_components}{Game Components} section above that a standard Catan board has 9 ports, 4 of which are generic and 5 of which are specific. A constant \lstinline$PORT_RATIO = 0.6$ attempts to extrapolate this rule to larger board sizes while still satisfying the initial rule constraint. Consider how the constant's value of 0.6 applies to a standard board: 60 percent of the 30 intersections in the last ring in \lstinline$iRings$ should be adjacent to a maritime port, a calculation that gives the result of 18, twice the standard number of ports specified in the official game rules. Since each maritime port in Catan is attached to two intersections, it is clear that the ratio of 0.6 satisfies the rules of Catan. For larger boards, multiplying by the port ratio can produce a result that is odd, which is undesirable but easily fixed by subtracting any remainder given by \lstinline$numPortsI % 2$, where \lstinline$numPortsI$ is the number of intersections that need to be attached to a maritime port.
+
+In order to follow the standard split of generic and specific ports as closely as possible, the algorithm tries to assign the \lstinline$SPECIFIC$ type to about half of the needed ports and the \lstinline$GENERIC$ type to the ports that remain. However, in order to maintain fairness and balance, the number of specific ports needs to be divisible by the number of resource types (5) so that no resource is given preference over the others in terms of trading advantage. To achieve this, it is necessary to first compute \lstinline$(numPortsL / 2) % Resource.NUM_TYPES$ and subtract the result from \lstinline$Resource.NUM_TYPES$, where \lstinline$numPortsL$ is the number of logical ports (equal to one half of \lstinline$numPortsI$). The purpose of this calculation is to determine how many ports need to be added to the computed \lstinline$numPortsL / 2$ value so that the number of logical ports is divisible by 5. Once \lstinline$numSpecificL$ and \lstinline$numGenericL$ are computed, all that remains is to initialize the appropriate number of specific and generic ports using loops.
+
+\hypertarget{sec:the_board_data_type}{}
 \subsubsection{The \lstinline$Board$ Data Type}
+
+
 
 \hypertarget{sec:hexes}{}
 \subsubsection{Hexes}
 
-\subsubsection{Ports}
+\hypertarget{sec:random_ports}{}
+\subsubsection{Random Ports}
 
+\hypertarget{sec:intersections}{}
 \subsubsection{Intersections}
 
+\hypertarget{sec:roads}{}
 \subsubsection{Roads}
 
 \subsection{Rendering the Board with StdDraw}
 
-\subsubsection{\lstinline$HexShape$ Data Type}
+\subsubsection{The \lstinline$HexShape$ Data Type}
 
 \subsubsection{Hex Coordinates}
 

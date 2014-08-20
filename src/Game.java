@@ -139,7 +139,7 @@ public class Game {
     public static void main(String args[]) {
         // First argument is number of players, second argument number of rings for board size
         if (args.length < 3) { 
-            System.out.println("Usage: \"java Game NUM_PLAYERS BOARD_RADIUS BOARD_DIMENSIONS \"");
+            System.out.println("Usage: \"java Game NUM_PLAYERS BOARD_RADIUS BOARD_DIMENSIONS\"");
         }
         int numPlayers;
         int radius;

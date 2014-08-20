@@ -61,6 +61,9 @@ public class Port {
     public int getRatio() {
         return portType; // port types map exactly to ratios, but this is not set in stone
     }
+    public String getStringRatio() {
+        return getRatio() + ":1";
+    }
 
     /* Inherits / overrides */
     
@@ -98,6 +101,6 @@ public class Port {
             default:
                 return "Invalid";
         }
-        return s + " (" + portType + ":1)";
+        return s + " (" + getStringRatio() + ")";
     }
 }

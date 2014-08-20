@@ -264,7 +264,7 @@ public class BoardDraw {
         drawEmptyPort(i);
         StdDraw.setPenColor(StdDraw.WHITE);
         StdDraw.setFont(new Font("Arial", Font.BOLD, (int) (w / 9)));
-        StdDraw.text(portXCoords[i / 2], portYCoords[i / 2], port.toString().substring(0, 3));
+        StdDraw.text(portXCoords[i / 2], portYCoords[i / 2], port.getStringRatio());
     }
     private void drawRefPort(int i) {
         StdDraw.setPenColor(StdDraw.WHITE);

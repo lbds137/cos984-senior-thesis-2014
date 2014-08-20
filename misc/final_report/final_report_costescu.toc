@@ -1,38 +1,39 @@
-\contentsline {section}{\numberline {1}Motivation and Goals for the Project}{3}{section.1}
-\contentsline {section}{\numberline {2}Background and Related Work}{4}{section.2}
-\contentsline {subsection}{\numberline {2.1}Klaus Teuber and Die Siedler von Catan}{4}{subsection.2.1}
-\contentsline {subsection}{\numberline {2.2}Impact of Catan}{5}{subsection.2.2}
-\contentsline {subsection}{\numberline {2.3}Other Software Implementations of Catan}{6}{subsection.2.3}
-\contentsline {section}{\numberline {3}Catan Rules \cite {catanwebrules}}{6}{section.3}
-\contentsline {subsection}{\numberline {3.1}Game Components}{6}{subsection.3.1}
-\contentsline {subsection}{\numberline {3.2}Game Setup}{7}{subsection.3.2}
-\contentsline {subsection}{\numberline {3.3}Victory Conditions}{8}{subsection.3.3}
-\contentsline {subsection}{\numberline {3.4}Typical Turn Workflow}{9}{subsection.3.4}
-\contentsline {subsubsection}{\numberline {3.4.1}Rolling the Dice}{9}{subsubsection.3.4.1}
-\contentsline {subsubsection}{\numberline {3.4.2}Engaging in Trade}{9}{subsubsection.3.4.2}
-\contentsline {subsubsection}{\numberline {3.4.3}Building Roads, Settlements, Cities, and Development Cards}{10}{subsubsection.3.4.3}
-\contentsline {section}{\numberline {4}Implementation Details \cite {self2014}}{12}{section.4}
-\contentsline {subsection}{\numberline {4.1}Insertion Point}{12}{subsection.4.1}
-\contentsline {subsection}{\numberline {4.2}The \lstinline $Rules$ Class}{13}{subsection.4.2}
-\contentsline {subsection}{\numberline {4.3}Dynamic Board Generation}{13}{subsection.4.3}
-\contentsline {subsubsection}{\numberline {4.3.1}Numbering Conventions}{13}{subsubsection.4.3.1}
-\contentsline {subsubsection}{\numberline {4.3.2}Rings of Catan}{14}{subsubsection.4.3.2}
-\contentsline {subsubsection}{\numberline {4.3.3}Hex Graph}{14}{subsubsection.4.3.3}
-\contentsline {subsubsection}{\numberline {4.3.4}Intersection Graph}{16}{subsubsection.4.3.4}
-\contentsline {subsubsection}{\numberline {4.3.5}Hex to Intersection Mappings}{18}{subsubsection.4.3.5}
-\contentsline {subsubsection}{\numberline {4.3.6}Choosing Balanced Hex Resources}{19}{subsubsection.4.3.6}
-\contentsline {subsubsection}{\numberline {4.3.7}Dice Roll Chits and Conflict Avoidance}{19}{subsubsection.4.3.7}
-\contentsline {subsubsection}{\numberline {4.3.8}Hexes}{19}{subsubsection.4.3.8}
-\contentsline {subsubsection}{\numberline {4.3.9}Ports}{19}{subsubsection.4.3.9}
-\contentsline {subsubsection}{\numberline {4.3.10}Intersections}{19}{subsubsection.4.3.10}
-\contentsline {subsubsection}{\numberline {4.3.11}Roads}{19}{subsubsection.4.3.11}
-\contentsline {subsection}{\numberline {4.4}Rendering the Board with StdDraw}{19}{subsection.4.4}
-\contentsline {subsubsection}{\numberline {4.4.1}\lstinline $HexShape$ Data Type}{19}{subsubsection.4.4.1}
-\contentsline {subsubsection}{\numberline {4.4.2}Hex Coordinates}{19}{subsubsection.4.4.2}
-\contentsline {subsubsection}{\numberline {4.4.3}Intersection Coordinates}{19}{subsubsection.4.4.3}
-\contentsline {subsubsection}{\numberline {4.4.4}Port Coordinates}{19}{subsubsection.4.4.4}
-\contentsline {subsubsection}{\numberline {4.4.5}Drawing}{19}{subsubsection.4.4.5}
-\contentsline {subsection}{\numberline {4.5}(More sections to come)}{20}{subsection.4.5}
-\contentsline {section}{\numberline {5}Challenges Encountered}{20}{section.5}
-\contentsline {section}{\numberline {6}Future Features}{20}{section.6}
-\contentsline {section}{\numberline {7}Conclusion}{20}{section.7}
+\contentsline {section}{\numberline {1}Motivation and Goals for the Project}{4}{section.1}
+\contentsline {section}{\numberline {2}Background and Related Work}{5}{section.2}
+\contentsline {subsection}{\numberline {2.1}Klaus Teuber and Die Siedler von Catan}{5}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Impact of Catan}{6}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Other Software Implementations of Catan}{7}{subsection.2.3}
+\contentsline {section}{\numberline {3}Catan Rules \cite {catanwebrules}}{7}{section.3}
+\contentsline {subsection}{\numberline {3.1}Game Components}{7}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Game Setup}{8}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Victory Conditions}{9}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.4}Typical Turn Workflow}{10}{subsection.3.4}
+\contentsline {subsubsection}{\numberline {3.4.1}Rolling the Dice}{10}{subsubsection.3.4.1}
+\contentsline {subsubsection}{\numberline {3.4.2}Engaging in Trade}{10}{subsubsection.3.4.2}
+\contentsline {subsubsection}{\numberline {3.4.3}Building Roads, Settlements, Cities, and Development Cards}{11}{subsubsection.3.4.3}
+\contentsline {section}{\numberline {4}Implementation Details \cite {self2014}}{13}{section.4}
+\contentsline {subsection}{\numberline {4.1}Insertion Point}{13}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}The \lstinline $Rules$ Class}{14}{subsection.4.2}
+\contentsline {subsection}{\numberline {4.3}Dynamic Board Generation}{14}{subsection.4.3}
+\contentsline {subsubsection}{\numberline {4.3.1}Numbering Conventions}{14}{subsubsection.4.3.1}
+\contentsline {subsubsection}{\numberline {4.3.2}Rings of Catan}{15}{subsubsection.4.3.2}
+\contentsline {subsubsection}{\numberline {4.3.3}Hex Graph}{15}{subsubsection.4.3.3}
+\contentsline {subsubsection}{\numberline {4.3.4}Intersection Graph}{17}{subsubsection.4.3.4}
+\contentsline {subsubsection}{\numberline {4.3.5}Hex to Intersection Mappings}{19}{subsubsection.4.3.5}
+\contentsline {subsubsection}{\numberline {4.3.6}Resources}{20}{subsubsection.4.3.6}
+\contentsline {subsubsection}{\numberline {4.3.7}Dice Roll Chits}{22}{subsubsection.4.3.7}
+\contentsline {subsubsection}{\numberline {4.3.8}The \lstinline $Board$ Data Type}{22}{subsubsection.4.3.8}
+\contentsline {subsubsection}{\numberline {4.3.9}Hexes}{22}{subsubsection.4.3.9}
+\contentsline {subsubsection}{\numberline {4.3.10}Ports}{22}{subsubsection.4.3.10}
+\contentsline {subsubsection}{\numberline {4.3.11}Intersections}{22}{subsubsection.4.3.11}
+\contentsline {subsubsection}{\numberline {4.3.12}Roads}{22}{subsubsection.4.3.12}
+\contentsline {subsection}{\numberline {4.4}Rendering the Board with StdDraw}{22}{subsection.4.4}
+\contentsline {subsubsection}{\numberline {4.4.1}\lstinline $HexShape$ Data Type}{22}{subsubsection.4.4.1}
+\contentsline {subsubsection}{\numberline {4.4.2}Hex Coordinates}{22}{subsubsection.4.4.2}
+\contentsline {subsubsection}{\numberline {4.4.3}Intersection Coordinates}{22}{subsubsection.4.4.3}
+\contentsline {subsubsection}{\numberline {4.4.4}Port Coordinates}{22}{subsubsection.4.4.4}
+\contentsline {subsubsection}{\numberline {4.4.5}Drawing}{22}{subsubsection.4.4.5}
+\contentsline {subsection}{\numberline {4.5}(More sections to come)}{22}{subsection.4.5}
+\contentsline {section}{\numberline {5}Challenges Encountered}{22}{section.5}
+\contentsline {section}{\numberline {6}Future Features}{22}{section.6}
+\contentsline {section}{\numberline {7}Conclusion}{22}{section.7}

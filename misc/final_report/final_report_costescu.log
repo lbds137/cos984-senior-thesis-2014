@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.8.11)  22 AUG 2014 17:36
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.8.11)  22 AUG 2014 17:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1071,6 +1071,10 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\@ifnextchar' on input line 246.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `\lstinline' on input line 248.
 
 
@@ -1113,13 +1117,13 @@ www . newyorker . com / online / blogs / currency / 2014 / 02 /
  []
 
 
-Underfull \hbox (badness 1173) in paragraph at lines 74--76
+Underfull \hbox (badness 1173) in paragraph at lines 78--80
 []\T1/ptm/m/n/10 (+20) K. Teu-ber, ``The Of-fi-cial Web-site for Set-tlers of C
 atan - Elec-tronic Games,'' [][]$http : / / www . catan . com /
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 83--87
+Underfull \hbox (badness 10000) in paragraph at lines 87--91
 \T1/ptm/m/n/10 (+20) theglobeandmail . com / technology / settlers-[]of-[]catan
 -[]a-[]low-[]tech-[]island-[]retreat-[]for-[]a-[]plugged-[]in-[]generation /
  []
@@ -1132,13 +1136,13 @@ Package atveryend Info: Empty hook `AfterLastShipout' on input line 288.
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 288.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 288.
 Package rerunfilecheck Info: File `final_report_costescu.out' has not changed.
-(rerunfilecheck)             Checksum: 56DA86EA92DA31615E41E3C8AEB2ED02;7027.
+(rerunfilecheck)             Checksum: 752EE080900B071DAD177F31386F2BC3;7090.
  ) 
 Here is how much of TeX's memory you used:
- 16783 strings out of 494985
- 242296 string characters out of 6180356
- 361615 words of memory out of 5000000
- 19431 multiletter control sequences out of 15000+600000
+ 16785 strings out of 494985
+ 242325 string characters out of 6180356
+ 361649 words of memory out of 5000000
+ 19432 multiletter control sequences out of 15000+600000
  82805 words of font info for 244 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
  48i,12n,43p,2847b,1323s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1148,10 +1152,10 @@ e/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf
 ype1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/time
 s/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></
 usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on final_report_costescu.pdf (30 pages, 257013 bytes).
+Output written on final_report_costescu.pdf (30 pages, 257428 bytes).
 PDF statistics:
- 522 PDF objects out of 1000 (max. 8388607)
- 477 compressed objects within 5 object streams
- 119 named destinations out of 1000 (max. 500000)
+ 526 PDF objects out of 1000 (max. 8388607)
+ 481 compressed objects within 5 object streams
+ 120 named destinations out of 1000 (max. 500000)
  51550 words of extra memory for PDF output out of 51595 (max. 10000000)
 

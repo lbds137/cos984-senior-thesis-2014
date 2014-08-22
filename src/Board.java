@@ -31,22 +31,22 @@ public class Board {
             desertIndices.add(index);
             partialLand = new ArrayList<Integer>(partialLand.subList(0, index));
         }
-        robberIndex = desertIndices.get(desertIndices.size() - 1); // robber starts in the first desert
         ArrayList<Integer> shuffledDiceRolls = getDiceRolls(desertIndices);
-        
         hexes = new Hex[n];
         for (int i = 0; i < n; i++) {
             hexes[i] = new Hex(i, new Resource(shuffledLand.get(i)), shuffledDiceRolls.get(i));
         }
+        // robber starts in a random desert
+        robberIndex = desertIndices.get((int) (Math.random() * desertIndices.size()));
         hexes[robberIndex].placeRobber();
     }
     private void initIntersections() {
         int n = Rules.getNumIntersections();
         ArrayList<Port> ports = randomizePorts();
-        
+        ArrayList<ArrayList<Integer>> iHMapping = Rules.getIHMapping();
         intersections = new Intersection[n];
         for (int i = 0; i < n; i++) {
-            ArrayList<Integer> hexList = Rules.getIHMapping().get(i);
+            ArrayList<Integer> hexList = iHMapping.get(i);
             ArrayList<Hex> iHexes = new ArrayList<Hex>(hexList.size());
             for (Integer hexId : hexList) { iHexes.add(hexes[hexId]); }
             intersections[i] = new Intersection(i, ports.get(i), iHexes);
@@ -116,11 +116,10 @@ public class Board {
         // it needs to be a multiple of Resource.NUM_TYPES
         int numSpecificL = (numPortsL / 2) + (Resource.NUM_TYPES - ((numPortsL / 2) % Resource.NUM_TYPES));
         int numGenericL = numPortsL - numSpecificL;
-        /* Initialize logical ports */
-        ArrayList<Port> portsL = new ArrayList<Port>(Rules.getPorts());
-        Collections.shuffle(portsL);
+        ArrayList<Port> portsL = new ArrayList<Port>(Rules.getPorts()); // get logical ports from Rules
         /* Randomize port locations */
-        int numInlandI = numI - numPortsI; 
+        Collections.shuffle(portsL);
+        int numInlandI = numI - numPortsI; // how many total inland ports are there
         int numAvailable = numInlandI; // how many inland ports are left to distribute
         Port inland = new Port(Port.INLAND); // use one inland port for all references
         ArrayList<Port> portsI = new ArrayList<Port>(numIntersections);
@@ -134,8 +133,7 @@ public class Board {
             portsI.add(portsL.get(i));
         }
         int portsISize = portsI.size(); // need to keep track of this because size will change
-        // distribute remaining inland ports
-        while (numAvailable > 0) {
+        while (numAvailable > 0) { // distribute remaining inland ports
             for (int i = numIntersections - numI; numAvailable > 0 && i < portsISize; i++) {
                 double rand = Math.random();
                 if (portsI.get(i).getPortType() == Port.INLAND && rand > 0.5) {

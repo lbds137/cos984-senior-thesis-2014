@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.8.11)  20 AUG 2014 19:23
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.8.11)  22 AUG 2014 17:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -971,7 +971,7 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-eur.cfg
 File: mt-eur.cfg 2006/07/31 v1.1 microtype config. file: AMS Euler Roman (RS)
 )
-<honor_code.png, id=164, 2006.49625pt x 249.93375pt>
+<honor_code.png, id=176, 2006.49625pt x 249.93375pt>
 File: honor_code.png Graphic file (type png)
  <use honor_code.png>
 Package pdftex.def Info: honor_code.png used on input line 23.
@@ -1056,19 +1056,32 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 211.
 
+[25] [26] [27] [28]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\lstinline' on input line 229.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 229.
+(hyperref)                removing `\lstinline' on input line 246.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 229.
+(hyperref)                removing `math shift' on input line 246.
 
-(./final_report_costescu.bbl
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 246.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\lstinline' on input line 248.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 248.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 248.
+
+[29] (./final_report_costescu.bbl
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 26.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7.4> not available
@@ -1099,7 +1112,7 @@ Underfull \hbox (badness 2790) in paragraph at lines 65--68
 www . newyorker . com / online / blogs / currency / 2014 / 02 /
  []
 
-[25]
+
 Underfull \hbox (badness 1173) in paragraph at lines 74--76
 []\T1/ptm/m/n/10 (+20) K. Teu-ber, ``The Of-fi-cial Web-site for Set-tlers of C
 atan - Elec-tronic Games,'' [][]$http : / / www . catan . com /
@@ -1112,33 +1125,33 @@ Underfull \hbox (badness 10000) in paragraph at lines 83--87
  []
 
 )
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 261.
- [26]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 261.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 288.
+ [30]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 288.
  (./final_report_costescu.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 261.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 261.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 288.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 288.
 Package rerunfilecheck Info: File `final_report_costescu.out' has not changed.
-(rerunfilecheck)             Checksum: 8BEBA6E1153230EAA2A3F824E5E5BAC0;6547.
+(rerunfilecheck)             Checksum: 56DA86EA92DA31615E41E3C8AEB2ED02;7027.
  ) 
 Here is how much of TeX's memory you used:
- 16715 strings out of 494985
- 241370 string characters out of 6180356
+ 16783 strings out of 494985
+ 242296 string characters out of 6180356
  361615 words of memory out of 5000000
- 19369 multiletter control sequences out of 15000+600000
+ 19431 multiletter control sequences out of 15000+600000
  82805 words of font info for 244 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
- 48i,12n,43p,2793b,1327s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 48i,12n,43p,2847b,1323s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf
 -dist/fonts/type1/urw/courier/ucrb8a.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/time
 s/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></
 usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on final_report_costescu.pdf (26 pages, 242285 bytes).
+Output written on final_report_costescu.pdf (30 pages, 257013 bytes).
 PDF statistics:
- 483 PDF objects out of 1000 (max. 8388607)
- 442 compressed objects within 5 object streams
- 113 named destinations out of 1000 (max. 500000)
- 51526 words of extra memory for PDF output out of 51595 (max. 10000000)
+ 522 PDF objects out of 1000 (max. 8388607)
+ 477 compressed objects within 5 object streams
+ 119 named destinations out of 1000 (max. 500000)
+ 51550 words of extra memory for PDF output out of 51595 (max. 10000000)
 

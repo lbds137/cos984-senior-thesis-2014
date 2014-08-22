@@ -136,33 +136,15 @@ public class HexShape {
     
     /* Getters */
     
-    public double getXCenter() {
-        return xCenter;
-    }
-    public double getYCenter() {
-        return yCenter;
-    }
-    public double getSide() {
-        return side;
-    }
-    public double getFlatWidth() {
-        return flatWidth;
-    }
-    public double getFlatHeight() {
-        return flatHeight;
-    }
-    public double getBalanceWidth() {
-        return balanceWidth;
-    }
-    public double getBalanceHeight() {
-        return balanceHeight;
-    }
-    public double[] getXCoords() {
-        return xCoords;
-    }
-    public double[] getYCoords() {
-        return yCoords;
-    }
+    public double getXCenter() { return xCenter; }
+    public double getYCenter() { return yCenter; }
+    public double getSide() { return side; }
+    public double getFlatWidth() { return flatWidth; }
+    public double getFlatHeight() { return flatHeight; }
+    public double getBalanceWidth() { return balanceWidth; }
+    public double getBalanceHeight() { return balanceHeight; }
+    public double[] getXCoords() { return xCoords; }
+    public double[] getYCoords() { return yCoords; }
     
     /* Inherits / overrides */
     

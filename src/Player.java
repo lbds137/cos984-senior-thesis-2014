@@ -55,39 +55,17 @@ public class Player {
     
     /* Getters */
     
-    public int getId() {
-        return id;
-    }
-    public ArrayList<Road> getRoads() {
-        return roads;
-    }
-    public ArrayList<Intersection> getSettlements() {
-        return settlements;
-    }
-    public ArrayList<Intersection> getCities() {
-        return cities;
-    }
-    public ResourceBundle getResourceCards() {
-        return resourceCards;
-    }
-    public DevCardBundle getDevCards() {
-        return devCards;
-    }
-    public DevCardBundle getPlayedDevcards() {
-        return playedDevCards;
-    }
-    public int getLongestRoad() {
-        return findLongestRoad();
-    }
-    public int getLargestArmy() {
-        return playedDevCards.size(DevCard.KNIGHT);
-    }
-    public int getPublicVP() {
-        return publicVP;
-    }
-    public int getVP() {
-        return publicVP + privateVP;
-    }
+    public int getId() { return id; }
+    public ArrayList<Road> getRoads() { return roads; }
+    public ArrayList<Intersection> getSettlements() { return settlements; }
+    public ArrayList<Intersection> getCities() { return cities; }
+    public ResourceBundle getResourceCards() { return resourceCards; }
+    public DevCardBundle getDevCards() { return devCards; }
+    public DevCardBundle getPlayedDevcards() { return playedDevCards; }
+    public int getLongestRoad() { return findLongestRoad(); }
+    public int getLargestArmy() { return playedDevCards.size(DevCard.KNIGHT); }
+    public int getPublicVP() { return publicVP; }
+    public int getVP() { return publicVP + privateVP; }
     
     /* Verification methods */
     

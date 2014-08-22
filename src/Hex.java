@@ -19,27 +19,15 @@ public class Hex {
     
     /* Getters */
     
-    public int getId() {
-        return id;
-    }
-    public Resource getResource() {
-        return resource;
-    }
-    public int getDiceRoll() {
-        return diceRoll;
-    }
-    public boolean hasRobber() {
-        return hasRobber;
-    }
+    public int getId() { return id; }
+    public Resource getResource() { return resource; }
+    public int getDiceRoll() { return diceRoll; }
+    public boolean hasRobber() { return hasRobber; }
     
     /* Operations */
     
-    public void placeRobber() {
-        hasRobber = true;
-    }
-    public void removeRobber() {
-        hasRobber = false;
-    }
+    public void placeRobber() { hasRobber = true; }
+    public void removeRobber() { hasRobber = false; }
     
     /* Inherits / overrides */
     

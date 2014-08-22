@@ -22,21 +22,11 @@ public class Intersection {
 
     /* Getters */
     
-    public int getId() {
-        return id;
-    }
-    public Player getPlayer() {
-        return player;
-    }
-    public Building getBuilding() {
-        return building;
-    }
-    public Port getPort() {
-        return port;
-    }
-    public ArrayList<Hex> getHexes() {
-        return hexes;
-    }
+    public int getId() { return id; }
+    public Player getPlayer() { return player; }
+    public Building getBuilding() { return building; }
+    public Port getPort() { return port; }
+    public ArrayList<Hex> getHexes() { return hexes; }
     
     /* Inherits / overrides */
     

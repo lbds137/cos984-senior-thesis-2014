@@ -102,12 +102,14 @@ public class BoardDraw {
     /* Operations */
     
     public void draw() {
+        StdDraw.show(0);
         drawOcean();
         drawHexes();
         drawChits();
         drawRoads();
         drawPorts();
         drawIntersections();
+        StdDraw.show(0);
     }
     public void drawRef() {
         drawRefHexes();

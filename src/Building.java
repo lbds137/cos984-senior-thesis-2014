@@ -27,18 +27,13 @@ public class Building implements Comparable<Building> {
 
     /* Getters */
 
-    public int getBuildingType() {
-        return buildingType;
-    }
-    public int getNumResources() {
-        return buildingType; // number of resources given on a dice roll
-    }
+    public int getBuildingType() { return buildingType; }
+    // number of resources given on a dice roll
+    public int getNumResources() { return buildingType; }
 
     /* Inherits / overrides */
 
-    public boolean equals(Building b) {
-        return compareTo(b) == 0;
-    }
+    public boolean equals(Building b) { return compareTo(b) == 0; }
     @Override
     public String toString() {
         switch (buildingType) {

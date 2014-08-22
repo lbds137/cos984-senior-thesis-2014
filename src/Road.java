@@ -22,9 +22,7 @@ public class Road {
     
     /* Getters */
     
-    public Player getPlayer() {
-        return player;
-    }
+    public Player getPlayer() { return player; }
     public int other(int i) {
         if (i == iTwo) return iOne;
         else if (i == iOne) return iTwo;
@@ -42,14 +40,8 @@ public class Road {
         both.add(iTwo);
         return both;
     }
-    public boolean isNeighbor(Road r) {
-        if (common(r) == Constants.INVALID) return false;
-        else return true;
-    }
-    public boolean canBuild() {
-        if (this.player == null) { return true; }
-        else { return false; }
-    }
+    public boolean isNeighbor(Road r) { return common(r) != Constants.INVALID; }
+    public boolean canBuild() { return this.player == null; }
     
     /* Operations */
     
@@ -68,6 +60,6 @@ public class Road {
         String pString;
         if (player == null) pString = "nobody";
         else pString = player.toString();
-        return " [" + iOne + "->" + iTwo + "] " + " owned by player " + pString;
+        return " [" + iOne + "->" + iTwo + "] " + " owned by " + pString;
     }
 }

@@ -84,12 +84,8 @@ public class ResourceBundle {
         for (int i = 0; i < bundle.size(); i++) { size += bundle.get(i).size(); }
         return size;
     }
-    public boolean isEmpty(int resourceType) {
-        return size(resourceType) == 0;
-    }
-    public boolean isEmpty() {
-        return size() == 0;
-    }
+    public boolean isEmpty(int resourceType) { return size(resourceType) == 0; }
+    public boolean isEmpty() { return size() == 0; }
     
     /* Inherits / overrides */
     

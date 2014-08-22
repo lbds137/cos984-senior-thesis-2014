@@ -243,7 +243,7 @@ In the Catan implementation presently being discussed, roads are stored in a two
 
 The remaining methods in \lstinline$Road$ (aside from \lstinline$getPlayer$, a retrieval method for the \lstinline$player$ field, and a debugging \lstinline$toString$ method) are used to assign an owner to the road, since \lstinline$Road$s are initialized with a \lstinline$null$ owner: \lstinline$canBuild$ verifies that the \lstinline$Road$ is unowned, and \lstinline$build$ changes the owner to the one provided as a parameter. Having discussed the \lstinline$Road$ data type, it is now possible to explain the initialization of \lstinline$Board$'s \lstinline$roads$ field, which is much easier than that of hexes and intersections (discussed in great detail above). Since \lstinline$roads$ is parallel to \lstinline$iGraph$, which has already been initialized in \lstinline$Rules$, all that needs to be done is to create a new \lstinline$Road$ instance with row index \lstinline$i$ and column index \lstinline$j$ wherever there exists a \lstinline$true$ value in \lstinline$iGraph$. Once the last \lstinline$Road$ is created, the game board is fully initialized and is ready to be rendered by \lstinline$BoardDraw$, the subject of the next section.
 
-\subsection{Rendering the Board with \lstinline$StdDraw$}
+\subsection{Rendering the Board with \lstinline$StdDraw$ \cite{princetoncs}}
 
 \subsubsection{The \lstinline$HexShape$ Data Type}
 

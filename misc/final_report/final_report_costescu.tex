@@ -6,6 +6,7 @@
 \usepackage[normalem]{ulem}
 \usepackage{courier}
 \usepackage{listings}
+%\usepackage{amsmath}
 
 \begin{document}
 \lstset{language=Java,basicstyle=\ttfamily}
@@ -243,24 +244,54 @@ In the Catan implementation presently being discussed, roads are stored in a two
 
 The remaining methods in \lstinline$Road$ (aside from \lstinline$getPlayer$, a retrieval method for the \lstinline$player$ field, and a debugging \lstinline$toString$ method) are used to assign an owner to the road, since \lstinline$Road$s are initialized with a \lstinline$null$ owner: \lstinline$canBuild$ verifies that the \lstinline$Road$ is unowned, and \lstinline$build$ changes the owner to the one provided as a parameter. Having discussed the \lstinline$Road$ data type, it is now possible to explain the initialization of \lstinline$Board$'s \lstinline$roads$ field, which is much easier than that of hexes and intersections (discussed in great detail above). Since \lstinline$roads$ is parallel to \lstinline$iGraph$, which has already been initialized in \lstinline$Rules$, all that needs to be done is to create a new \lstinline$Road$ instance with row index \lstinline$i$ and column index \lstinline$j$ wherever there exists a \lstinline$true$ value in \lstinline$iGraph$. Once the last \lstinline$Road$ is created, the game board is fully initialized and is ready to be rendered by \lstinline$BoardDraw$, the subject of the next section.
 
+\hypertarget{sec:rendering_the_board_with_stddraw}{}
 \subsection{Rendering the Board with \lstinline$StdDraw$ \cite{princetoncs}}
 
+The \lstinline$BoardDraw$ class is responsible for graphically rendering the game board, using the \lstinline$StdDraw$ library (part of the Princeton IntroCS package of standard libraries) to create a new window with a blank canvas and then draw each board element at the proper coordinates. The minutiae of performing the actual drawing operations are dealt with by \lstinline$StdDraw$, so the main task of \lstinline$BoardDraw$ is to calculate the proper coordinates for the various Catan board elements and call the appropriate \lstinline$StdDraw$ methods. To initialize a \lstinline$BoardDraw$ object, all that is needed is a reference to a \lstinline$Board$ and, optionally, a \lstinline$dim$ parameter that determines the dimensions of the rendered window in pixels (the window is square, so only one value is necessary). If no dimension parameter is provided, the \lstinline$DEFAULT_DIM = 700$ value is used instead, which works well for a standard size board but is too small for larger boards. The \lstinline$dim$ field is used to dynamically compute the dimensions of the game elements to be drawn, such that the components of a rendered board of any size are approximately proportionate and visually pleasing. These computed values will be discussed in more detail in the relevant sections on drawing different board elements, but it is worth noting here that the values are all calculated in the \lstinline$initCoords$ and \lstinline$initCanvas$ methods, such that the \lstinline$BoardDraw$ instance is ready to draw the board using the \lstinline$draw$ method once the class constructor returns.
+
+\hypertarget{sec:the_hexshape_data_type}{}
 \subsubsection{The \lstinline$HexShape$ Data Type}
 
+Central to \lstinline$BoardDraw$'s dimension and coordinate calculations is the \lstinline$HexShape$ data type, whose main task is to compute the $x$ and $y$ coordinates of the 6 vertices of a hex using the coordinates of the center point of the hex and the size of one of 3 possible dimensions of the hex. In order to explain the inner workings of \lstinline$HexShape$, it is first necessary to introduce some terms and concepts involved in the geometry of a regular hexagon (i.e. one with sides and angles of equal size). First and simplest is the rotation of a hex, which can either be \lstinline$FLAT$ or \lstinline$BALANCE$. The flat orientation is such that a hex has two of its sides positioned parallel to the $x$ axis. Conversely, the balanced orientation is such that a hex has two of its sides positioned parallel to the $y$ axis. The names of these orientations refer to how a hexagon would behave if placed on an infinite line in a two-dimensional world where gravity acts downward (i.e. in the negative $y$ direction): a \lstinline$FLAT$ hexagon would remain stationary, while a \lstinline$BALANCE$ hexagon would "roll" in the negative or positive $x$ direction unless perfectly balanced on its bottommost vertex.
+
+The next detail to be considered is the geometry involved in describing a regular hexagon. The first and most obvious dimension is the length of a side, the \lstinline$HexShape$ field for which is aptly titled \lstinline$side$. Another hexagon dimension is defined by the perpendicular distance between two parallel sides, which is titled \lstinline$flatHeight$ for the \lstinline$FLAT$ orientation and \lstinline$balanceWidth$ for the \lstinline$BALANCE$ orientation. The third and final dimension is the distance between the farthest 2 vertices, which is titled \lstinline$flatWidth$ and \lstinline$balanceHeight$. These dimensions can also be defined in a different way. Consider an arbitrary vertex indexed by $v$, where any of its neighbors is $v + 1$, the next neighbor is $v + 2$, and so on. The distance between $v$ and $v + 1$ is \lstinline$side$, the distance between $v$ and $v + 2$ is \lstinline$flatHeight$, and, finally, the distance between $v$ and $v + 3$ is \lstinline$flatWidth$. 
+
+In order to initialize a \lstinline$HexShape$ instance, 5 parameters are needed: \lstinline$xCenter$, \lstinline$yCenter$, \lstinline$rotation$, \lstinline$param$, and \lstinline$selector$, where \lstinline$xCenter$ and \lstinline$yCenter$ are the coordinates of the center of the hexagon, \lstinline$rotation$ describes the orientation, \lstinline$param$ is the value of one of the 3 dimensions defined above, and \lstinline$selector$ specifies which of the dimensions is provided by \lstinline$param$. Since only one of the 3 dimensions defined above is needed to compute the other two, \lstinline$param$ is the only argument that needs to be passed to one of the 5 \lstinline$given*$ methods (where \lstinline$*$ denotes any of the 5 names for the 3 dimensions), all of which use the geometric relationship among the dimensions: $side = x$, $flatHeight = \sqrt{3}x$, and $flatWidth = 2x$.
+
+Once the 5 dimension aliases are calculated, the final step is to compute the coordinates of the 6 vertices, which is done in the \lstinline$computeCoords$ method. This method takes advantage of the fact that all 6 vertices are equidistant from the center of a regular hex, where the distance is equal to one half of a side. Thus, the 6 coordinate pairs are calculated once, and then \lstinline$rotation$ is used to determine which coordinate array corresponds to \lstinline$xCoords$ and which corresponds to \lstinline$yCoords$. The resulting order of coordinates is as follows: in the \lstinline$FLAT$ case, the vertex indices ascend clockwise from the vertex with the lowest $x$ coordinate, and in the \lstinline$BALANCE$ case, the indices ascend counterclockwise from the vertex with the lowest $y$ coordinate.
+
+\hypertarget{sec:boarddraw_preliminaries}{}
+\subsubsection{\lstinline$BoardDraw$ Preliminaries}
+
+Having explored the important \lstinline$HexShape$ data type, the discussion can now turn to the \lstinline$BoardDraw$ class proper. When its constructor is called, \lstinline$BoardDraw$ first stores references to the relevant fields of the provided \lstinline$board$ parameter and also some \lstinline$static$ fields of \lstinline$Rules$, particularly \lstinline$hRings$ and \lstinline$iRings$. Then, it computes \lstinline$xCenter$ and \lstinline$yCenter$ (using \lstinline$dim$) and initializes a large flat \lstinline$HexShape$ to be used as the "ocean" in which the island of Catan will reside. Other important computed values include \lstinline$w$, \lstinline$h$, and \lstinline$s$, which are the \lstinline$balanceWidth$, \lstinline$balanceHeight$, and \lstinline$side$ dimensions of a typical hex. \lstinline$w$ is calculated so that the entire width of a Catan board can fit in the ocean hex and still have room for a one hex padding on each side, where the width of the board in hexes is \lstinline$(2 * radius) - 1$. \lstinline$h$ and \lstinline$s$ are calculated from \lstinline$w$ when a \lstinline$HexShape$ is created to represent the center hex (located at row and column indices 0 in \lstinline$hRings$). 
+
+\hypertarget{sec:the_getnextx_and_getnexty_methods}{}
+\subsubsection{The \lstinline$getNextX$ and \lstinline$getNextY$ Methods}
+
+Somewhat surprisingly, two humble and simple methods underpin the coordinate calculation algorithms for hexes, intersections, and ports. As their names suggest, these methods compute the "next" coordinate pair given the "current" coordinate pair and the relevant \lstinline$HexShape$ dimensions, where "current" and "next" refer to indices in a loop (since these methods are meant to be loop helpers). The concrete meanings of "current" and "next" are context-specific, but the general idea is that there is a movement from one point to another in one of 6 possible cardinal directions. These directions are best understood as lines of "outward" motion that are perpendicular to the 6 sides of a reference \lstinline$BALANCE$ hex, where "outward" refers to increasing distance from the center of the hex. The cardinal directions represented are northwest, west, southwest, southeast, east, and northeast, which are stored as constants in \lstinline$HexShape$ and referred to by their abbreviations (\lstinline$NW$, \lstinline$W$, \lstinline$SW$, \lstinline$SE$, \lstinline$E$, and \lstinline$NE$). The numeric values of these constants were purposely chosen to facilitate the computation of hex coordinates (the subject of the next section), but they also turned out to be useful for the computation of intersection coordinates (together with the application of some cleverness).
+
+\hypertarget{sec:hex_coordinates}{}
 \subsubsection{Hex Coordinates}
 
+\hypertarget{sec:intersection_coordinates}{}
 \subsubsection{Intersection Coordinates}
 
+\hypertarget{sec:port_coordinates}{}
 \subsubsection{Port Coordinates}
 
+\hypertarget{sec:drawing_hexes}{}
 \subsubsection{Drawing Hexes}
 
+\hypertarget{sec:drawing_intersections}{}
 \subsubsection{Drawing Intersections}
 
+\hypertarget{sec:drawing_roads}{}
 \subsubsection{Drawing Roads}
 
+\hypertarget{sec:drawing_ports}{}
 \subsubsection{Drawing Ports}
 
+\hypertarget{sec:game_mechanics}{}
 \subsection{Game Mechanics}
 
 \subsection{(More sections to come)}

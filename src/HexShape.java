@@ -33,7 +33,6 @@ public class HexShape {
     private double flatHeight;
     private double balanceWidth;
     private double balanceHeight;
-    
     // default rotation is flat
     private int rotation;
     
@@ -43,7 +42,6 @@ public class HexShape {
         this.xCenter = xCenter;
         this.yCenter = yCenter;
         this.rotation = rotation;
-        
         switch (selector) {
             case FLAT_WIDTH:
                 givenFlatWidth(param);
@@ -104,7 +102,6 @@ public class HexShape {
         double[] coords1 = new double[NUM_SIDES];
         double[] coords2 = new double[NUM_SIDES];
         double center1, center2;
-        
         switch (rotation) {
             case BALANCE:
                 center1 = yCenter;
@@ -119,7 +116,6 @@ public class HexShape {
                 yCoords = coords2;
                 break;
         }
-        
         coords1[0] = center1 - (flatWidth / 2); 
         coords2[0] = center2;
         coords1[1] = center1 - (flatWidth / 4);

@@ -396,7 +396,7 @@ public class Player {
     }
     // prints *the sum of public and private* VP
     public void printVP() {
-        System.out.println("Your VP score is: " + getVP());
+        System.out.println("Your VP score is: " + getVP() + " (out of " + Rules.getMaxVP() + ")");
     }
     
     /* Static methods */

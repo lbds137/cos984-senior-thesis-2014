@@ -7,8 +7,6 @@ public class BoardDraw {
     /* Constants */
     
     public static final int DEFAULT_DIM = 700;
-    public static final int NORMAL_REF_DIM = 1000;
-    public static final int HUGE_REF_DIM = 2000;
     public static final int PLACES_TO_ROUND = 3;
     public static final double ROAD_OUTER_RADIUS = 0.015;
     public static final double ROAD_INNER_RADIUS = 0.01;
@@ -375,16 +373,16 @@ public class BoardDraw {
     private double getNextX(double x, double w, int direction) {
         double xNew = x;
         switch (direction) {
-            case 0: case 2:
+            case HexShape.NW: case HexShape.SW:
                 xNew -= w / 2;
                 break;
-            case 1:
+            case HexShape.W:
                 xNew -= w;
                 break;
-            case 3: case 5:
+            case HexShape.SE: case HexShape.NE:
                 xNew += w / 2;
                 break;
-            case 4:
+            case HexShape.E:
                 xNew += w;
                 break;
             default:
@@ -395,13 +393,13 @@ public class BoardDraw {
     private double getNextY(double y, double h, double s, int direction) {
         double yNew = y;
         switch (direction) {
-            case 0: case 5:
+            case HexShape.NW: case HexShape.NE:
                 yNew += (h + s) / 2;
                 break;
-            case 1: case 4:
+            case HexShape.W: case HexShape.E:
                 // yNew = y;
                 break;
-            case 2: case 3:
+            case HexShape.SW: case HexShape.SE:
                 yNew -= (h + s) / 2;
                 break;
             default:

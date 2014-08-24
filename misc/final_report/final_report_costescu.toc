@@ -28,16 +28,18 @@
 \contentsline {subsubsection}{\numberline {4.3.11}Intersections}{26}{subsubsection.4.3.11}
 \contentsline {subsubsection}{\numberline {4.3.12}Roads}{28}{subsubsection.4.3.12}
 \contentsline {subsection}{\numberline {4.4}Rendering the Board with \lstinline $StdDraw$ \cite {princetoncs}}{29}{subsection.4.4}
-\contentsline {subsubsection}{\numberline {4.4.1}The \lstinline $HexShape$ Data Type}{29}{subsubsection.4.4.1}
-\contentsline {subsubsection}{\numberline {4.4.2}Hex Coordinates}{29}{subsubsection.4.4.2}
-\contentsline {subsubsection}{\numberline {4.4.3}Intersection Coordinates}{29}{subsubsection.4.4.3}
-\contentsline {subsubsection}{\numberline {4.4.4}Port Coordinates}{29}{subsubsection.4.4.4}
-\contentsline {subsubsection}{\numberline {4.4.5}Drawing Hexes}{30}{subsubsection.4.4.5}
-\contentsline {subsubsection}{\numberline {4.4.6}Drawing Intersections}{30}{subsubsection.4.4.6}
-\contentsline {subsubsection}{\numberline {4.4.7}Drawing Roads}{30}{subsubsection.4.4.7}
-\contentsline {subsubsection}{\numberline {4.4.8}Drawing Ports}{30}{subsubsection.4.4.8}
-\contentsline {subsection}{\numberline {4.5}Game Mechanics}{30}{subsection.4.5}
-\contentsline {subsection}{\numberline {4.6}(More sections to come)}{30}{subsection.4.6}
-\contentsline {section}{\numberline {5}Challenges Encountered}{30}{section.5}
-\contentsline {section}{\numberline {6}Future Features}{30}{section.6}
-\contentsline {section}{\numberline {7}Conclusion}{30}{section.7}
+\contentsline {subsubsection}{\numberline {4.4.1}The \lstinline $HexShape$ Data Type}{30}{subsubsection.4.4.1}
+\contentsline {subsubsection}{\numberline {4.4.2}\lstinline $BoardDraw$ Preliminaries}{31}{subsubsection.4.4.2}
+\contentsline {subsubsection}{\numberline {4.4.3}The \lstinline $getNextX$ and \lstinline $getNextY$ Methods}{32}{subsubsection.4.4.3}
+\contentsline {subsubsection}{\numberline {4.4.4}Hex Coordinates}{32}{subsubsection.4.4.4}
+\contentsline {subsubsection}{\numberline {4.4.5}Intersection Coordinates}{32}{subsubsection.4.4.5}
+\contentsline {subsubsection}{\numberline {4.4.6}Port Coordinates}{32}{subsubsection.4.4.6}
+\contentsline {subsubsection}{\numberline {4.4.7}Drawing Hexes}{32}{subsubsection.4.4.7}
+\contentsline {subsubsection}{\numberline {4.4.8}Drawing Intersections}{32}{subsubsection.4.4.8}
+\contentsline {subsubsection}{\numberline {4.4.9}Drawing Roads}{32}{subsubsection.4.4.9}
+\contentsline {subsubsection}{\numberline {4.4.10}Drawing Ports}{32}{subsubsection.4.4.10}
+\contentsline {subsection}{\numberline {4.5}Game Mechanics}{33}{subsection.4.5}
+\contentsline {subsection}{\numberline {4.6}(More sections to come)}{33}{subsection.4.6}
+\contentsline {section}{\numberline {5}Challenges Encountered}{33}{section.5}
+\contentsline {section}{\numberline {6}Future Features}{33}{section.6}
+\contentsline {section}{\numberline {7}Conclusion}{33}{section.7}

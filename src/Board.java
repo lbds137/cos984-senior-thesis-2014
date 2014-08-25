@@ -155,10 +155,11 @@ public class Board {
     /* Getters */
     
     public Hex[] getHexes() { return hexes; }
-    public Intersection[] getIntersections() { return intersections; }
-    public Road[][] getRoads() { return roads; }
     // get the locations of ONLY the maritime ports (i.e. GENERIC and SPECIFIC but not INLAND)
     public ArrayList<Integer> getPortLocations() { return portLocations; }
+    public Intersection[] getIntersections() { return intersections; }
+    public Road[][] getRoads() { return roads; }
+    public int getRobberIndex() { return robberIndex; }
     
     /* Operations */
     

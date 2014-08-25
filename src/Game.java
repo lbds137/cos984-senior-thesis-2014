@@ -24,7 +24,8 @@ public class Game {
         else { this.numPlayers = numPlayers; }
         if (radius < 3) { this.radius = 3; }
         else { this.radius = radius; }
-        this.dim = dim;
+        if (dim < BoardDraw.MIN_DIM) { this.dim = BoardDraw.MIN_DIM; }
+        else { this.dim = dim; }
         startGame();
     }
     
@@ -35,35 +36,8 @@ public class Game {
         setUpDecks();
         UserInput.init(board, resDeck, bDraw);
         firstMoves();
-        giveStartingResources();
+        for (Player p : players) { p.collectResources(resDeck); } // give starting resources
         gameLoop();
-    }
-    /* MAIN GAME LOOP - WHERE EVERYTHING HAPPENS */
-    private void gameLoop() {
-        Player pCurrent = players.get(0);
-        while (getWinner() == null) {
-            UserInput.doPrivacy();
-            int diceRoll = getDiceRoll();
-            System.out.println("Dice roll was " + diceRoll + ".");
-            if (diceRoll == 7) { 
-                moveRobber(pCurrent);
-                // because trading among players is not yet implemented, players need to
-                // stockpile many cards and trade with the bank, so we do not enforce
-                // the usual "discard half of your hand if you have more than 7 cards" rule
-                //for (Player p : players) { p.discard(resDeck); }
-            }
-            else {
-                for (Player p : players) { p.collectResources(diceRoll, resDeck); }
-            }
-            UserInput.doTurn(pCurrent);
-            // todo: remainder of game turn logic
-            
-            pCurrent = getNextPlayer(pCurrent);
-        }
-        Player winner = getWinner();
-        System.out.println(winner + " has won the game with " + winner.getVP() + " victory points!");
-        bDraw.save("final_board_state.png");
-        System.exit(0);
     }
     private void setUpPlayers() {
         players = new ArrayList<Player>(numPlayers);
@@ -104,8 +78,30 @@ public class Game {
             UserInput.doInitialTurn(players.get(i)); 
         }
     }
-    private void giveStartingResources() {
-        for (Player p : players) { p.collectStartingResources(resDeck); }
+    /* MAIN GAME LOOP - WHERE EVERYTHING HAPPENS */
+    private void gameLoop() {
+        Player pCurrent = players.get(0);
+        while (getWinner() == null) {
+            UserInput.doPrivacy();
+            int diceRoll = getDiceRoll();
+            System.out.println("Dice roll was " + diceRoll + ".");
+            if (diceRoll == 7) { 
+                moveRobber(pCurrent);
+                // because trading among players is not yet implemented, players need to
+                // stockpile many cards and trade with the bank, so we do not enforce
+                // the usual "discard half of your hand if you have more than 7 cards" rule
+                //for (Player p : players) { p.discard(resDeck); }
+            }
+            else {
+                for (Player p : players) { p.collectResources(diceRoll, resDeck); }
+            }
+            UserInput.doTurn(pCurrent);
+            pCurrent = getNextPlayer(pCurrent);
+        }
+        Player winner = getWinner();
+        System.out.println(winner + " has won the game with " + winner.getVP() + " victory points!");
+        bDraw.save("final_board_state.png");
+        System.exit(0);
     }
     private Player getNextPlayer(Player p) {
         int index = players.indexOf(p);
@@ -121,8 +117,11 @@ public class Game {
         return yellowDie + redDie;
     }
     private void moveRobber(Player p) {
-        Player victim = board.moveRobber(UserInput.getHex(p));
-        if (victim != null) { victim.giveResource(p); }
+        int robberIndex = board.getRobberIndex();
+        int targetIndex = robberIndex;
+        while (targetIndex == robberIndex) { targetIndex = UserInput.getHex(p); }
+        Player victim = board.moveRobber(targetIndex);
+        if (victim != null) { victim.stealResource(p); }
         bDraw.draw();
     }
     // returns null if no winner yet
@@ -150,7 +149,7 @@ public class Game {
             dim = Integer.parseInt(args[2]);
         }
         catch (Exception e) {
-            System.out.println("One or more of the arguments entered was invalid, or one or more arguments were missing. Using default values instead.");
+            System.out.println("One or more arguments entered were invalid, or one or more arguments were missing. Using default values instead.");
             numPlayers = Rules.MIN_PLAYERS;
             radius = Rules.DEFAULT_RADIUS;
             dim = BoardDraw.DEFAULT_DIM;

@@ -6,6 +6,7 @@ public class BoardDraw {
 
     /* Constants */
     
+    public static final int MIN_DIM = 500;
     public static final int DEFAULT_DIM = 700;
     public static final int PLACES_TO_ROUND = 3;
     public static final double ROAD_OUTER_RADIUS = 0.015;
@@ -298,8 +299,9 @@ public class BoardDraw {
                     nextHex = Constants.INVALID;
                     continue;
                 }
-                hexXCenters[nextHex] = getNextX(hexXCenters[curHex], w, j / i);
-                hexYCenters[nextHex] = getNextY(hexYCenters[curHex], h, s, j / i);
+                int sextant = j / i;
+                hexXCenters[nextHex] = getNextX(hexXCenters[curHex], w, sextant);
+                hexYCenters[nextHex] = getNextY(hexYCenters[curHex], h, s, sextant);
             }
         }
     }
@@ -337,8 +339,8 @@ public class BoardDraw {
                     interXCoords[iOffset + iEven] = getNextX(interXCoords[iOffset + prevIEven], w, j);
                     interYCoords[iOffset + iEven] = getNextY(interYCoords[iOffset + prevIEven], h, s, j);
                 }
-                oddInc = ((oddInc + 1 - i) % 2) + i;
-                evenInc = ((evenInc + 1 - i) % 2) + i;
+                oddInc = ((oddInc - i + 1) % 2) + i;
+                evenInc = ((evenInc - i + 1) % 2) + i;
             }
             iOffset += curIRingSize;
         }
@@ -360,14 +362,9 @@ public class BoardDraw {
             else if (xDiff > 0 && yDiff > 0) { direction = HexShape.SE; }
             else if (xDiff == 0 && yDiff > 0) { direction = HexShape.E; }
             else /* if (xDiff < 0 && yDiff > 0) */ { direction = HexShape.NE; }
-            // use dummy hex shape to calculate lengths
-            HexShape shape = new HexShape(0, 0, HexShape.BALANCE, s / 2, HexShape.SIDE);
-            double wTemp = shape.getBalanceWidth();
-            double hTemp = shape.getBalanceHeight();
-            double sTemp = shape.getSide();
-            // use decider to find coordinates
-            portXCoords[i / 2] = getNextX(xOne + (xDiff / 2), wTemp, direction);
-            portYCoords[i / 2] = getNextY(yOne + (yDiff / 2), hTemp, sTemp, direction);
+            // use direction to find coordinates
+            portXCoords[i / 2] = getNextX(xOne + (xDiff / 2), w / 2, direction);
+            portYCoords[i / 2] = getNextY(yOne + (yDiff / 2), h / 2, s / 2, direction);
         }
     }
     private double getNextX(double x, double w, int direction) {
@@ -397,7 +394,7 @@ public class BoardDraw {
                 yNew += (h + s) / 2;
                 break;
             case HexShape.W: case HexShape.E:
-                // yNew = y;
+                // yNew += 0;
                 break;
             case HexShape.SW: case HexShape.SE:
                 yNew -= (h + s) / 2;

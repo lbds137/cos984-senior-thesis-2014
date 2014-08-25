@@ -36,8 +36,8 @@ public class Player {
     /* Constructors */
     
     public Player(int id) {
-        if (id < 0) { System.exit(1); }
-        this.id = id;
+        if (id < 0) { this.id = id * Integer.signum(id); }
+        else { this.id = id; }
         roads = new ArrayList<Road>(Rules.getMaxRoads());
         settlements = new ArrayList<Intersection>(Rules.getMaxSettlements());
         cities = new ArrayList<Intersection>(Rules.getMaxCities());
@@ -175,13 +175,14 @@ public class Player {
         }
         return true;
     }
-    // 
-    public boolean collectStartingResources(ResourceBundle resDeck) {
+    // collect the starting resources
+    public boolean collectResources(ResourceBundle resDeck) {
         int[] resourcesOwed = new int[Resource.NUM_TYPES];
         Intersection secondSettlement = settlements.get(1);
         ArrayList<Hex> hexes = secondSettlement.getHexes();
         for (Hex h : hexes) {
             int resourceType = h.getResource().getResourceType();
+            if (resourceType == Resource.DESERT) { continue; }
             Building b = secondSettlement.getBuilding();
             resourcesOwed[resourceType] += b.getNumResources();
         }
@@ -227,14 +228,14 @@ public class Player {
         }
     }
     // random card stolen by robber
-    public void giveResource(Player other) {
+    public void stealResource(Player other) {
         Resource r = resourceCards.removeRandom();
         if (r == null) { return; }
-        other.receiveResource(r);
+        other.stealResource(r);
         System.out.println(other + " stole a card (" + r + ") from " + this + "!"); 
     }
     // receive stolen card
-    public void receiveResource(Resource r) {
+    public void stealResource(Resource r) {
         resourceCards.add(r);
     }
     // trade X cards of r for one card of s

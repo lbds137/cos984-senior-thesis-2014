@@ -9,8 +9,6 @@ public class BoardDraw {
     public static final int MIN_DIM = 500;
     public static final int DEFAULT_DIM = 700;
     public static final int PLACES_TO_ROUND = 3;
-    public static final double ROAD_OUTER_RADIUS = 0.015;
-    public static final double ROAD_INNER_RADIUS = 0.01;
 
     /* Private fields */
 
@@ -94,8 +92,8 @@ public class BoardDraw {
         buildingRadius = w / 8;
         innerCityRadius = buildingRadius - (buildingRadius / 3);
         intersectionRadius = buildingRadius - (buildingRadius / 4);
-        roadOuterRadius = ROAD_OUTER_RADIUS;
-        roadInnerRadius = ROAD_INNER_RADIUS;
+        roadInnerRadius = (21 / (dim * radius));
+        roadOuterRadius = roadInnerRadius + (roadInnerRadius / 2);
     }
     
     /* Operations */

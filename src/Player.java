@@ -11,9 +11,13 @@ public class Player {
     public static final int RED = 2;
     public static final int WHITE = 3;
     public static final Color[] COLORS = {StdDraw.BLUE,StdDraw.ORANGE,
-                                          StdDraw.RED,StdDraw.WHITE};
+                                          StdDraw.RED,StdDraw.WHITE,
+                                          StdDraw.GREEN,StdDraw.LIGHT_GRAY,
+                                          StdDraw.MAGENTA,StdDraw.PINK};
     public static final String[] NAMES = {"Blue Player","Orange Player",
-                                          "Red Player","White Player"};
+                                          "Red Player","White Player",
+                                          "Green Player","Light Gray Player",
+                                          "Magenta Player","Pink Player"};
     
     /* Fields */
     
@@ -383,12 +387,8 @@ public class Player {
     
     @Override
     public String toString() {
-        switch (id) { // only the first four players get fancy names
-            case BLUE: case ORANGE: case RED: case WHITE:
-                return NAMES[id];
-            default:
-                return "Player " + (id + 1);
-        }
+        if (id < NAMES.length) { return NAMES[id]; }
+        else { return "Player " + (id + 1); }
     }
     
     /* Printing */
@@ -403,10 +403,7 @@ public class Player {
     /* Static methods */
     
     public static Color getPlayerColor(Player p) {
-        switch (p.getId()) {
-            case BLUE: case ORANGE: case RED: case WHITE:
-                return COLORS[p.getId()];
-            default: return StdDraw.BLACK;
-        }
+        if (p.getId() < COLORS.length) { return COLORS[p.getId()]; }
+        else { return StdDraw.BLACK; }
     }
 }

@@ -15,9 +15,9 @@ public class Resource implements Comparable<Resource> {
     public static final int LUMBER = 2;
     public static final int BRICK = 3;
     public static final int ORE = 4;
-    public static final Color[] COLORS = {new Color(255, 255, 153), new Color(0, 204, 0),
-                                          new Color(255, 204, 0), new Color(0, 102, 0), 
-                                          new Color(204, 102, 0), new Color(102, 102, 102)};
+    public static final Color[] COLORS = {new Color(0xFF, 0xFF, 0x99), new Color(0, 0xCC, 0),
+                                          new Color(0xFF, 0xCC, 0), new Color(0, 0x66, 0), 
+                                          new Color(0xCC, 0x66, 0), new Color(0x66, 0x66, 0x66)};
     public static final ArrayList<String> NAMES = 
         new ArrayList<String>(Arrays.asList("Desert","Wool","Grain","Lumber","Brick","Ore"));
     

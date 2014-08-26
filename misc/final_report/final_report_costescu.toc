@@ -35,11 +35,11 @@
 \contentsline {subsubsection}{\numberline {4.4.5}Intersection Coordinates}{33}{subsubsection.4.4.5}
 \contentsline {subsubsection}{\numberline {4.4.6}Port Coordinates}{34}{subsubsection.4.4.6}
 \contentsline {subsubsection}{\numberline {4.4.7}Drawing Hexes}{35}{subsubsection.4.4.7}
-\contentsline {subsubsection}{\numberline {4.4.8}Drawing Intersections}{35}{subsubsection.4.4.8}
-\contentsline {subsubsection}{\numberline {4.4.9}Drawing Roads}{35}{subsubsection.4.4.9}
-\contentsline {subsubsection}{\numberline {4.4.10}Drawing Ports}{35}{subsubsection.4.4.10}
-\contentsline {subsection}{\numberline {4.5}Game Mechanics}{35}{subsection.4.5}
-\contentsline {subsection}{\numberline {4.6}(More sections to come)}{35}{subsection.4.6}
-\contentsline {section}{\numberline {5}Challenges Encountered}{35}{section.5}
-\contentsline {section}{\numberline {6}Future Features}{35}{section.6}
-\contentsline {section}{\numberline {7}Conclusion}{35}{section.7}
+\contentsline {subsubsection}{\numberline {4.4.8}Drawing Intersections}{36}{subsubsection.4.4.8}
+\contentsline {subsubsection}{\numberline {4.4.9}Drawing Ports}{36}{subsubsection.4.4.9}
+\contentsline {subsubsection}{\numberline {4.4.10}Drawing Roads}{37}{subsubsection.4.4.10}
+\contentsline {subsection}{\numberline {4.5}Game Mechanics}{37}{subsection.4.5}
+\contentsline {subsection}{\numberline {4.6}(More sections to come)}{37}{subsection.4.6}
+\contentsline {section}{\numberline {5}Challenges Encountered}{37}{section.5}
+\contentsline {section}{\numberline {6}Future Features}{37}{section.6}
+\contentsline {section}{\numberline {7}Conclusion}{37}{section.7}

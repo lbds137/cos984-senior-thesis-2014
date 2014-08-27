@@ -62,6 +62,9 @@ public class DevCardBundle {
         for (int i = 0; i < bundle.size(); i++) { size += bundle.get(i).size(); }
         return size;
     }
-    public boolean isEmpty(int devCardType) { return size(devCardType) == 0; }
+    public boolean isEmpty(int type) { 
+        if (type < 0 || type >= bundle.size() || bundle.get(type).size() == 0) { return true; }
+        else { return false; }
+    }
     public boolean isEmpty() { return size() == 0; }
 }

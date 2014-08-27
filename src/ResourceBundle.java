@@ -38,13 +38,9 @@ public class ResourceBundle {
         }
         return true;
     }
-    public boolean canRemove(int type) {
-        if (type < 0 || type >= bundle.size() || bundle.get(type).size() == 0) return false;
-        else return true;
-    }
+    public boolean canRemove(int type) { return !isEmpty(type); }
     public boolean canRemove(int[] resourceCounts) {
         if (resourceCounts.length != Resource.NUM_TYPES) { return false; } // lengths must match
-        
         boolean canRemove = true;
         for (int i = 0; i < resourceCounts.length; i++) {
             if (resourceCounts[i] > size(i)) { canRemove = false; }
@@ -57,13 +53,9 @@ public class ResourceBundle {
     }
     public ResourceBundle remove(int[] resourceCounts) {
         if (!canRemove(resourceCounts)) return null;
-        
         ResourceBundle b = new ResourceBundle();
         for (int i = 0; i < resourceCounts.length; i++) {
-            for (int j = 0; j < resourceCounts[i]; j++) {
-                // don't need to check return value of add(), since we're removing from an existing bundle
-                b.add(remove(i));
-            }
+            for (int j = 0; j < resourceCounts[i]; j++) { b.add(remove(i)); }
         }
         return b;
     }
@@ -84,7 +76,10 @@ public class ResourceBundle {
         for (int i = 0; i < bundle.size(); i++) { size += bundle.get(i).size(); }
         return size;
     }
-    public boolean isEmpty(int resourceType) { return size(resourceType) == 0; }
+    public boolean isEmpty(int type) { 
+        if (type < 0 || type >= bundle.size() || bundle.get(type).size() == 0) { return true; }
+        else { return false; }
+    }
     public boolean isEmpty() { return size() == 0; }
     
     /* Inherits / overrides */

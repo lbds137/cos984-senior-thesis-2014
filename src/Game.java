@@ -41,11 +41,8 @@ public class Game {
     }
     private void setUpPlayers() {
         players = new ArrayList<Player>(numPlayers);
-        for (int i = 0; i < numPlayers; i++) {
-            players.add(new Player(i));
-        }
-        // randomize order of play (no point to actually rolling dice)
-        Collections.shuffle(players);
+        for (int i = 0; i < numPlayers; i++) { players.add(new Player(i)); }
+        Collections.shuffle(players); // randomize order of play (no point to actually rolling dice)
     }
     private void setUpBoard() {
         board = new Board();

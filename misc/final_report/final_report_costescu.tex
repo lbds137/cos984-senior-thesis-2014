@@ -16,7 +16,7 @@ Settlers of Catan: Developing an Implementation of an Emerging Classic Board Gam
 \date{}
 
 \topskip0pt
-\author{Vladimir Costescu \\ Professor David P. Walker \\ Princeton University \\ August $25^{\text{th}}$, 2014}
+\author{Vladimir Costescu \\ Professor David P. Walker \\ Princeton University \\ August $29^{\text{th}}$, 2014}
 \maketitle
 \vspace*{\fill}
 \begin{figure}
@@ -311,22 +311,33 @@ Drawing ports is a simple affair once the coordinates have been calculated. Port
 
 The final step in the game board rendering process is to draw the roads built by players during the game. Note that, although \lstinline$Road$ instances are generated together with the board, no roads are drawn until their player ownership has been changed from \lstinline$null$ to an actual \lstinline$Player$ instance using the \lstinline$Road.build$ method. Each road is rendered by drawing a line between the two intersections that are connected by the road (retrieved using the \lstinline$Road.both$ method), where these lines show the player owner's color and also a black border. To achieve the black border effect, a thicker black line is drawn first and then a thinner colored line is drawn on top, where the thicknesses of the lines are set using \lstinline$StdDraw.setPenRadius$ and the empirically generated \lstinline$roadInnerRadius$ and \lstinline$roadOuterRadius$ values. 
 
+\hypertarget{sec:resource_and_development_cards}{}
+\subsection{Resource and Development Cards}
+
+The discussion thus far has covered the operation of the program through the \lstinline$Game$ constructor and into the \lstinline$startGame$ method, including the calls to \lstinline$Rules.init$ and \lstinline$setUpBoard$, which creates a new \lstinline$Board$ and then a \lstinline$BoardDraw$ instance tied to that board. The \lstinline$setUpPlayers$ method was not discussed because it is very simple, initializing a sufficient number of \lstinline$Player$ instances, as specified by the \lstinline$numPlayers$ field, and then shuffling them to determine a random play order (note that actually rolling dice as in the official Catan rules is unnecessary, although adding the visual feedback for such a process would perhaps improve the user experience). The next step in \lstinline$startGame$ is a call to \lstinline$setUpDecks$, which, as its name suggests, is tasked with initializing the data structures used to represent the resource and development cards to be used in the game. These data structures are the subject of the following two sections.
+
+\hypertarget{sec:the_resource_and_resourcebundle_data_types}{}
+\subsubsection{The \lstinline$Resource$ and \lstinline$ResourceBundle$ Data Types}
+
+The \lstinline$Resource$ data type was already covered in the \hyperlink{sec:resources}{Resources} section, but it is worth repeating here that it serves the dual purpose of representing hex tile resources and the resource cards distributed to players as specified in the game rules (see the \hyperlink{sec:game_setup}{Game Setup} and \hyperlink{sec:rolling_the_dice}{Rolling the Dice} sections for more information on resource card allocation). In order to make it easier to work with bundles of cards (i.e. players' hands, the resource deck, and the cards used in trading and to pay for building game objects), the \lstinline$ResourceBundle$ data type is used, which at its core is simply a two-dimensional \lstinline$ArrayList$ of \lstinline$Resource$ instances. This data type exposes a number of convenience methods for manipulating the underlying array structure, following standard Java nomenclature whenever possible (e.g. for methods such as \lstinline$add$, \lstinline$remove$, \lstinline$isEmpty$, and \lstinline$size$). Most of these methods exist in multiple flavors (using argument overloading) so that the client classes calling them can worry less about dealing with implementation minutiae and more about performing operations relevant to the game. 
+
+The general pattern for these overloaded methods is to have one version for interacting with a single \lstinline$Resource$ or integer resource type and another version for interacting with multiple resources. The \lstinline$add$ methods take either a single \lstinline$Resource$ instance or another \lstinline$ResourceBundle$ instance that is to be merged into \lstinline$this$. Similarly, \lstinline$canRemove$ and \lstinline$remove$ are called either with an integer resource type or an array of size \lstinline$Resource.NUM_TYPES$ specifying the number of each type of resource to be removed (particularly useful when enforcing the resource costs for players building various game objects). The final overloaded method pairs are \lstinline$isEmpty$ and \lstinline$size$ and take either no argument or an integer resource type, where the result is to give information about the size of either the overall data structure or a specific resource "bucket". 
+
+There are two more methods in \lstinline$ResourceBundle$ worth mentioning: \lstinline$removeRandom$ and \lstinline$toString$. The former is used to remove a random resource card from a resource bundle (as the name suggests), which is useful when simulating resource card stealing (recall from the \hyperlink{sec:rolling_the_dice}{Rolling the Dice} section that whenever a player rolls a 7 s/he is entitled to move the robber and steal a resource card from another player). The latter method is used to print the contents of the resource decks and players' hands when it is their turn to play, since there is no graphical inferface for displaying the decks and players must know which resources are available in order to make gameplay decisions. The contents of a \lstinline$ResourceBundle$ are printed according to the following format: \lstinline$Wool: x*; Grain: x*; Lumber: x*; Brick: x*; Ore: x*;$, where \lstinline$*$ is a placeholder for the actual number of cards of each type.
+
+\hypertarget{sec:the_devcard_and_devcardbundle_data_types}{}
+\subsubsection{The \lstinline$DevCard$ and \lstinline$DevCardBundle$ Data Types}
+
 \hypertarget{sec:game_mechanics}{}
 \subsection{Game Mechanics}
-
-\subsection{(More sections to come)}
-
-%\end{doublespacing}
-%\begin{lstlisting}[frame=single]
-
-%\end{lstlisting}
-%\begin{doublespacing}
 
 \hypertarget{sec:challenges_encountered}{}
 \section{Challenges Encountered}
 
+\hypertarget{sec:future_features}{}
 \section{Future Features}
 
+\hypertarget{sec:conclusion}{}
 \section{Conclusion}
 
 % end content of the paper

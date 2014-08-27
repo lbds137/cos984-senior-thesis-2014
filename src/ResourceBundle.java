@@ -77,8 +77,7 @@ public class ResourceBundle {
         return size;
     }
     public boolean isEmpty(int type) { 
-        if (type < 0 || type >= bundle.size() || bundle.get(type).size() == 0) { return true; }
-        else { return false; }
+        return type < 0 || type >= bundle.size() || bundle.get(type).size() == 0;
     }
     public boolean isEmpty() { return size() == 0; }
     
@@ -94,20 +93,6 @@ public class ResourceBundle {
             s += res + ": x" + count + "; "; 
         }
         return s;
-    }
-    
-    public static void main(String[] args) {
-        Rules.init(3);
-        ResourceBundle resDeck = new ResourceBundle();
-        for (int i = 0; i < Resource.NUM_TYPES; i++) {
-            for (int j = 0; j < Rules.getNumHexes(); j++) {
-                resDeck.add(new Resource(i));
-            }
-        }
-        System.out.println("about to start removing");
-        while (!resDeck.isEmpty()) {
-            System.out.println(resDeck.removeRandom());
-        }
     }
 }
 

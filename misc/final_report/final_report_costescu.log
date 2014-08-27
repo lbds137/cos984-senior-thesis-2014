@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.8.11)  27 AUG 2014 11:55
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.8.11)  27 AUG 2014 14:16
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -971,7 +971,7 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-eur.cfg
 File: mt-eur.cfg 2006/07/31 v1.1 microtype config. file: AMS Euler Roman (RS)
 )
-<honor_code.png, id=192, 2006.49625pt x 249.93375pt>
+<honor_code.png, id=196, 2006.49625pt x 249.93375pt>
 File: honor_code.png Graphic file (type png)
  <use honor_code.png>
 Package pdftex.def Info: honor_code.png used on input line 24.
@@ -1174,6 +1174,18 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 329.
 
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\lstinline' on input line 336.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 336.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 336.
+
 (./final_report_costescu.bbl
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 26.
@@ -1181,7 +1193,7 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7.4> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 26.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <6> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 26.
-
+ [39]
 Underfull \hbox (badness 10000) in paragraph at lines 46--49
 []\T1/ptm/m/n/10 (+20) K. Law, ``Set-tlers of Catan: Monopoly Killer?'' [][]$ht
 tp : / / mental^^]oss . com / article / 26416 /
@@ -1218,20 +1230,20 @@ Underfull \hbox (badness 10000) in paragraph at lines 87--91
  []
 
 )
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 350.
- [39]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 350.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 357.
+ [40]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 357.
  (./final_report_costescu.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 350.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 350.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 357.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 357.
 Package rerunfilecheck Info: File `final_report_costescu.out' has not changed.
-(rerunfilecheck)             Checksum: 37C78D023DE7FEB33F56941362D30150;8127.
+(rerunfilecheck)             Checksum: 2C8059F51289E8D7874AB34BF17EE3C4;8294.
  ) 
 Here is how much of TeX's memory you used:
- 16914 strings out of 494985
- 244167 string characters out of 6180356
+ 16920 strings out of 494985
+ 244269 string characters out of 6180356
  362653 words of memory out of 5000000
- 19527 multiletter control sequences out of 15000+600000
+ 19530 multiletter control sequences out of 15000+600000
  83955 words of font info for 248 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
  48i,12n,43p,2847b,1373s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1243,10 +1255,10 @@ ype1/urw/courier/ucrb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/cour
 ier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb>
 </usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/tex
 live/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on final_report_costescu.pdf (39 pages, 302841 bytes).
+Output written on final_report_costescu.pdf (40 pages, 305302 bytes).
 PDF statistics:
- 629 PDF objects out of 1000 (max. 8388607)
- 572 compressed objects within 6 object streams
- 150 named destinations out of 1000 (max. 500000)
- 51582 words of extra memory for PDF output out of 51595 (max. 10000000)
+ 640 PDF objects out of 1000 (max. 8388607)
+ 582 compressed objects within 6 object streams
+ 153 named destinations out of 1000 (max. 500000)
+ 51590 words of extra memory for PDF output out of 51595 (max. 10000000)
 

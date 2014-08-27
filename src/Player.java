@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.TreeSet;
 import java.awt.Color;
 
 public class Player {
@@ -66,7 +65,6 @@ public class Player {
     public ResourceBundle getResourceCards() { return resourceCards; }
     public DevCardBundle getDevCards() { return devCards; }
     public DevCardBundle getPlayedDevcards() { return playedDevCards; }
-    public int getLongestRoad() { return findLongestRoad(); }
     public int getLargestArmy() { return playedDevCards.size(DevCard.KNIGHT); }
     public int getPublicVP() { return publicVP; }
     public int getVP() { return publicVP + privateVP; }
@@ -312,76 +310,8 @@ public class Player {
         }
         return bestPort.getRatio();
     }
-    // returns the length of this player's longest road
-    private int findLongestRoad() {
-        TreeSet<Integer> iAll = new TreeSet<Integer>();
-        // get all intersection IDs touched by this player's roads
-        for (int i = 0; i < roads.size(); i++) {
-            ArrayList<Integer> both = roads.get(i).both();
-            iAll.add(both.get(0));
-            iAll.add(both.get(1));
-        }
-        TreeSet<Integer> iCommon = new TreeSet<Integer>();
-        // find vertices that are shared by two or more roads
-        for (int i = 0; i < roads.size(); i++) {
-            for (int j = i + 1; j < roads.size(); j++) {
-                int common = roads.get(i).common(roads.get(j));
-                if (common != Constants.INVALID) { iCommon.add(common); }
-            }
-        }
-        // find termini by set minus operation
-        TreeSet<Integer> iTermini = new TreeSet<Integer>(iAll);
-        iTermini.removeAll(iCommon);
-        
-        //System.out.println(iTermini);
-        
-        int n = iAll.last() + 1;
-        boolean[][] iGraph = new boolean[n][n];
-        // create intersection graph
-        for (int i = 0; i < roads.size(); i++) {
-            ArrayList<Integer> both = roads.get(i).both();
-            iGraph[both.get(0)][both.get(1)] = true;
-            iGraph[both.get(1)][both.get(0)] = true;
-        }
-        
-        TreeSet<Integer> longestRoads = new TreeSet<Integer>();
-        for (Integer i : iTermini) {
-            ArrayList<Integer> idsVisited = new ArrayList<Integer>();
-            idsVisited.add(i);
-            longestRoads.add(findLongestRoad(idsVisited, iGraph, Constants.INVALID)); // recursive helper
-        }
-        
-        return longestRoads.last();
-    }
-    // recursive helper method for findLongestRoad()
-    private int findLongestRoad(ArrayList<Integer> idsVisited, boolean[][] iGraph, int prevId) {
-        int iCurrent = idsVisited.get(idsVisited.size() - 1);
-        ArrayList<Integer> nextIds = new ArrayList<Integer>((HexShape.NUM_SIDES / 2) - 1);
-        for (int k = 0; k < iGraph[iCurrent].length; k++) {
-            if (k == iCurrent) continue;
-            if (iGraph[iCurrent][k] && k != prevId) nextIds.add(k);
-        }
-        /* base case: dead-ended (not into a loop) */
-        if (nextIds.size() == 0) { return idsVisited.size() - 1; }
-        TreeSet<Integer> longestRoads = new TreeSet<Integer>();
-        //System.out.println(idsVisited);
-        for (int j = 0; j < nextIds.size(); j++) {
-            ArrayList<Integer> newIdsVisited = new ArrayList<Integer>(idsVisited);
-            // continue only to intersections not visited yet
-            if (idsVisited.indexOf(nextIds.get(j)) == -1) {
-                newIdsVisited.add(nextIds.get(j));
-                longestRoads.add(findLongestRoad(newIdsVisited, iGraph, iCurrent));
-            }
-        }
-        /* base case: dead-ended (into a loop) */
-        if (longestRoads.size() == 0) { return idsVisited.size(); }
-        //System.out.println("ever got here?");
-        /* recursive case: return the longest road (out of 1 or more candidates, 
-                           depending on whether or not there is a fork) */
-        return longestRoads.last();
-    }
     
-    // todo: trading functionality (with bank and other players)
+    // todo: trading functionality with other players
     
     /* Inherits / overrides */
     

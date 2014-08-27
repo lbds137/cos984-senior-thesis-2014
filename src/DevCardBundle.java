@@ -42,6 +42,7 @@ public class DevCardBundle {
         }
         return true;
     }
+    public boolean canRemove(int type) { return !isEmpty(type); }
     public DevCard remove(int devCardType) {
         if (devCardType >= bundle.size() || bundle.get(devCardType).size() == 0) { return null; }
         return bundle.get(devCardType).remove(bundle.get(devCardType).size() - 1);
@@ -63,8 +64,21 @@ public class DevCardBundle {
         return size;
     }
     public boolean isEmpty(int type) { 
-        if (type < 0 || type >= bundle.size() || bundle.get(type).size() == 0) { return true; }
-        else { return false; }
+        return type < 0 || type >= bundle.size() || bundle.get(type).size() == 0;
     }
     public boolean isEmpty() { return size() == 0; }
+    
+    /* Inherits / overrides */
+    
+    @Override
+    public String toString() {
+        if (isEmpty()) { return "(empty)"; }
+        String s = "";
+        for (int i = 0; i < DevCard.NUM_TYPES; i++) {
+            String res = "" + DevCard.NAMES.get(i + 1);
+            int count = bundle.get(i).size();
+            s += res + ": x" + count + "; "; 
+        }
+        return s;
+    }
 }

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.8.11)  28 AUG 2014 08:56
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.8.11)  28 AUG 2014 12:01
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1199,7 +1199,7 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 362.
 
-[43] (./final_report_costescu.bbl
+[43] [44] [45] [46] (./final_report_costescu.bbl
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 26.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7.4> not available
@@ -1230,7 +1230,7 @@ Underfull \hbox (badness 2790) in paragraph at lines 65--68
 www . newyorker . com / online / blogs / currency / 2014 / 02 /
  []
 
-
+[47]
 Underfull \hbox (badness 1173) in paragraph at lines 78--80
 []\T1/ptm/m/n/10 (+20) K. Teu-ber, ``The Of-fi-cial Web-site for Set-tlers of C
 atan - Elec-tronic Games,'' [][]$http : / / www . catan . com /
@@ -1243,20 +1243,20 @@ Underfull \hbox (badness 10000) in paragraph at lines 87--91
  []
 
 )
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 399.
- [44]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 399.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 415.
+ [48]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 415.
  (./final_report_costescu.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 399.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 399.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 415.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 415.
 Package rerunfilecheck Info: File `final_report_costescu.out' has not changed.
-(rerunfilecheck)             Checksum: A57A7D4B36FF02036E9F56E44A18D751;9442.
+(rerunfilecheck)             Checksum: DB9D938B03397A3B7E7DF4AC9DC15DC5;9356.
  ) 
 Here is how much of TeX's memory you used:
- 16972 strings out of 494985
- 245138 string characters out of 6180356
+ 17009 strings out of 494985
+ 245649 string characters out of 6180356
  362659 words of memory out of 5000000
- 19566 multiletter control sequences out of 15000+600000
+ 19599 multiletter control sequences out of 15000+600000
  83955 words of font info for 248 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
  48i,12n,43p,2847b,1379s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1268,10 +1268,10 @@ ype1/urw/courier/ucrb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/cour
 ier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb>
 </usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/tex
 live/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on final_report_costescu.pdf (44 pages, 318380 bytes).
+Output written on final_report_costescu.pdf (48 pages, 328578 bytes).
 PDF statistics:
- 705 PDF objects out of 1000 (max. 8388607)
- 642 compressed objects within 7 object streams
- 169 named destinations out of 1000 (max. 500000)
+ 725 PDF objects out of 1000 (max. 8388607)
+ 658 compressed objects within 7 object streams
+ 173 named destinations out of 1000 (max. 500000)
  51638 words of extra memory for PDF output out of 61914 (max. 10000000)
 

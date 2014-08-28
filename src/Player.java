@@ -9,6 +9,10 @@ public class Player {
     public static final int ORANGE = 1;
     public static final int RED = 2;
     public static final int WHITE = 3;
+    public static final int GREEN = 4;
+    public static final int LIGHT_GRAY = 5;
+    public static final int MAGENTA = 6;
+    public static final int PINK = 7;
     public static final Color[] COLORS = {StdDraw.BLUE,StdDraw.ORANGE,
                                           StdDraw.RED,StdDraw.WHITE,
                                           StdDraw.GREEN,StdDraw.LIGHT_GRAY,
@@ -159,13 +163,13 @@ public class Player {
         publicVP++;
         return true;
     }
-    // build a dev card and return a boolean status (true if success, false if failure)
-    public boolean buildDevCard(DevCardBundle devDeck, ResourceBundle resDeck) {
+    // build a dev card and return it
+    public DevCard buildDevCard(DevCardBundle devDeck, ResourceBundle resDeck) {
         // must check that this player has enough resources to build a dev card
-        if (!resourceCards.canRemove(Rules.DEV_CARD_COST)) { return false; }
+        if (!resourceCards.canRemove(Rules.DEV_CARD_COST)) { return null; }
         // attempt to draw a dev card
         DevCard card = devDeck.removeRandom();
-        if (card == null) { return false; }
+        if (card == null) { return null; }
         // draw card
         devCards.add(card);
         resDeck.add(resourceCards.remove(Rules.DEV_CARD_COST));
@@ -176,7 +180,7 @@ public class Player {
                 privateVP++;
                 break;
         }
-        return true;
+        return card;
     }
     // collect the starting resources
     public boolean collectResources(ResourceBundle resDeck) {

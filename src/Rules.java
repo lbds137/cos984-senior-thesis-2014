@@ -24,8 +24,10 @@ public class Rules {
     public static final int[] MAX_DEV_CARDS = {14,2,2,2,1,1,1,1,1};
     public static final int INITIAL_FREE_ROADS = 2;
     public static final int INITIAL_FREE_SETTLEMENTS = 2;
+    public static final int DEV_CARD_FREE_ROADS = 2;
     public static final int LONGEST_ROAD_VP = 2;
     public static final int LARGEST_ARMY_VP = 2;
+    public static final int MIN_LARGEST_ARMY = 3;
     
     /* Static fields */
     
@@ -49,6 +51,7 @@ public class Rules {
     private static int maxRoads; // default (for radius 3) = 15
     private static int maxSettlements; // default (for radius 3) = 5
     private static int maxCities; // default (for radius 3) = 4
+    private static int minLongestRoad; // default (for radius 3) = 5
     
 
     public static void init(int radius) {
@@ -86,6 +89,7 @@ public class Rules {
     public static int getMaxRoads() { return maxRoads; }
     public static int getMaxSettlements() { return maxSettlements; }
     public static int getMaxCities() { return maxCities; }
+    public static int getMinLongestRoad() { return minLongestRoad; }
     
     /* Private helpers */
     
@@ -368,5 +372,6 @@ public class Rules {
         maxRoads = maxVP + (maxVP / 2);
         maxSettlements = maxRoads - maxVP;
         maxCities = maxSettlements - (maxVP / (Resource.NUM_TYPES * 2));
+        minLongestRoad = maxRoads / 3;
     }
 }

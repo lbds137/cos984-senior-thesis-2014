@@ -64,7 +64,7 @@ public class Player {
     public ArrayList<Intersection> getCities() { return cities; }
     public ResourceBundle getResourceCards() { return resourceCards; }
     public DevCardBundle getDevCards() { return devCards; }
-    public DevCardBundle getPlayedDevcards() { return playedDevCards; }
+    public DevCardBundle getPlayedDevCards() { return playedDevCards; }
     public int getLargestArmy() { return playedDevCards.size(DevCard.KNIGHT); }
     public int getPublicVP() { return publicVP; }
     public int getVP() { return publicVP + privateVP; }
@@ -126,6 +126,7 @@ public class Player {
         if (settlements.indexOf(i) == -1) { return false; }
         else { return true; }
     }
+    public boolean canBuildDevCard() { return (resourceCards.canRemove(Rules.DEV_CARD_COST)); }
     
     /* Operations */
     
@@ -251,9 +252,9 @@ public class Player {
         resourceCards.add(resDeck.remove(s));
         return true;
     }
-    public DevCard playDevCard(int type) {
+    public boolean playDevCard(int type) {
         // check whether player owns at least one dev card of given type
-        if (devCards.size(type) == 0) { return null; }
+        if (devCards.size(type) == 0) { return false; }
         DevCard card = devCards.remove(type);
         playedDevCards.add(card);
         // if VP card played, decrease private VP and increase public VP
@@ -264,7 +265,7 @@ public class Player {
                 publicVP++;
                 break;
         }
-        return card;
+        return true;
     }
     // used for Road Building dev card (and debugging)
     public void giveFreeRoads(int n) {
@@ -319,15 +320,6 @@ public class Player {
     public String toString() {
         if (id < NAMES.length) { return NAMES[id]; }
         else { return "Player " + (id + 1); }
-    }
-    
-    /* Printing */
-    public void printResourceCards() {
-        System.out.println("Your hand is: " + resourceCards);
-    }
-    // prints *the sum of public and private* VP
-    public void printVP() {
-        System.out.println("Your VP score is: " + getVP() + " (out of " + Rules.getMaxVP() + ")");
     }
     
     /* Static methods */

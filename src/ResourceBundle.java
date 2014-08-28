@@ -62,9 +62,15 @@ public class ResourceBundle {
     // remove a random resource card
     public Resource removeRandom() {
         if (size() == 0) { return null; }
-        int rand = 0;
-        do { rand = (int) (Math.random() * Resource.NUM_TYPES); } while (size(rand) == 0);
-        return remove(rand);
+        int size = size();
+        int rand = (int) (Math.random() * size);
+        int i = 0;
+        int temp = 0;
+        for (; i < DevCard.NUM_TYPES; i++) {
+            if (temp > rand) { break; }
+            temp += size(i);
+        }
+        return remove(i - 1);
     }
     public int size(int resourceType) {
         int test = new Resource(resourceType).getResourceType();
@@ -88,8 +94,9 @@ public class ResourceBundle {
         if (isEmpty()) { return "(empty)"; }
         String s = "";
         for (int i = 0; i < Resource.NUM_TYPES; i++) {
+            if (size(i) == 0) { continue; }
             String res = "" + Resource.NAMES.get(i + 1);
-            int count = bundle.get(i).size();
+            int count = size(i);
             s += res + ": x" + count + "; "; 
         }
         return s;

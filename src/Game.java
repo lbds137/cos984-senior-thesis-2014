@@ -22,6 +22,7 @@ public class Game {
     private int longestRoadLength;
     private Player largestArmyOwner;
     private int largestArmySize;
+    private Player pCurrent;
     
     public Game(int numPlayers, int radius, int dim) {
         if (numPlayers < 2) { this.numPlayers = 2; }
@@ -73,24 +74,27 @@ public class Game {
     private void firstMoves() {
         // prompt to place first settlements and roads in normal order
         for (int i = 0; i < players.size(); i++) { 
+            pCurrent = players.get(i);
             UserInput.doPrivacy();
-            doInitialTurn(players.get(i)); 
+            System.out.println(pCurrent + UserInput.WELCOME);
+            doInitialTurn(); 
         }
         // prompt to place second settlements and roads in reverse order
         for (int i = players.size() - 1; i >= 0; i--) { 
+            pCurrent = players.get(i);
             UserInput.doPrivacy();
-            doInitialTurn(players.get(i)); 
+            doInitialTurn(); 
         }
     }
     /* MAIN GAME LOOP - WHERE EVERYTHING HAPPENS */
     private void gameLoop() {
-        Player pCurrent = players.get(0);
+        pCurrent = players.get(0);
         while (getWinner() == null) {
             UserInput.doPrivacy();
             int diceRoll = getDiceRoll();
             System.out.println("Dice roll was " + diceRoll + ".");
             if (diceRoll == 7) { 
-                moveRobber(pCurrent);
+                moveRobber();
                 // because trading among players is not yet implemented, players need to
                 // stockpile many cards and trade with the bank, so we do not enforce
                 // the usual "discard half of your hand if you have more than 7 cards" rule
@@ -99,7 +103,7 @@ public class Game {
             else {
                 for (Player p : players) { p.collectResources(diceRoll, resDeck); }
             }
-            doTurn(pCurrent);
+            doTurn();
             pCurrent = getNextPlayer(pCurrent);
         }
         Player winner = getWinner();
@@ -120,12 +124,12 @@ public class Game {
         int redDie = (int) (Math.random() * Rules.DIE_SIDES) + 1;
         return yellowDie + redDie;
     }
-    private void moveRobber(Player p) {
+    private void moveRobber() {
         int robberIndex = board.getRobberIndex();
         int targetIndex = robberIndex;
-        while (targetIndex == robberIndex) { targetIndex = getHex(p); }
+        while (targetIndex == robberIndex) { targetIndex = getHex(); }
         Player victim = board.moveRobber(targetIndex);
-        if (victim != null) { victim.stealResource(p); }
+        if (victim != null) { victim.stealResource(pCurrent); }
         bDraw.draw();
     }
     // returns null if no winner yet
@@ -135,6 +139,21 @@ public class Game {
             if (p.getVP() >= Rules.getMaxVP()) { winner = p; }
         }
         return winner;
+    }
+    private void findLongestRoad() {
+        // take away longest road until roads are counted again
+        if (longestRoadOwner != null) { longestRoadOwner.takeLongestRoad(); }
+        longestRoadLength = 0;
+        longestRoadOwner = null;
+        for (Player p : players) { 
+            int longestRoad = findLongestRoad(p);
+            if (longestRoad >= Rules.getMinLongestRoad() && 
+                longestRoad > longestRoadLength) {
+                longestRoadLength = longestRoad;
+                longestRoadOwner = p;
+            }
+        }
+        if (longestRoadOwner != null) { longestRoadOwner.giveLongestRoad(); }
     }
     // returns the length of this player's longest road
     private int findLongestRoad(Player p) {
@@ -169,18 +188,21 @@ public class Game {
         for (Integer i : iTermini) {
             ArrayList<Integer> idsVisited = new ArrayList<Integer>();
             idsVisited.add(i);
-            longestRoads.add(findLongestRoad(idsVisited, iGraph, Constants.INVALID)); // recursive helper
+            longestRoads.add(findLongestRoad(p, idsVisited, iGraph, Constants.INVALID)); // recursive helper
         }
         return longestRoads.last();
     }
     // recursive helper method for findLongestRoad()
-    private int findLongestRoad(ArrayList<Integer> idsVisited, boolean[][] iGraph, int prevId) {
+    private int findLongestRoad(Player p, ArrayList<Integer> idsVisited, boolean[][] iGraph, int prevId) {
         int iCurrent = idsVisited.get(idsVisited.size() - 1);
         ArrayList<Integer> nextIds = new ArrayList<Integer>((HexShape.NUM_SIDES / 2) - 1);
         for (int k = 0; k < iGraph[iCurrent].length; k++) {
             if (k == iCurrent) continue;
             if (iGraph[iCurrent][k] && k != prevId) nextIds.add(k);
         }
+        /* base case: road broken up by enemy player building */
+        Player q = intersections[iCurrent].getPlayer();
+        if (q != null && q != p) { return idsVisited.size() - 1; }
         /* base case: dead-ended (not into a loop) */
         if (nextIds.size() == 0) { return idsVisited.size() - 1; }
         TreeSet<Integer> longestRoads = new TreeSet<Integer>();
@@ -189,7 +211,7 @@ public class Game {
             // continue only to intersections not visited yet
             if (idsVisited.indexOf(nextIds.get(j)) == -1) {
                 newIdsVisited.add(nextIds.get(j));
-                longestRoads.add(findLongestRoad(newIdsVisited, iGraph, iCurrent));
+                longestRoads.add(findLongestRoad(p, newIdsVisited, iGraph, iCurrent));
             }
         }
         /* base case: dead-ended (into a loop) */
@@ -198,10 +220,71 @@ public class Game {
                            depending on whether or not there is a fork) */
         return longestRoads.last();
     }
+    private void playDevCard(int devCardType) {
+        switch (devCardType) {
+            case DevCard.KNIGHT:
+                moveRobber();
+                break;
+            case DevCard.ROAD:
+                if (pCurrent.getRoads().size() < (Rules.getMaxRoads() - Rules.DEV_CARD_FREE_ROADS)) {
+                    System.out.println(pCurrent + UserInput.CANNOT_BUILD_ROAD);
+                    return; // road limit would be exceeded
+                }
+                pCurrent.giveFreeRoads(Rules.DEV_CARD_FREE_ROADS);
+                pCurrent.buildRoad(getRoad(), resDeck);
+                pCurrent.buildRoad(getRoad(), resDeck);
+                break;
+            case DevCard.PLENTY:
+                boolean success = true;
+                String result = UserInput.PLENTY_REQUEST;
+                int typeOne;
+                int typeTwo;
+                do {
+                    String input;
+                    // check for valid resource input
+                    do {
+                        input = UserInput.getNewInput(pCurrent, result);
+                        result = UserInput.validateTwoResources(input);
+                    } while (!result.equals(UserInput.VALID));
+                    String[] sRes = input.split("\\s");
+                    String sResOne = sRes[0];
+                    String sResTwo = sRes[1];
+                    // verify if requested cards can be drawn
+                    typeOne = Resource.getResourceType(sResOne);
+                    typeTwo = Resource.getResourceType(sResTwo);
+                    success = resDeck.canRemove(typeOne) && resDeck.canRemove(typeTwo);
+                    if (!success) { result = UserInput.CANNOT_DRAW_RESOURCE_CARD; }
+                } while (!success);
+                // actually draw the cards (you thief!)
+                pCurrent.stealResource(resDeck.remove(typeOne));
+                pCurrent.stealResource(resDeck.remove(typeTwo));
+                break;
+            case DevCard.MONOPOLY:
+                result = UserInput.MONOPOLY_REQUEST;
+                String input;
+                // check for valid resource input
+                do {
+                    input = UserInput.getNewInput(pCurrent, result);
+                    result = UserInput.validateResource(input);
+                } while (!result.equals(UserInput.VALID));
+                int resType = Resource.getResourceType(input);
+                for (Player p : players) {
+                    if (p == pCurrent) { continue; }
+                    ResourceBundle pHand = p.getResourceCards();
+                    while (pHand.size(resType) > 0) { pCurrent.stealResource(pHand.remove(resType)); }
+                }
+                break;
+            case DevCard.CHAPEL: case DevCard.UNIVERSITY: case DevCard.PALACE: 
+            case DevCard.LIBRARY: case DevCard.MARKET:
+                // the Player class handles the VP given by these cards
+                break;
+        }
+        pCurrent.playDevCard(devCardType);
+    }
     
     /* User interaction */
     
-    public int getHex(Player p) {
+    private int getHex() {
         boolean valid = true;
         String result = UserInput.ROBBER_REQUEST;
         int location;
@@ -209,7 +292,7 @@ public class Game {
             String input;
             // check for valid integer input
             do {
-                input = UserInput.getNewInput(p, result);
+                input = UserInput.getNewInput(pCurrent, result);
                 result = UserInput.validateInteger(input);
             } while (!result.equals(UserInput.VALID));
             valid = true;
@@ -222,11 +305,11 @@ public class Game {
         } while (!valid);
         return location;
     }
-    public Road getRoad(Player p) {
+    private Road getRoad() {
         Road r = null;
         // if player has exceeded maximum allowance or doesn't have enough resources, abort
-        if (!p.canBuildRoad()) {
-            System.out.println(p.toString() + UserInput.CANNOT_BUILD_ROAD);
+        if (!pCurrent.canBuildRoad()) {
+            System.out.println(pCurrent.toString() + UserInput.CANNOT_BUILD_ROAD);
             return r;
         }
         int numIntersections = roads.length;
@@ -234,32 +317,15 @@ public class Game {
         String result = UserInput.ROAD_REQUEST;
         do {
             String input;
-            String[] sInts;
-            String sIntOne = "";
-            String sIntTwo = "";
-            String resultOne;
-            String resultTwo;
             // check for valid integer input
             do {
-                input = UserInput.getNewInput(p, result);
-                sInts = input.split("\\s");
-                if (sInts.length < 2) {
-                    result = UserInput.INVALID_INTEGER;
-                    continue;
-                }
-                sIntOne = sInts[0];
-                sIntTwo = sInts[1];
-                resultOne = UserInput.validateInteger(sIntOne);
-                resultTwo = UserInput.validateInteger(sIntTwo);
-                if (!resultOne.equals(UserInput.VALID) || !resultTwo.equals(UserInput.VALID)) {
-                    if (resultOne.equals(UserInput.VALID)) { result = resultTwo; }
-                    else { result = resultOne; }
-                }
-                else { result = UserInput.VALID; }
+                input = UserInput.getNewInput(pCurrent, result);
+                result = UserInput.validateTwoIntegers(input);
             } while (!result.equals(UserInput.VALID));
+            String[] sInts = input.split("\\s");
+            int iOne = Integer.parseInt(sInts[0]);
+            int iTwo = Integer.parseInt(sInts[1]);
             valid = true;
-            int iOne = Integer.parseInt(sIntOne);
-            int iTwo = Integer.parseInt(sIntTwo);
             // throw out locations outside the range of intersections[], and 
             // reject roads that aren't on the board (i.e. connecting wrong intersections)
             if (iOne < 0 || iTwo < 0 || iOne >= numIntersections || iTwo >= numIntersections || 
@@ -269,8 +335,8 @@ public class Game {
                 continue;
             }
             r = roads[iOne][iTwo];
-            // verify if player p can build a road at the given location
-            valid = p.canBuildRoad(r);
+            // verify if player can build a road at the given location
+            valid = pCurrent.canBuildRoad(r);
             if (!valid) { 
                 result = UserInput.INVALID_ROAD;
                 r = null;
@@ -278,11 +344,11 @@ public class Game {
         } while (!valid);
         return r;
     }
-    public Intersection getSettlement(Player p) {
+    private Intersection getSettlement() {
         Intersection inter = null;
         // if player has exceeded maximum allowance or doesn't have enough resources, abort
-        if (!p.canBuildSettlement()) {
-            System.out.println(p.toString() + UserInput.CANNOT_BUILD_SETTLEMENT);
+        if (!pCurrent.canBuildSettlement()) {
+            System.out.println(pCurrent.toString() + UserInput.CANNOT_BUILD_SETTLEMENT);
             return inter;
         }
         int numIntersections = intersections.length;
@@ -292,7 +358,7 @@ public class Game {
             String input;
             // check for valid integer input
             do {
-                input = UserInput.getNewInput(p, result);
+                input = UserInput.getNewInput(pCurrent, result);
                 result = UserInput.validateInteger(input);
             } while (!result.equals(UserInput.VALID));
             valid = true;
@@ -317,8 +383,8 @@ public class Game {
             }
             if (!valid) { continue; }
             inter = intersections[location];
-            // verify if player p can build a settlement at the given location
-            valid = p.canBuildSettlement(inter);
+            // verify if player can build a settlement at the given location
+            valid = pCurrent.canBuildSettlement(inter);
             if (!valid) { 
                 result = UserInput.INVALID_SETTLEMENT;
                 inter = null;
@@ -326,11 +392,11 @@ public class Game {
         } while (!valid);
         return inter;
     }
-    public Intersection getCity(Player p) {
+    private Intersection getCity() {
         Intersection inter = null;
         // if player has exceeded maximum allowance or doesn't have enough resources, abort
-        if (!p.canBuildCity()) {
-            System.out.println(p.toString() + UserInput.CANNOT_BUILD_CITY);
+        if (!pCurrent.canBuildCity()) {
+            System.out.println(pCurrent.toString() + UserInput.CANNOT_BUILD_CITY);
             return inter;
         }
         int numIntersections = intersections.length;
@@ -340,7 +406,7 @@ public class Game {
             String input;
             // check for valid integer input
             do {
-                input = UserInput.getNewInput(p, result);
+                input = UserInput.getNewInput(pCurrent, result);
                 result = UserInput.validateInteger(input);
             } while (!result.equals(UserInput.VALID));
             valid = true;
@@ -352,8 +418,8 @@ public class Game {
                 continue;
             }
             inter = intersections[location];
-            // verify if player p can build a city at the given location
-            valid = p.canBuildCity(inter);
+            // verify if player can build a city at the given location
+            valid = pCurrent.canBuildCity(inter);
             if (!valid) { 
                 result = UserInput.INVALID_CITY;
                 inter = null;
@@ -361,73 +427,95 @@ public class Game {
         } while (!valid);
         return inter;
     }
-    public void doPortTrade(Player p) {
+    private int getDevCard() {
+        int card = Constants.INVALID;
+        // if player has no dev cards, abort
+        if (pCurrent.getDevCards().size() == 0) {
+            System.out.println(pCurrent.toString() + UserInput.CANNOT_PLAY_DEV_CARD);
+            return card;
+        }
+        boolean valid = true;
+        String result = UserInput.DEV_CARD_REQUEST;
+        do {
+            String input;
+            // check for valid dev card input
+            do {
+                input = UserInput.getNewInput(pCurrent, result);
+                result = UserInput.validateDevCard(input);
+            } while (!result.equals(UserInput.VALID));
+            valid = true;
+            card = DevCard.getCardType(input);
+            if (pCurrent.getDevCards().size(card) == 0) {
+                valid = false;
+                result = UserInput.INVALID_DEV_CARD;
+                continue;
+            }
+        } while (!valid);
+        return card;
+    }
+    private void doPortTrade() {
         boolean success = true;
         String result = UserInput.PORT_TRADE_REQUEST;
         do {
             String input;
-            String[] sRes;
-            String sResOne = "";
-            String sResTwo = "";
-            String resultOne;
-            String resultTwo;
             // check for valid resource input
             do {
-                input = UserInput.getNewInput(p, result);
-                sRes = input.split("\\s");
-                if (sRes.length < 2) {
-                    result = UserInput.INVALID_RESOURCE;
-                    continue;
-                }
-                sResOne = sRes[0];
-                sResTwo = sRes[1];
-                resultOne = UserInput.validateResource(sResOne);
-                resultTwo = UserInput.validateResource(sResTwo);
-                if (!resultOne.equals(UserInput.VALID) || !resultTwo.equals(UserInput.VALID)) {
-                    if (resultOne.equals(UserInput.VALID)) { result = resultTwo; }
-                    else { result = resultOne; }
-                }
-                else { result = UserInput.VALID; }
+                input = UserInput.getNewInput(pCurrent, result);
+                result = UserInput.validateTwoResources(input);
             } while (!result.equals(UserInput.VALID));
-            // verify if player p can do the trade
-            success = p.doPortTrade(Resource.getResourceType(sResOne), 
-                                    Resource.getResourceType(sResTwo), resDeck);
+            String[] sRes = input.split("\\s");
+            String sResOne = sRes[0];
+            String sResTwo = sRes[1];
+            // verify if player can do the trade
+            success = pCurrent.doPortTrade(Resource.getResourceType(sResOne), 
+                                           Resource.getResourceType(sResTwo), resDeck);
             if (!success) { result = UserInput.INVALID_TRADE; }
         } while (!success);
     }
-    public void doTurn(Player p) {
+    private void doTurn() {
         boolean done = false;
         do {
-            System.out.println();
-            p.printResourceCards();
-            p.printVP();
-            String input = UserInput.getNewInput(p, UserInput.TURN_REQUEST);
+            printTurnInfo();
+            String input = UserInput.getNewInput(pCurrent, UserInput.TURN_REQUEST);
             String result = UserInput.validateTurnCommand(input);
             while (!result.equals(UserInput.VALID)) {
-                input = UserInput.getNewInput(p, result);
+                input = UserInput.getNewInput(pCurrent, result);
                 result = UserInput.validateTurnCommand(input);
             }
             switch (input.toLowerCase()) {
                 case UserInput.BUILD_ROAD:
-                    Road r = getRoad(p);
-                    if (r != null) { p.buildRoad(r, resDeck); }
+                    Road r = getRoad();
+                    if (r != null) { 
+                        pCurrent.buildRoad(r, resDeck);
+                        findLongestRoad();
+                    }
                     break;
                 case UserInput.BUILD_SETTLEMENT:
-                    Intersection i = getSettlement(p);
-                    if (i != null) { p.buildSettlement(i, resDeck); }
+                    Intersection i = getSettlement();
+                    if (i != null) { 
+                        pCurrent.buildSettlement(i, resDeck);
+                        findLongestRoad(); // what if a newly build settlement breaks a road?
+                    }
                     break;
                 case UserInput.BUILD_CITY:
-                    Intersection j = getCity(p);
-                    if (j != null) { p.buildCity(j, resDeck); }
+                    Intersection j = getCity();
+                    if (j != null) { pCurrent.buildCity(j, resDeck); }
                     break;
                 case UserInput.TRADE_PORT:
-                    doPortTrade(p);
+                    doPortTrade();
                     break;
-                case UserInput.BUILD_DEV_CARD: case UserInput.TRADE_PLAYER: case UserInput.PLAY_DEV_CARD: 
+                case UserInput.BUILD_DEV_CARD:
+                    if (!pCurrent.canBuildDevCard()) {
+                        System.out.println(pCurrent + UserInput.CANNOT_BUILD_DEV_CARD);
+                    }
+                    pCurrent.buildDevCard(devDeck, resDeck);
+                    break;
+                case UserInput.PLAY_DEV_CARD:
+                    int card = getDevCard();
+                    if (card != Constants.INVALID) { playDevCard(card); }
+                    break;
+                case UserInput.TRADE_PLAYER:  
                     System.out.println("The desired functionality is not yet implemented. Please try a different command.");
-                    break;
-                case UserInput.PRINT_RESOURCE_CARDS:
-                    p.printResourceCards();
                     break;
                 case UserInput.END_TURN:
                     done = true;
@@ -438,15 +526,45 @@ public class Game {
             bDraw.draw();
         } while (!done);
     }
-    public void doInitialTurn(Player p) {
+    private void doInitialTurn() {
         System.out.println();
-        System.out.println(p.toString() + UserInput.BEGINNING_INFO);
-        Intersection i = getSettlement(p);
-        p.buildSettlement(i, resDeck);
+        System.out.println(pCurrent + UserInput.BEGINNING_INFO);
+        Intersection i = getSettlement();
+        pCurrent.buildSettlement(i, resDeck);
         bDraw.draw();
-        Road r = getRoad(p);
-        p.buildRoad(r, resDeck);
+        Road r = getRoad();
+        pCurrent.buildRoad(r, resDeck);
         bDraw.draw();
+    }
+    private void printTurnInfo() {
+        /* note: dice roll printed in gameLoop() */
+        System.out.println();
+        System.out.println("----------------------------------------------------------------------");
+        System.out.println();
+        System.out.println("Resource decks: " + resDeck);
+        System.out.println("Dev cards available: " + devDeck.size());
+        System.out.println();
+        System.out.println("Roads available: " + (Rules.getMaxRoads() - pCurrent.getRoads().size()));
+        System.out.println("Settlements available: " + 
+                           (Rules.getMaxSettlements() - pCurrent.getSettlements().size()));
+        System.out.println("Cities available: " + (Rules.getMaxCities() - pCurrent.getCities().size()));
+        System.out.println();
+        System.out.print("Longest road owner: ");
+        if (longestRoadOwner != null) {
+            System.out.print(longestRoadOwner + "\n");
+        }
+        else { System.out.print("(nobody)\n"); }
+        System.out.print("Largest army owner: ");
+        if (largestArmyOwner != null) {
+            System.out.print(largestArmyOwner + "\n");
+        }
+        else { System.out.print("(nobody)\n"); }
+        System.out.println();
+        System.out.println("Your VP score is: " + pCurrent.getVP() + " (out of " + Rules.getMaxVP() + ")");
+        System.out.println("Your hand is: " + pCurrent.getResourceCards());
+        System.out.println("Unplayed dev cards: " + pCurrent.getDevCards());
+        System.out.println("Played dev cards: " + pCurrent.getPlayedDevCards());
+        System.out.println();
     }
     
     /* PROGRAM ENTRY POINT */

@@ -81,9 +81,7 @@ public class Resource implements Comparable<Resource> {
     /* Static methods */
     
     public static int getResourceType(String sResource) {
-        String s = sResource.toLowerCase();
-        s = Character.toUpperCase(s.charAt(0)) + s.substring(1);
-        int i = NAMES.indexOf(s);
+        int i = NAMES.indexOf(sResource);
         switch (i - 1) {
             case WOOL: case GRAIN: case LUMBER:
             case BRICK: case ORE: case DESERT:

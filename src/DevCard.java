@@ -59,10 +59,8 @@ public class DevCard {
     
     /* Static methods */
     
-    public static int getDevCardType(String sDevCard) {
-        String s = sDevCard.toLowerCase();
-        s = Character.toUpperCase(s.charAt(0)) + s.substring(1);
-        int i = NAMES.indexOf(s);
+    public static int getCardType(String sDevCard) {
+        int i = NAMES.indexOf(sDevCard);
         switch (i) {
             case KNIGHT: case ROAD: case PLENTY: case MONOPOLY: case CHAPEL:
             case UNIVERSITY: case PALACE: case LIBRARY: case MARKET:

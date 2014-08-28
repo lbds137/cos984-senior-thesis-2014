@@ -49,9 +49,15 @@ public class DevCardBundle {
     }
     public DevCard removeRandom() { // simulate drawing from a shuffled deck
         if (size() == 0) { return null; }
-        int rand = 0;
-        do { rand = (int) (Math.random() * DevCard.NUM_TYPES); } while (size(rand) != 0);
-        return remove(rand);
+        int size = size();
+        int rand = (int) (Math.random() * size);
+        int i = 0;
+        int temp = 0;
+        for (; i < DevCard.NUM_TYPES; i++) {
+            if (temp > rand) { break; }
+            temp += size(i);
+        }
+        return remove(i - 1);
     }
     public int size(int devCardType) {
         int test = new DevCard(devCardType).getCardType();
@@ -75,10 +81,25 @@ public class DevCardBundle {
         if (isEmpty()) { return "(empty)"; }
         String s = "";
         for (int i = 0; i < DevCard.NUM_TYPES; i++) {
-            String res = "" + DevCard.NAMES.get(i + 1);
-            int count = bundle.get(i).size();
+            if (size(i) == 0) { continue; }
+            String res = "" + DevCard.NAMES.get(i);
+            int count = size(i);
             s += res + ": x" + count + "; "; 
         }
         return s;
+    }
+    
+    /* Testing */
+    
+    public static void main(String[] args) {
+        DevCardBundle devDeck = new DevCardBundle();
+        for (int i = 0; i < DevCard.NUM_TYPES; i++) {
+            for (int j = 0; j < Rules.MAX_DEV_CARDS[i]; j++) {
+                devDeck.add(new DevCard(i));
+            }
+        }
+        System.out.println(devDeck);
+        while (!devDeck.isEmpty()) { System.out.println(devDeck.removeRandom()); }
+        System.out.println(devDeck);
     }
 }

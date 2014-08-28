@@ -530,7 +530,7 @@ public class Game {
                     doPortTrade();
                     break;
                 case UserInput.BUILD_DEV_CARD:
-                    if (!pCurrent.canBuildDevCard()) {
+                    if (!pCurrent.canBuildDevCard(devDeck)) {
                         System.out.println(pCurrent + UserInput.CANNOT_BUILD_DEV_CARD);
                     }
                     newDevCards.add(pCurrent.buildDevCard(devDeck, resDeck));

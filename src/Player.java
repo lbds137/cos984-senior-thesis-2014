@@ -130,7 +130,9 @@ public class Player {
         if (settlements.indexOf(i) == -1) { return false; }
         else { return true; }
     }
-    public boolean canBuildDevCard() { return (resourceCards.canRemove(Rules.DEV_CARD_COST)); }
+    public boolean canBuildDevCard(DevCardBundle devDeck) { 
+        return resourceCards.canRemove(Rules.DEV_CARD_COST) && !devDeck.isEmpty(); 
+    }
     
     /* Operations */
     
@@ -165,12 +167,8 @@ public class Player {
     }
     // build a dev card and return it
     public DevCard buildDevCard(DevCardBundle devDeck, ResourceBundle resDeck) {
-        // must check that this player has enough resources to build a dev card
-        if (!resourceCards.canRemove(Rules.DEV_CARD_COST)) { return null; }
-        // attempt to draw a dev card
+        if (!canBuildDevCard(devDeck)) { return null; }
         DevCard card = devDeck.removeRandom();
-        if (card == null) { return null; }
-        // draw card
         devCards.add(card);
         resDeck.add(resourceCards.remove(Rules.DEV_CARD_COST));
         // if VP card is drawn, save VP

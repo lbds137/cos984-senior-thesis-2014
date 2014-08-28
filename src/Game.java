@@ -48,6 +48,10 @@ public class Game {
         players = new ArrayList<Player>(numPlayers);
         for (int i = 0; i < numPlayers; i++) { players.add(new Player(i)); }
         Collections.shuffle(players); // randomize order of play (no point to actually rolling dice)
+        longestRoadOwner = null;
+        longestRoadLength = 0;
+        largestArmyOwner = null;
+        largestArmySize = 0;
     }
     private void setUpBoard() {
         board = new Board();
@@ -140,20 +144,29 @@ public class Game {
         }
         return winner;
     }
+    private void findLargestArmy() {
+        for (Player p : players) { 
+            int largestArmy = p.getLargestArmy();
+            if (largestArmy >= Rules.MIN_LARGEST_ARMY && 
+                largestArmy > largestArmySize) {
+                largestArmySize = largestArmy;
+                if (largestArmyOwner != null) { largestArmyOwner.takeLargestArmy(); }
+                largestArmyOwner = p;
+                largestArmyOwner.giveLargestArmy();
+            }
+        }
+    }
     private void findLongestRoad() {
-        // take away longest road until roads are counted again
-        if (longestRoadOwner != null) { longestRoadOwner.takeLongestRoad(); }
-        longestRoadLength = 0;
-        longestRoadOwner = null;
         for (Player p : players) { 
             int longestRoad = findLongestRoad(p);
             if (longestRoad >= Rules.getMinLongestRoad() && 
                 longestRoad > longestRoadLength) {
                 longestRoadLength = longestRoad;
+                if (longestRoadOwner != null) { longestRoadOwner.takeLongestRoad(); }
                 longestRoadOwner = p;
+                longestRoadOwner.giveLongestRoad();
             }
         }
-        if (longestRoadOwner != null) { longestRoadOwner.giveLongestRoad(); }
     }
     // returns the length of this player's longest road
     private int findLongestRoad(Player p) {
@@ -224,6 +237,7 @@ public class Game {
         switch (devCardType) {
             case DevCard.KNIGHT:
                 moveRobber();
+                findLargestArmy();
                 break;
             case DevCard.ROAD:
                 if (pCurrent.getRoads().size() < (Rules.getMaxRoads() - Rules.DEV_CARD_FREE_ROADS)) {

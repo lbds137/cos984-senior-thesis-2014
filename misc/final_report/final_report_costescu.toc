@@ -50,5 +50,5 @@
 \contentsline {subsubsection}{\numberline {4.8.1}First Moves}{44}{subsubsection.4.8.1}
 \contentsline {subsubsection}{\numberline {4.8.2}The Game Loop}{44}{subsubsection.4.8.2}
 \contentsline {section}{\numberline {5}Challenges Encountered}{47}{section.5}
-\contentsline {section}{\numberline {6}Future Features}{47}{section.6}
-\contentsline {section}{\numberline {7}Conclusion}{47}{section.7}
+\contentsline {section}{\numberline {6}Future Features}{48}{section.6}
+\contentsline {section}{\numberline {7}Conclusion}{49}{section.7}

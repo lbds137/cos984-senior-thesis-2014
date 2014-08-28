@@ -23,6 +23,7 @@ public class Game {
     private Player largestArmyOwner;
     private int largestArmySize;
     private Player pCurrent;
+    private ArrayList<DevCard> newDevCards;
     
     public Game(int numPlayers, int radius, int dim) {
         if (numPlayers < 2) { this.numPlayers = 2; }
@@ -36,22 +37,13 @@ public class Game {
     
     private void startGame() {
         Rules.init(radius);
-        setUpPlayers();
         setUpBoard();
         setUpDecks();
+        setUpPlayers();
         UserInput.init();
         firstMoves();
         for (Player p : players) { p.collectResources(resDeck); } // give starting resources
         gameLoop();
-    }
-    private void setUpPlayers() {
-        players = new ArrayList<Player>(numPlayers);
-        for (int i = 0; i < numPlayers; i++) { players.add(new Player(i)); }
-        Collections.shuffle(players); // randomize order of play (no point to actually rolling dice)
-        longestRoadOwner = null;
-        longestRoadLength = 0;
-        largestArmyOwner = null;
-        largestArmySize = 0;
     }
     private void setUpBoard() {
         board = new Board();
@@ -74,6 +66,16 @@ public class Game {
                 devDeck.add(new DevCard(i));
             }
         }
+        newDevCards = new ArrayList<DevCard>();
+    }
+    private void setUpPlayers() {
+        players = new ArrayList<Player>(numPlayers);
+        for (int i = 0; i < numPlayers; i++) { players.add(new Player(i)); }
+        Collections.shuffle(players); // randomize order of play (no point to actually rolling dice)
+        longestRoadOwner = null;
+        longestRoadLength = 0;
+        largestArmyOwner = null;
+        largestArmySize = 0;
     }
     private void firstMoves() {
         // prompt to place first settlements and roads in normal order
@@ -109,6 +111,7 @@ public class Game {
             }
             doTurn();
             pCurrent = getNextPlayer(pCurrent);
+            newDevCards.clear();
         }
         Player winner = getWinner();
         System.out.println(winner + " has won the game with " + winner.getVP() + " victory points!");
@@ -234,13 +237,21 @@ public class Game {
         return longestRoads.last();
     }
     private void playDevCard(int devCardType) {
+        int[] devCardCounts = new int[DevCard.NUM_TYPES];
+        for (DevCard d : newDevCards) { devCardCounts[d.getCardType()]++; }
+        int totalDevCardCount = pCurrent.getDevCards().size(devCardType);
+        // cards cannot be played in the same turn they were built
+        if (totalDevCardCount == devCardCounts[devCardType]) {
+            System.out.println(pCurrent + UserInput.CANNOT_PLAY_DEV_CARD);
+            return;
+        }
         switch (devCardType) {
             case DevCard.KNIGHT:
                 moveRobber();
                 findLargestArmy();
                 break;
             case DevCard.ROAD:
-                if (pCurrent.getRoads().size() < (Rules.getMaxRoads() - Rules.DEV_CARD_FREE_ROADS)) {
+                if (pCurrent.getRoads().size() > (Rules.getMaxRoads() - Rules.DEV_CARD_FREE_ROADS)) {
                     System.out.println(pCurrent + UserInput.CANNOT_BUILD_ROAD);
                     return; // road limit would be exceeded
                 }
@@ -445,7 +456,7 @@ public class Game {
         int card = Constants.INVALID;
         // if player has no dev cards, abort
         if (pCurrent.getDevCards().size() == 0) {
-            System.out.println(pCurrent.toString() + UserInput.CANNOT_PLAY_DEV_CARD);
+            System.out.println(pCurrent.toString() + UserInput.NO_DEV_CARDS);
             return card;
         }
         boolean valid = true;
@@ -522,14 +533,14 @@ public class Game {
                     if (!pCurrent.canBuildDevCard()) {
                         System.out.println(pCurrent + UserInput.CANNOT_BUILD_DEV_CARD);
                     }
-                    pCurrent.buildDevCard(devDeck, resDeck);
+                    newDevCards.add(pCurrent.buildDevCard(devDeck, resDeck));
                     break;
                 case UserInput.PLAY_DEV_CARD:
                     int card = getDevCard();
                     if (card != Constants.INVALID) { playDevCard(card); }
                     break;
                 case UserInput.TRADE_PLAYER:  
-                    System.out.println("The desired functionality is not yet implemented. Please try a different command.");
+                    System.out.println(UserInput.NOT_IMPLEMENTED);
                     break;
                 case UserInput.END_TURN:
                     done = true;

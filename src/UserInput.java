@@ -8,7 +8,6 @@ public final class UserInput {
     public static final String COMMA = ", ";
     public static final String TRY_AGAIN = "Please try again. ";
     public static final String ABORTING = "Aborting. ";
-    
     public static final String BUILD_ROAD = "build road";
     public static final String BUILD_SETTLEMENT = "build settlement";
     public static final String BUILD_CITY = "build city";
@@ -17,8 +16,7 @@ public final class UserInput {
     public static final String TRADE_PORT = "trade port";
     public static final String PLAY_DEV_CARD = "play dev card";
     public static final String END_TURN = "end turn";
-    
-    public static final String WELCOME = COMMA + "welcome to Catan!";
+    public static final String WELCOME = COMMA + "welcome to Settlers of Catan!";
     public static final String BEGINNING_INFO = COMMA + "you will be prompted to build a settlement and a road this turn. ";
     public static final String ROBBER_REQUEST = COMMA +"please enter a hex to which to move the robber. ";
     public static final String TURN_REQUEST = COMMA + "what would you like to do? Valid options are: " + BUILD_ROAD + COMMA + 
@@ -35,9 +33,9 @@ public final class UserInput {
     public static final String CANNOT_BUILD_SETTLEMENT = COMMA + "you are unable to build a settlement. " + ABORTING;
     public static final String CANNOT_BUILD_CITY = COMMA + "you are unable to build a city. " + ABORTING;
     public static final String CANNOT_BUILD_DEV_CARD = COMMA + "you are unable to build a dev card. " + ABORTING;
-    public static final String CANNOT_PLAY_DEV_CARD = COMMA + "you have no dev cards. " + ABORTING;
+    public static final String CANNOT_PLAY_DEV_CARD = COMMA + "you must wait a turn before playing that dev card. " + ABORTING;
+    public static final String NO_DEV_CARDS = COMMA + "you have no dev cards. " + ABORTING;
     public static final String CANNOT_DRAW_RESOURCE_CARD = COMMA + "there are no more resource cards of that type. " + TRY_AGAIN;
-    
     public static final String VALID = "valid";
     public static final String INVALID_TURN_COMMAND = COMMA + "you entered an invalid command. " + TRY_AGAIN;
     public static final String INVALID_INTEGER = COMMA + "you did not enter a valid integer. " + TRY_AGAIN;
@@ -47,6 +45,7 @@ public final class UserInput {
     public static final String INVALID_CITY = COMMA + "you cannot build a city there. " + TRY_AGAIN;
     public static final String INVALID_DEV_CARD = COMMA + "you entered an invalid dev card. " + TRY_AGAIN;
     public static final String INVALID_TRADE = COMMA + "you cannot afford that trade. " + TRY_AGAIN;
+    public static final String NOT_IMPLEMENTED = "The desired functionality is not yet implemented. Please try a different command.";
     
     /* Static fields */
     

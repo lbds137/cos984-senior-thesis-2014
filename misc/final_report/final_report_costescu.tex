@@ -16,7 +16,7 @@ Settlers of Catan: Developing an Implementation of an Emerging Classic Board Gam
 \date{}
 
 \topskip0pt
-\author{Vladimir Costescu \\ Professor David P. Walker \\ Princeton University \\ August $29^{\text{th}}$, 2014}
+\author{Vladimir Costescu \\ Professor David P. Walker \\ Princeton University \\ August $28^{\text{th}}$, 2014}
 \maketitle
 \vspace*{\fill}
 \begin{figure}
@@ -361,10 +361,18 @@ Aside from the resource card debits that occur when the \lstinline$build*$ metho
 \hypertarget{sec:the_userinput_class}{}
 \subsection{The \lstinline$UserInput$ Class}
 
+Since the implementation presently being discussed does not utilize a graphical interface (aside from the dynamic board image covered in the \hyperlink{sec:rendering_the_board_with_stddraw}{Rendering the Board with \lstinline$StdDraw$} section), it is necessary to collect user input via the terminal command prompt instead. The role of the \lstinline$UserInput$ class is to provide basic text input functionality and to store important messages that are to be displayed to the user at various points in the game. It uses a standard Java \lstinline$Scanner$ instance wrapped around \lstinline$System.in$ to collect the actual input and then implements some basic verification methods to ensure that the collected input satisfies certain criteria, depending on which method is called at a given point. Aside from these, the only other method implemented is \lstinline$doPrivacy$, which simply prints 100 blank lines whenever control switches from one player to another (at the end of a turn) so that the next player cannot "peek" at the previous player's sensitive information. Finally, numerous \lstinline$String$s are stored as constants, containing various prompts and informational tidbits that are to be displayed to the current player, contingent on different actions that the player takes (the actual \lstinline$System.out.println$ calls are in \lstinline$Game$, but \lstinline$UserInput$ stores the messages).
+
 \hypertarget{sec:putting_it_all_together_game_mechanics}{}
 \subsection{Putting It All Together: Game Mechanics}
 
+In the preceding sections, a number of important data types and components of game functionality were covered in great detail, and now that all the relevant prerequisites have been explored it is possible to finally finish painting the full picture of how a typical game of Catan works in the implementation presently being discussed. Recall that the conversation thus far has followed the initialization of \lstinline$Game$ into the \lstinline$startGame$ method and through the call to the \lstinline$setUpPlayers$ method. The last steps in \lstinline$startGame$ are to initialize \lstinline$UserInput$, prompt the players to place their first two settlements and roads using \lstinline$firstMoves$, allocate the starting resources, and then finally call \lstinline$gameLoop$, where all remaining game activity takes place.
 
+\hypertarget{sec:first_moves}{}
+\subsubsection{First Moves}
+
+\hypertarget{sec:the_game_loop}{}
+\subsubsection{The Game Loop}
 
 \hypertarget{sec:challenges_encountered}{}
 \section{Challenges Encountered}
